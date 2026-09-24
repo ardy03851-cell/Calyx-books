@@ -8,17 +8,20 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Calyx Book">
-  <meta name="theme-color" content="#0b0d10">
-  <meta name="description" content="Calyx Book — a professional writing studio for long-form work.">
+  <meta name="theme-color" content="#0a0b0e">
+  <meta name="description" content="Calyx Book — a writing studio for people who love to write.">
   <title>Calyx Book — Library</title>
   <link rel="icon" type="image/png" href="assets/icon.png">
   <link rel="apple-touch-icon" href="assets/icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,800&display=swap"
     rel="stylesheet">
   <style>
+    /* ============================================================
+       BASE / TOKENS
+       ============================================================ */
     * {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent
@@ -33,27 +36,41 @@
 
     body {
       font-family: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
-      background: #0b0d10;
-      color: #e9edf2;
+      background: #0a0b0e;
+      color: #ecedef;
       font-size: 14px;
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       overflow-x: hidden;
+      font-feature-settings: "cv11", "ss01";
     }
 
     :root {
-      --surface: rgba(255, 255, 255, .045);
-      --surface-hi: rgba(255, 255, 255, .08);
-      --border: rgba(255, 255, 255, .09);
-      --border-hi: rgba(255, 255, 255, .2);
-      --text: #e9edf2;
-      --text-2: #98a3b2;
-      --text-3: #68727f;
+      --bg: #0a0b0e;
+      --bg-2: #0e1014;
+      --surface: #14161b;
+      --surface-2: #1a1d23;
+      --surface-3: #232730;
+      --surface-hi: rgba(255, 255, 255, .07);
+      --border: rgba(255, 255, 255, .06);
+      --border-hi: rgba(255, 255, 255, .14);
+      --text: #ecedef;
+      --text-2: #969ba5;
+      --text-3: #5f646e;
       --accent: #c9a227;
-      --accent-hi: #e0b83d;
+      --accent-hi: #e8c356;
+      --accent-soft: rgba(201, 162, 39, .14);
       --radius: 14px;
       --radius-sm: 9px;
+      --radius-lg: 20px;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, .35);
+      --shadow-md: 0 8px 24px -8px rgba(0, 0, 0, .6);
+      --shadow-lg: 0 24px 48px -18px rgba(0, 0, 0, .75);
+      --shadow-xl: 0 44px 88px -28px rgba(0, 0, 0, .85);
+      --ease: cubic-bezier(.2, .8, .2, 1);
+      --ease-spring: cubic-bezier(.2, 1.1, .4, 1);
+      --top-h: 64px;
     }
 
     button,
@@ -80,16 +97,40 @@
     }
 
     ::selection {
-      background: rgba(201, 162, 39, .3)
+      background: rgba(201, 162, 39, .3);
+      color: inherit
     }
 
-    /* ---------- Background ---------- */
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, .1);
+      border-radius: 8px;
+      border: 3px solid transparent;
+      background-clip: content-box
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, .2);
+      background-clip: content-box
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent
+    }
+
+    /* ============================================================
+       BACKGROUND
+       ============================================================ */
     .bg {
       position: fixed;
       inset: 0;
       z-index: -2;
-      background: url('assets/bg.png') center center / cover no-repeat;
-      background-color: #0b0d10;
+      background: #0a0b0e url('assets/bg.png') center center / cover no-repeat;
+      background-color: #0a0b0e;
     }
 
     .bg::after {
@@ -97,31 +138,49 @@
       position: absolute;
       inset: 0;
       background:
-        radial-gradient(ellipse 90% 60% at 50% 0%, rgba(201, 162, 39, .06), transparent 70%),
-        linear-gradient(180deg, rgba(8, 10, 13, .72) 0%, rgba(8, 10, 13, .86) 45%, rgba(8, 10, 13, .95) 100%);
+        radial-gradient(ellipse 100% 55% at 50% -5%, rgba(201, 162, 39, .07), transparent 65%),
+        linear-gradient(180deg, rgba(8, 10, 13, .78) 0%, rgba(8, 10, 13, .9) 40%, rgba(8, 10, 13, .96) 100%);
     }
 
     .bg::before {
       content: "";
       position: absolute;
       inset: 0;
-      backdrop-filter: blur(1.5px);
-      -webkit-backdrop-filter: blur(1.5px);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
     }
 
-    /* ---------- Top bar ---------- */
+    /* Subtle grain */
+    .grain {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      opacity: .32;
+      mix-blend-mode: overlay;
+      background-image:
+        radial-gradient(circle at 12% 34%, rgba(255, 255, 255, .028) 0 1px, transparent 1px),
+        radial-gradient(circle at 71% 68%, rgba(255, 255, 255, .022) 0 1px, transparent 1px);
+      background-size: 3px 3px, 4px 4px;
+    }
+
+    /* ============================================================
+       TOP BAR
+       ============================================================ */
     .topbar {
       position: sticky;
       top: 0;
-      z-index: 30;
+      z-index: 40;
       display: flex;
       align-items: center;
       gap: 14px;
-      padding: 16px 32px;
-      padding-top: calc(16px + env(safe-area-inset-top));
-      background: linear-gradient(180deg, rgba(10, 12, 16, .94), rgba(10, 12, 16, .7));
-      backdrop-filter: blur(18px) saturate(1.4);
-      -webkit-backdrop-filter: blur(18px) saturate(1.4);
+      padding: 14px 34px;
+      padding-top: calc(14px + env(safe-area-inset-top));
+      padding-left: max(34px, env(safe-area-inset-left));
+      padding-right: max(34px, env(safe-area-inset-right));
+      background: linear-gradient(180deg, rgba(10, 11, 14, .9), rgba(10, 11, 14, .62));
+      backdrop-filter: blur(24px) saturate(1.5);
+      -webkit-backdrop-filter: blur(24px) saturate(1.5);
       border-bottom: 1px solid var(--border);
     }
 
@@ -129,36 +188,43 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      min-width: 0
+      min-width: 0;
+      text-decoration: none;
+      color: inherit;
     }
 
     .brand-icon {
-      width: 36px;
-      height: 36px;
+      width: 38px;
+      height: 38px;
       border-radius: 10px;
       display: block;
       flex: 0 0 auto;
-      box-shadow: 0 4px 16px -6px rgba(0, 0, 0, .9), 0 0 0 1px rgba(255, 255, 255, .08);
+      box-shadow:
+        0 6px 18px -8px rgba(0, 0, 0, .9),
+        0 0 0 1px rgba(255, 255, 255, .08),
+        inset 0 1px 0 rgba(255, 255, 255, .06);
     }
 
     .brand-text {
       display: flex;
       flex-direction: column;
-      line-height: 1.15;
+      line-height: 1.12;
       min-width: 0
     }
 
     .brand-name {
-      font-size: 15px;
+      font-family: Fraunces, Georgia, serif;
+      font-size: 16.5px;
       font-weight: 700;
-      letter-spacing: .2px;
-      white-space: nowrap
+      letter-spacing: -.2px;
+      white-space: nowrap;
+      font-variation-settings: "opsz" 24;
     }
 
     .brand-sub {
-      font-size: 10.5px;
+      font-size: 9.5px;
       color: var(--text-3);
-      letter-spacing: 1.2px;
+      letter-spacing: 1.6px;
       text-transform: uppercase;
       font-weight: 600
     }
@@ -166,15 +232,18 @@
     .btn {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
-      padding: 9px 16px;
-      border-radius: var(--radius-sm);
+      padding: 9px 15px;
+      border-radius: 10px;
       font-weight: 600;
-      font-size: 13.5px;
-      transition: .16s;
+      font-size: 13px;
+      transition: background .16s var(--ease), border-color .16s var(--ease), color .16s var(--ease), transform .1s var(--ease), filter .16s;
       white-space: nowrap;
       flex: 0 0 auto;
       border: 1px solid transparent;
+      letter-spacing: -.05px;
+      height: 38px;
     }
 
     .btn:active {
@@ -182,53 +251,444 @@
     }
 
     .btn svg {
-      width: 16px;
-      height: 16px;
+      width: 15px;
+      height: 15px;
       flex: 0 0 auto
     }
 
     .btn.ghost {
-      background: var(--surface);
+      background: rgba(255, 255, 255, .04);
       border-color: var(--border);
-      color: var(--text);
+      color: var(--text-2);
     }
 
     .btn.ghost:hover {
       background: var(--surface-hi);
+      color: var(--text);
       border-color: var(--border-hi)
     }
 
     .btn.primary {
       background: linear-gradient(140deg, var(--accent), var(--accent-hi));
       color: #17130a;
-      box-shadow: 0 8px 24px -10px rgba(201, 162, 39, .7);
+      box-shadow: 0 8px 22px -10px rgba(201, 162, 39, .7), inset 0 1px 0 rgba(255, 255, 255, .2);
     }
 
     .btn.primary:hover {
-      filter: brightness(1.07)
+      filter: brightness(1.06);
+      box-shadow: 0 10px 26px -10px rgba(201, 162, 39, .85), inset 0 1px 0 rgba(255, 255, 255, .25);
     }
 
-    /* ---------- Toolbar ---------- */
+    .tb-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      color: var(--text-2);
+      transition: .16s var(--ease);
+      flex: 0 0 auto;
+      border: 1px solid transparent;
+    }
+
+    .tb-icon svg {
+      width: 17px;
+      height: 17px
+    }
+
+    .tb-icon:hover {
+      background: var(--surface-hi);
+      color: var(--text)
+    }
+
+    .tb-icon:active {
+      transform: scale(.94)
+    }
+
+    /* ============================================================
+       MAIN LAYOUT
+       ============================================================ */
     .main {
-      max-width: 1560px;
+      max-width: 1440px;
       margin: 0 auto;
       width: 100%;
-      padding: 0 32px 100px;
-      padding-bottom: calc(100px + env(safe-area-inset-bottom));
+      padding: 0 34px 120px;
+      padding-left: max(34px, env(safe-area-inset-left));
+      padding-right: max(34px, env(safe-area-inset-right));
+      padding-bottom: calc(120px + env(safe-area-inset-bottom));
+    }
+
+    /* ============================================================
+       HERO — CONTINUE READING
+       ============================================================ */
+    .hero {
+      display: none;
+      grid-template-columns: 200px minmax(0, 1fr);
+      gap: 34px;
+      margin: 40px 0 8px;
+      padding: 30px;
+      border-radius: var(--radius-lg);
+      background:
+        linear-gradient(140deg, rgba(255, 255, 255, .035), rgba(255, 255, 255, .012)),
+        radial-gradient(circle at 100% 0%, rgba(201, 162, 39, .07), transparent 60%);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-md);
+      animation: heroIn .4s var(--ease-spring) both;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(201, 162, 39, .35), transparent);
+    }
+
+    .hero.on {
+      display: grid
+    }
+
+    @keyframes heroIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    .hero-cover {
+      position: relative;
+      aspect-ratio: 2/3;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 16px;
+      text-align: center;
+      box-shadow:
+        0 30px 60px -24px rgba(0, 0, 0, .95),
+        0 0 0 1px rgba(255, 255, 255, .1),
+        inset 0 0 0 1px rgba(255, 255, 255, .05);
+      background-size: cover;
+      background-position: center;
+      transition: transform .3s var(--ease);
+    }
+
+    .hero-cover:hover {
+      transform: translateY(-3px)
+    }
+
+    .hero-cover::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 10px;
+      background: linear-gradient(90deg, rgba(0, 0, 0, .32), rgba(255, 255, 255, .08) 55%, rgba(0, 0, 0, .16));
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .hero-cover::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0, 0, 0, .05) 0%, rgba(0, 0, 0, .3) 100%);
+      pointer-events: none;
+    }
+
+    .hero-cover-frame {
+      position: absolute;
+      inset: 12px;
+      border: 1px solid rgba(255, 255, 255, .3);
+      border-radius: 2px;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .hero-cover-title {
+      position: relative;
+      z-index: 4;
+      font-family: Fraunces, Georgia, serif;
+      font-weight: 700;
+      font-size: 18px;
+      line-height: 1.22;
+      color: #fff;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, .65);
+      word-break: break-word;
+      max-height: 5.5em;
+      overflow: hidden;
+    }
+
+    .hero-cover-author {
+      position: absolute;
+      bottom: 22px;
+      left: 18px;
+      right: 18px;
+      z-index: 4;
+      font-size: 8.5px;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, .88);
+      font-weight: 600;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, .7);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .hero-body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 10.5px;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+      color: var(--accent-hi);
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .hero-eyebrow::before {
+      content: "";
+      width: 20px;
+      height: 1px;
+      background: var(--accent-hi);
+      opacity: .6;
+    }
+
+    .hero-title {
+      font-family: Fraunces, Georgia, serif;
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: -.8px;
+      line-height: 1.15;
+      margin: 0 0 8px;
+      font-variation-settings: "opsz" 30;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .hero-sub {
+      font-size: 13.5px;
+      color: var(--text-2);
+      margin: 0 0 22px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .hero-sub i {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: var(--text-3);
+      font-style: normal;
+    }
+
+    .hero-progress {
+      margin-bottom: 22px;
+      max-width: 420px;
+    }
+
+    .hero-progress-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 11.5px;
+      color: var(--text-3);
+      margin-bottom: 8px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .hero-progress-label b {
+      color: var(--text-2);
+      font-weight: 600
+    }
+
+    .hero-progress-bar {
+      height: 4px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, .06);
+      overflow: hidden;
+    }
+
+    .hero-progress-bar i {
+      display: block;
+      height: 100%;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-hi));
+      box-shadow: 0 0 12px -2px rgba(201, 162, 39, .8);
+      transition: width .6s var(--ease-spring);
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .hero-actions .btn {
+      height: 42px;
+      padding: 0 20px;
+      font-size: 13.5px;
+    }
+
+    .hero-meta {
+      display: flex;
+      gap: 22px;
+      margin-top: 22px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .hero-meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .hero-meta-item b {
+      font-family: Fraunces, Georgia, serif;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -.3px;
+      font-variant-numeric: tabular-nums;
+      color: var(--text);
+    }
+
+    .hero-meta-item span {
+      font-size: 10px;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+
+    /* ============================================================
+       STATS STRIP
+       ============================================================ */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      margin: 40px 0 40px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      animation: heroIn .4s var(--ease-spring) both;
+    }
+
+    .stat {
+      padding: 20px 24px;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      position: relative;
+      transition: background .2s var(--ease);
+    }
+
+    .stat:hover {
+      background: var(--surface-2)
+    }
+
+    .stat b {
+      font-family: Fraunces, Georgia, serif;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -.8px;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      color: var(--text);
+    }
+
+    .stat span {
+      font-size: 10.5px;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 1.3px;
+      font-weight: 600;
+    }
+
+    .stat .stat-trend {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent-hi);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ============================================================
+       LIBRARY HEAD / TOOLBAR
+       ============================================================ */
+    .library-head {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+
+    .library-title {
+      font-family: Fraunces, Georgia, serif;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -.4px;
+      margin: 0;
+      font-variation-settings: "opsz" 24;
+    }
+
+    .library-count {
+      font-size: 12.5px;
+      color: var(--text-3);
+      font-weight: 500;
+      padding-left: 10px;
+      border-left: 1px solid var(--border);
+      margin-left: 4px;
+      font-variant-numeric: tabular-nums;
     }
 
     .toolbar {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 26px 0 20px;
+      gap: 10px;
+      flex: 1 1 100%;
+      margin-top: 14px;
       flex-wrap: wrap;
     }
 
     .search {
       position: relative;
       flex: 1 1 260px;
-      max-width: 380px;
+      max-width: 360px;
       display: flex;
       align-items: center;
     }
@@ -236,21 +696,23 @@
     .search svg {
       position: absolute;
       left: 13px;
-      width: 16px;
-      height: 16px;
+      width: 15px;
+      height: 15px;
       color: var(--text-3);
       pointer-events: none;
     }
 
     .search input {
       width: 100%;
-      padding: 11px 14px 11px 38px;
-      background: var(--surface);
+      padding: 10px 14px 10px 38px;
+      background: rgba(255, 255, 255, .035);
       border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+      border-radius: 10px;
       outline: none;
-      transition: .16s;
-      font-size: 13.5px;
+      transition: .16s var(--ease);
+      font-size: 13px;
+      height: 38px;
+      color: var(--text);
     }
 
     .search input::placeholder {
@@ -259,41 +721,129 @@
 
     .search input:focus {
       border-color: rgba(201, 162, 39, .5);
-      background: var(--surface-hi);
-      box-shadow: 0 0 0 3px rgba(201, 162, 39, .08)
+      background: rgba(255, 255, 255, .055);
+      box-shadow: 0 0 0 3px rgba(201, 162, 39, .09)
     }
 
-    .count {
-      font-size: 12.5px;
+    .chips {
+      display: flex;
+      gap: 4px;
+      padding: 3px;
+      background: rgba(255, 255, 255, .03);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      flex: 0 0 auto;
+    }
+
+    .chips::-webkit-scrollbar {
+      display: none
+    }
+
+    .chip {
+      padding: 7px 13px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 600;
       color: var(--text-3);
-      font-weight: 500;
-      white-space: nowrap
+      transition: .16s var(--ease);
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      letter-spacing: -.05px;
+    }
+
+    .chip:hover {
+      color: var(--text-2)
+    }
+
+    .chip.on {
+      background: var(--surface-2);
+      color: var(--text);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, .3);
+    }
+
+    .chip .chip-count {
+      font-size: 10.5px;
+      padding: 1px 6px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, .05);
+      color: var(--text-3);
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+    }
+
+    .chip.on .chip-count {
+      background: var(--accent-soft);
+      color: var(--accent-hi);
     }
 
     .select {
       padding: 10px 32px 10px 13px;
-      background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2398a3b2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center;
+      background: rgba(255, 255, 255, .035) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%23969ba5' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center;
       border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+      border-radius: 10px;
       appearance: none;
       -webkit-appearance: none;
       outline: none;
       cursor: pointer;
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 500;
       color: var(--text-2);
-      transition: .16s;
+      transition: .16s var(--ease);
+      height: 38px;
     }
 
     .select:hover {
-      background-color: var(--surface-hi)
+      background-color: var(--surface-hi);
+      color: var(--text);
+      border-color: var(--border-hi)
     }
 
-    /* ---------- Grid ---------- */
+    .view-toggle {
+      display: flex;
+      gap: 2px;
+      padding: 3px;
+      background: rgba(255, 255, 255, .03);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      flex: 0 0 auto;
+    }
+
+    .view-toggle button {
+      width: 32px;
+      height: 32px;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      color: var(--text-3);
+      transition: .14s;
+    }
+
+    .view-toggle button svg {
+      width: 15px;
+      height: 15px
+    }
+
+    .view-toggle button:hover {
+      color: var(--text-2)
+    }
+
+    .view-toggle button.on {
+      background: var(--surface-2);
+      color: var(--text);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, .3);
+    }
+
+    /* ============================================================
+       BOOK GRID
+       ============================================================ */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(198px, 1fr));
-      gap: 26px 22px;
+      grid-template-columns: repeat(auto-fill, minmax(196px, 1fr));
+      gap: 30px 24px;
     }
 
     .card {
@@ -302,8 +852,8 @@
       flex-direction: column;
       cursor: pointer;
       border-radius: var(--radius);
-      transition: transform .2s cubic-bezier(.3, 1, .4, 1);
-      animation: cardIn .32s cubic-bezier(.3, 1, .4, 1) both;
+      transition: transform .24s var(--ease);
+      animation: cardIn .36s var(--ease-spring) both;
     }
 
     @keyframes cardIn {
@@ -319,36 +869,36 @@
     }
 
     .card:hover {
-      transform: translateY(-4px)
+      transform: translateY(-5px)
     }
 
     .card:active {
-      transform: translateY(-1px) scale(.99)
+      transform: translateY(-2px) scale(.995)
     }
 
     .cover {
       position: relative;
       aspect-ratio: 2/3;
-      border-radius: 10px;
+      border-radius: 8px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 18px 14px;
+      padding: 20px 16px;
       text-align: center;
       box-shadow:
-        0 18px 36px -18px rgba(0, 0, 0, .9),
+        0 22px 44px -20px rgba(0, 0, 0, .95),
         0 0 0 1px rgba(255, 255, 255, .09),
         inset 0 0 0 1px rgba(255, 255, 255, .05);
-      transition: box-shadow .2s;
+      transition: box-shadow .28s var(--ease);
       background-size: cover;
       background-position: center;
     }
 
     .card:hover .cover {
       box-shadow:
-        0 26px 48px -20px rgba(0, 0, 0, .95),
+        0 32px 56px -22px rgba(0, 0, 0, .98),
         0 0 0 1px rgba(255, 255, 255, .16),
         inset 0 0 0 1px rgba(255, 255, 255, .07);
     }
@@ -357,8 +907,9 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(180deg, rgba(0, 0, 0, .05) 0%, rgba(0, 0, 0, .28) 100%);
+      background: linear-gradient(180deg, rgba(0, 0, 0, .04) 0%, rgba(0, 0, 0, .3) 100%);
       pointer-events: none;
+      z-index: 1;
     }
 
     .cover::before {
@@ -367,41 +918,42 @@
       left: 0;
       top: 0;
       bottom: 0;
-      width: 8px;
-      background: linear-gradient(90deg, rgba(0, 0, 0, .28), rgba(255, 255, 255, .06) 55%, rgba(0, 0, 0, .14));
-      z-index: 2;
+      width: 9px;
+      background: linear-gradient(90deg, rgba(0, 0, 0, .3), rgba(255, 255, 255, .08) 55%, rgba(0, 0, 0, .15));
+      z-index: 3;
       pointer-events: none;
     }
 
     .cover-frame {
       position: absolute;
-      inset: 12px;
-      border: 1px solid rgba(255, 255, 255, .32);
-      border-radius: 3px;
-      z-index: 1;
+      inset: 13px;
+      border: 1px solid rgba(255, 255, 255, .3);
+      border-radius: 2px;
+      z-index: 2;
       pointer-events: none;
     }
 
     .cover-title {
       position: relative;
-      z-index: 3;
-      font-family: "Playfair Display", Georgia, serif;
+      z-index: 4;
+      font-family: Fraunces, Georgia, serif;
       font-weight: 700;
       font-size: 17px;
-      line-height: 1.25;
+      line-height: 1.24;
       color: #fff;
-      text-shadow: 0 2px 12px rgba(0, 0, 0, .6);
+      text-shadow: 0 2px 12px rgba(0, 0, 0, .65);
       max-height: 5.2em;
       overflow: hidden;
       word-break: break-word;
+      letter-spacing: -.2px;
     }
 
     .cover-author {
       position: absolute;
-      bottom: 22px;
-      left: 16px;
-      right: 16px;
-      z-index: 3;
+      bottom: 24px;
+      left: 18px;
+      right: 18px;
+      z-index: 4;
       font-size: 8.5px;
       letter-spacing: 1.6px;
       text-transform: uppercase;
@@ -415,12 +967,12 @@
 
     .cover-badge {
       position: absolute;
-      top: 14px;
-      left: 14px;
-      z-index: 4;
+      top: 15px;
+      left: 15px;
+      z-index: 5;
       padding: 4px 8px;
       border-radius: 6px;
-      background: rgba(0, 0, 0, .55);
+      background: rgba(0, 0, 0, .6);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       font-size: 9.5px;
@@ -430,23 +982,89 @@
       text-transform: uppercase;
     }
 
+    .cover-pin {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      z-index: 5;
+      width: 24px;
+      height: 24px;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      background: rgba(201, 162, 39, .9);
+      color: #17130a;
+      box-shadow: 0 4px 12px -4px rgba(201, 162, 39, .9);
+    }
+
+    .cover-pin svg {
+      width: 13px;
+      height: 13px
+    }
+
+    .cover-check {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      z-index: 6;
+      width: 24px;
+      height: 24px;
+      border-radius: 7px;
+      display: none;
+      place-items: center;
+      background: rgba(0, 0, 0, .6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1.5px solid rgba(255, 255, 255, .5);
+      color: transparent;
+      transition: .16s var(--ease);
+    }
+
+    .cover-check svg {
+      width: 14px;
+      height: 14px
+    }
+
+    body.selecting .cover-check {
+      display: grid
+    }
+
+    .card.selected .cover-check {
+      background: linear-gradient(140deg, var(--accent), var(--accent-hi));
+      border-color: var(--accent-hi);
+      color: #17130a;
+      box-shadow: 0 4px 14px -4px rgba(201, 162, 39, .9);
+    }
+
+    .card.selected .cover {
+      box-shadow:
+        0 22px 44px -20px rgba(0, 0, 0, .95),
+        0 0 0 2px var(--accent),
+        inset 0 0 0 1px rgba(255, 255, 255, .05);
+    }
+
     .card-menu {
       position: absolute;
-      top: 10px;
-      right: 10px;
-      z-index: 5;
+      top: 13px;
+      right: 13px;
+      z-index: 7;
       width: 30px;
       height: 30px;
       border-radius: 8px;
       display: grid;
       place-items: center;
-      background: rgba(0, 0, 0, .5);
+      background: rgba(0, 0, 0, .55);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       color: #fff;
       opacity: 0;
-      transition: .16s;
+      transition: .18s var(--ease);
       border: 1px solid rgba(255, 255, 255, .12);
+    }
+
+    .cover-pin ~ .card-menu {
+      top: 13px;
+      right: 48px;
     }
 
     .card-menu svg {
@@ -459,7 +1077,12 @@
     }
 
     .card-menu:hover {
-      background: rgba(0, 0, 0, .75)
+      background: rgba(0, 0, 0, .8);
+      border-color: rgba(255, 255, 255, .2)
+    }
+
+    body.selecting .card-menu {
+      display: none
     }
 
     @media (hover:none) {
@@ -469,7 +1092,7 @@
     }
 
     .card-info {
-      padding: 13px 3px 0
+      padding: 14px 4px 0;
     }
 
     .card-title {
@@ -479,7 +1102,8 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      margin-bottom: 3px;
+      margin-bottom: 4px;
+      letter-spacing: -.1px;
     }
 
     .card-meta {
@@ -490,96 +1114,314 @@
       align-items: center;
       gap: 6px;
       flex-wrap: wrap;
+      font-variant-numeric: tabular-nums;
     }
 
     .card-meta i {
-      width: 2.5px;
-      height: 2.5px;
+      width: 3px;
+      height: 3px;
       border-radius: 50%;
       background: var(--text-3);
       flex: 0 0 auto;
       font-style: normal;
+      opacity: .6;
     }
 
     .card-progress {
-      margin-top: 9px;
-      height: 2.5px;
-      border-radius: 3px;
-      background: rgba(255, 255, 255, .07);
+      margin-top: 10px;
+      height: 3px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, .06);
       overflow: hidden;
     }
 
     .card-progress i {
       display: block;
       height: 100%;
-      border-radius: 3px;
+      border-radius: 2px;
       background: linear-gradient(90deg, var(--accent), var(--accent-hi));
-      transition: width .5s cubic-bezier(.3, 1, .4, 1);
+      transition: width .6s var(--ease-spring);
     }
 
-    /* ---------- Empty state ---------- */
+    /* ============================================================
+       LIST VIEW
+       ============================================================ */
+    .grid.list-view {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .grid.list-view .card {
+      display: grid;
+      grid-template-columns: 64px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 18px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      transition: .16s var(--ease);
+      background: rgba(255, 255, 255, .015);
+    }
+
+    .grid.list-view .card:hover {
+      transform: none;
+      background: var(--surface);
+      border-color: var(--border-hi);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .grid.list-view .cover {
+      width: 64px;
+      height: 96px;
+      aspect-ratio: auto;
+      padding: 6px;
+      border-radius: 5px;
+      box-shadow:
+        0 8px 18px -8px rgba(0, 0, 0, .9),
+        0 0 0 1px rgba(255, 255, 255, .08);
+    }
+
+    .grid.list-view .cover::before {
+      width: 5px
+    }
+
+    .grid.list-view .cover-frame {
+      inset: 5px
+    }
+
+    .grid.list-view .cover-title {
+      font-size: 8px;
+      line-height: 1.15;
+    }
+
+    .grid.list-view .cover-author,
+    .grid.list-view .cover-badge,
+    .grid.list-view .cover-pin,
+    .grid.list-view .cover-check {
+      display: none
+    }
+
+    .grid.list-view .card-info {
+      padding: 0;
+      min-width: 0;
+    }
+
+    .grid.list-view .card-title {
+      font-family: Fraunces, Georgia, serif;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      letter-spacing: -.2px;
+    }
+
+    .grid.list-view .card-progress {
+      margin-top: 8px;
+      max-width: 320px;
+    }
+
+    .grid.list-view .card-menu {
+      position: static;
+      opacity: 1;
+      background: transparent;
+      border-color: transparent;
+      color: var(--text-3);
+      width: 32px;
+      height: 32px;
+    }
+
+    .grid.list-view .card-menu:hover {
+      background: var(--surface-hi);
+      color: var(--text);
+      border-color: transparent
+    }
+
+    .grid.list-view .card.selected .cover {
+      box-shadow:
+        0 8px 18px -8px rgba(0, 0, 0, .9),
+        0 0 0 2px var(--accent);
+    }
+
+    /* ============================================================
+       SELECTION BAR (FLOATING)
+       ============================================================ */
+    .sel-bar {
+      position: fixed;
+      bottom: calc(28px + env(safe-area-inset-bottom));
+      left: 50%;
+      transform: translateX(-50%) translateY(150%);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px;
+      background: var(--surface-2);
+      border: 1px solid var(--border-hi);
+      border-radius: 14px;
+      box-shadow: var(--shadow-xl);
+      backdrop-filter: blur(20px) saturate(1.5);
+      -webkit-backdrop-filter: blur(20px) saturate(1.5);
+      transition: transform .28s var(--ease-spring);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .sel-bar.on {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .sel-count {
+      padding: 0 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-2);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .sel-count b {
+      color: var(--text);
+      font-weight: 700
+    }
+
+    .sel-bar .sel-divider {
+      width: 1px;
+      height: 22px;
+      background: var(--border);
+      margin: 0 2px;
+    }
+
+    .sel-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 14px;
+      border-radius: 9px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-2);
+      transition: .14s var(--ease);
+      white-space: nowrap;
+    }
+
+    .sel-btn svg {
+      width: 14px;
+      height: 14px
+    }
+
+    .sel-btn:hover {
+      background: var(--surface-hi);
+      color: var(--text)
+    }
+
+    .sel-btn.danger {
+      color: #ef7b7b
+    }
+
+    .sel-btn.danger:hover {
+      background: rgba(239, 123, 123, .12);
+      color: #ff9090
+    }
+
+    .sel-btn.primary {
+      background: linear-gradient(140deg, var(--accent), var(--accent-hi));
+      color: #17130a;
+    }
+
+    .sel-btn.primary:hover {
+      filter: brightness(1.06);
+      color: #17130a;
+      background: linear-gradient(140deg, var(--accent), var(--accent-hi));
+    }
+
+    /* ============================================================
+       EMPTY STATE
+       ============================================================ */
     .empty {
       text-align: center;
       padding: 100px 24px;
-      animation: cardIn .4s both;
+      animation: cardIn .44s both;
     }
 
     .empty-icon {
-      width: 76px;
-      height: 76px;
-      margin: 0 auto 22px;
-      border-radius: 20px;
+      width: 84px;
+      height: 84px;
+      margin: 0 auto 26px;
+      border-radius: 22px;
       display: grid;
       place-items: center;
-      background: var(--surface);
+      background: linear-gradient(140deg, rgba(255, 255, 255, .04), rgba(255, 255, 255, .01));
       border: 1px solid var(--border);
+      box-shadow: 0 20px 40px -22px rgba(0, 0, 0, .9);
+      position: relative;
+    }
+
+    .empty-icon::after {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: 22px;
+      background: linear-gradient(140deg, rgba(201, 162, 39, .3), transparent 40%);
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      padding: 1px;
+      pointer-events: none;
+      opacity: .6;
     }
 
     .empty-icon svg {
-      width: 32px;
-      height: 32px;
-      color: var(--text-3)
+      width: 34px;
+      height: 34px;
+      color: var(--text-3);
+      opacity: .8;
     }
 
     .empty h2 {
-      margin: 0 0 8px;
-      font-size: 19px;
+      margin: 0 0 10px;
+      font-family: Fraunces, Georgia, serif;
+      font-size: 24px;
       font-weight: 700;
-      letter-spacing: -.2px
+      letter-spacing: -.4px;
     }
 
     .empty p {
-      margin: 0 auto 26px;
-      max-width: 380px;
+      margin: 0 auto 28px;
+      max-width: 400px;
       color: var(--text-2);
       font-size: 13.5px;
-      line-height: 1.65
+      line-height: 1.7;
     }
 
     .empty-actions {
       display: flex;
       gap: 10px;
       justify-content: center;
-      flex-wrap: wrap
+      flex-wrap: wrap;
     }
 
-    /* ---------- Dropdown menu ---------- */
+    /* ============================================================
+       CONTEXT MENU
+       ============================================================ */
     .menu {
       position: fixed;
-      z-index: 200;
-      min-width: 186px;
+      z-index: 260;
+      min-width: 200px;
       padding: 5px;
-      background: #161a20;
-      border: 1px solid rgba(255, 255, 255, .12);
-      border-radius: 11px;
-      box-shadow: 0 24px 60px -18px rgba(0, 0, 0, .9);
-      animation: menuIn .13s ease;
+      background: var(--surface-2);
+      border: 1px solid var(--border-hi);
+      border-radius: 12px;
+      box-shadow: var(--shadow-xl);
+      animation: menuIn .14s var(--ease-spring);
+      backdrop-filter: blur(20px) saturate(1.4);
+      -webkit-backdrop-filter: blur(20px) saturate(1.4);
     }
 
     @keyframes menuIn {
       from {
         opacity: 0;
-        transform: translateY(-4px) scale(.98)
+        transform: translateY(-5px) scale(.97)
       }
 
       to {
@@ -591,14 +1433,14 @@
     .menu button {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 11px;
       width: 100%;
       padding: 9px 11px;
-      border-radius: 7px;
+      border-radius: 8px;
       font-size: 13px;
       font-weight: 500;
       color: var(--text-2);
-      transition: .12s;
+      transition: .12s var(--ease);
       text-align: left;
     }
 
@@ -629,7 +1471,20 @@
       margin: 4px 6px
     }
 
-    /* ---------- Modals ---------- */
+    .menu .kbd {
+      margin-left: auto;
+      font-size: 10.5px;
+      color: var(--text-3);
+      font-family: "JetBrains Mono", monospace;
+      padding: 2px 6px;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, .04);
+      font-weight: 500;
+    }
+
+    /* ============================================================
+       MODALS
+       ============================================================ */
     .overlay {
       position: fixed;
       inset: 0;
@@ -638,14 +1493,14 @@
       align-items: center;
       justify-content: center;
       padding: 20px;
-      background: rgba(5, 7, 9, .72);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      background: rgba(5, 6, 8, .76);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
     }
 
     .overlay.open {
       display: flex;
-      animation: fadeIn .16s ease
+      animation: fadeIn .18s ease
     }
 
     @keyframes fadeIn {
@@ -660,22 +1515,22 @@
 
     .modal {
       width: 100%;
-      max-width: 520px;
+      max-width: 540px;
       max-height: 88vh;
       display: flex;
       flex-direction: column;
-      background: #14181e;
-      border: 1px solid rgba(255, 255, 255, .1);
+      background: var(--surface);
+      border: 1px solid var(--border-hi);
       border-radius: 18px;
-      box-shadow: 0 50px 100px -30px rgba(0, 0, 0, .95);
-      animation: modalIn .22s cubic-bezier(.2, 1.1, .4, 1);
+      box-shadow: var(--shadow-xl);
+      animation: modalIn .24s var(--ease-spring);
       overflow: hidden;
     }
 
     @keyframes modalIn {
       from {
         opacity: 0;
-        transform: scale(.96) translateY(12px)
+        transform: scale(.96) translateY(14px)
       }
 
       to {
@@ -686,35 +1541,38 @@
 
     .modal-head {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       gap: 12px;
-      padding: 20px 22px 16px;
+      padding: 22px 24px 16px;
       flex: 0 0 auto;
     }
 
     .modal-head h2 {
       margin: 0;
-      font-size: 16.5px;
+      font-family: Fraunces, Georgia, serif;
+      font-size: 20px;
       font-weight: 700;
-      letter-spacing: -.2px
+      letter-spacing: -.4px;
+      font-variation-settings: "opsz" 22;
     }
 
     .modal-head p {
-      margin: 4px 0 0;
+      margin: 5px 0 0;
       font-size: 12.5px;
-      color: var(--text-3)
+      color: var(--text-3);
+      line-height: 1.5;
     }
 
     .modal-body {
-      padding: 0 22px 22px;
+      padding: 0 24px 24px;
       overflow-y: auto;
       flex: 1;
       min-height: 0
     }
 
     .modal-foot {
-      padding: 16px 22px;
+      padding: 16px 24px;
       display: flex;
       gap: 10px;
       justify-content: flex-end;
@@ -725,9 +1583,9 @@
     }
 
     .x {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
       flex: 0 0 auto;
       display: grid;
       place-items: center;
@@ -747,13 +1605,15 @@
 
     .field {
       width: 100%;
-      padding: 11px 13px;
+      padding: 12px 14px;
       background: rgba(255, 255, 255, .04);
       border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+      border-radius: 10px;
       outline: none;
-      transition: .16s;
+      transition: .16s var(--ease);
       font-size: 13.5px;
+      color: var(--text);
+      height: 44px;
     }
 
     .field::placeholder {
@@ -768,38 +1628,40 @@
 
     label.lab {
       display: block;
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 700;
-      letter-spacing: 1.1px;
+      letter-spacing: 1.3px;
       text-transform: uppercase;
       color: var(--text-3);
-      margin: 0 0 7px;
+      margin: 0 0 8px;
     }
 
     .fgroup {
-      margin-bottom: 16px
+      margin-bottom: 18px
     }
 
     .tmpl-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 9px
+      gap: 10px
     }
 
     .tmpl {
-      padding: 13px 10px;
-      border-radius: 10px;
+      padding: 16px 10px 14px;
+      border-radius: 12px;
       text-align: center;
-      background: rgba(255, 255, 255, .03);
-      border: 1px solid var(--border);
-      transition: .16s;
+      background: rgba(255, 255, 255, .02);
+      border: 1.5px solid var(--border);
+      transition: .16s var(--ease);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .tmpl svg {
-      width: 19px;
-      height: 19px;
-      margin: 0 auto 7px;
-      display: block;
+      width: 20px;
+      height: 20px;
+      margin-bottom: 9px;
       color: var(--text-3);
       transition: .16s
     }
@@ -807,7 +1669,8 @@
     .tmpl span {
       font-size: 11.5px;
       font-weight: 600;
-      color: var(--text-2)
+      color: var(--text-2);
+      letter-spacing: -.05px;
     }
 
     .tmpl:hover {
@@ -817,21 +1680,23 @@
 
     .tmpl.on {
       border-color: var(--accent);
-      background: rgba(201, 162, 39, .09)
+      background: var(--accent-soft);
     }
 
     .tmpl.on svg {
-      color: var(--accent)
+      color: var(--accent-hi)
     }
 
     .tmpl.on span {
       color: var(--text)
     }
 
-    /* ---------- Toast ---------- */
+    /* ============================================================
+       TOASTS
+       ============================================================ */
     #toasts {
       position: fixed;
-      bottom: calc(26px + env(safe-area-inset-bottom));
+      bottom: calc(28px + env(safe-area-inset-bottom));
       left: 50%;
       transform: translateX(-50%);
       z-index: 500;
@@ -840,26 +1705,53 @@
       gap: 8px;
       align-items: center;
       pointer-events: none;
+      max-width: calc(100vw - 32px);
     }
 
     .toast {
-      padding: 11px 18px;
-      border-radius: 11px;
-      background: #1b2028;
-      border: 1px solid rgba(255, 255, 255, .12);
+      padding: 12px 18px 12px 20px;
+      border-radius: 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--border-hi);
       color: var(--text);
       font-size: 13px;
       font-weight: 500;
-      box-shadow: 0 18px 44px -14px rgba(0, 0, 0, .9);
-      animation: toastIn .24s cubic-bezier(.3, 1, .4, 1);
-      max-width: 86vw;
-      text-align: center;
+      box-shadow: var(--shadow-lg);
+      animation: toastIn .26s var(--ease-spring);
+      max-width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      pointer-events: auto;
+      backdrop-filter: blur(20px) saturate(1.5);
+      -webkit-backdrop-filter: blur(20px) saturate(1.5);
+    }
+
+    .toast.gold {
+      background: linear-gradient(140deg, rgba(201, 162, 39, .2), rgba(201, 162, 39, .08));
+      border-color: rgba(201, 162, 39, .4);
+      color: var(--accent-hi);
+    }
+
+    .toast button {
+      padding: 6px 12px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-hi);
+      background: rgba(201, 162, 39, .12);
+      transition: .14s;
+      white-space: nowrap;
+    }
+
+    .toast button:hover {
+      background: rgba(201, 162, 39, .22)
     }
 
     @keyframes toastIn {
       from {
         opacity: 0;
-        transform: translateY(12px)
+        transform: translateY(14px) scale(.96)
       }
 
       to {
@@ -868,7 +1760,62 @@
       }
     }
 
-    /* ---------- Responsive ---------- */
+    /* ============================================================
+       KEYBOARD SHORTCUTS PANEL
+       ============================================================ */
+    .kbd-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 28px;
+    }
+
+    .kbd-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 6px 0;
+      font-size: 12.5px;
+      color: var(--text-2);
+    }
+
+    .kbd-row kbd {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 10.5px;
+      padding: 3px 7px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, .06);
+      border: 1px solid var(--border);
+      color: var(--text-2);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media(max-width:900px) {
+      .hero {
+        grid-template-columns: 150px minmax(0, 1fr);
+        gap: 24px;
+        padding: 24px;
+        margin-top: 28px
+      }
+
+      .hero-title {
+        font-size: 24px
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+        margin: 28px 0
+      }
+
+      .kbd-grid {
+        grid-template-columns: 1fr
+      }
+    }
+
     @media(max-width:820px) {
       .topbar {
         padding: 12px 18px;
@@ -876,43 +1823,96 @@
         gap: 10px
       }
 
+      .main {
+        padding: 0 18px 100px;
+        padding-bottom: calc(100px + env(safe-area-inset-bottom))
+      }
+
       .brand-sub {
         display: none
       }
 
       .brand-icon {
-        width: 32px;
-        height: 32px
-      }
-
-      .main {
-        padding: 0 18px 80px
-      }
-
-      .toolbar {
-        padding: 18px 0 16px
-      }
-
-      .grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 20px 14px
-      }
-
-      .cover-title {
-        font-size: 14px
-      }
-
-      .btn {
-        padding: 8px 13px;
-        font-size: 13px
+        width: 34px;
+        height: 34px
       }
 
       .btn .lbl {
         display: none
       }
 
+      .btn {
+        padding: 0 12px;
+        width: 38px
+      }
+
       .btn svg {
         margin: 0
+      }
+
+      .grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 22px 16px
+      }
+
+      .cover-title {
+        font-size: 14px
+      }
+
+      .cover-author {
+        bottom: 18px;
+        left: 14px;
+        right: 14px
+      }
+    }
+
+    @media(max-width:640px) {
+      .hero {
+        grid-template-columns: 1fr;
+        gap: 22px
+      }
+
+      .hero-cover {
+        max-width: 160px;
+        margin: 0 auto
+      }
+
+      .hero-title {
+        font-size: 22px
+      }
+
+      .hero-meta {
+        gap: 16px;
+        margin-top: 18px;
+        padding-top: 16px
+      }
+
+      .hero-meta-item b {
+        font-size: 15px
+      }
+
+      .stats {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .stat {
+        padding: 16px 18px
+      }
+
+      .stat b {
+        font-size: 22px
+      }
+
+      .stat span {
+        font-size: 10px
+      }
+
+      .library-title {
+        font-size: 20px
+      }
+
+      .toolbar {
+        margin-top: 10px
       }
     }
 
@@ -920,6 +1920,21 @@
       .grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 18px 12px
+      }
+
+      .grid.list-view .card {
+        grid-template-columns: 52px minmax(0, 1fr) 32px;
+        gap: 12px;
+        padding: 10px 12px
+      }
+
+      .grid.list-view .cover {
+        width: 52px;
+        height: 78px
+      }
+
+      .grid.list-view .card-title {
+        font-size: 14px
       }
 
       .search {
@@ -932,76 +1947,243 @@
         display: none
       }
     }
+
+    @media (pointer:coarse) {
+      .card-menu {
+        width: 34px;
+        height: 34px;
+        opacity: 1
+      }
+
+      .chip {
+        padding: 9px 14px
+      }
+
+      .view-toggle button {
+        width: 36px;
+        height: 36px
+      }
+    }
   </style>
 </head>
 
 <body>
 
   <div class="bg"></div>
+  <div class="grain"></div>
 
   <header class="topbar">
-    <div class="brand">
-      <img src="assets/icon.png" alt="Calyx Book" class="brand-icon">
+    <a class="brand" href="index.html">
+      <img src="assets/icon.png" alt="" class="brand-icon">
       <div class="brand-text">
         <span class="brand-name">Calyx Book</span>
-        <span class="brand-sub">Writing Studio</span>
+        <span class="brand-sub">Library</span>
       </div>
-    </div>
+    </a>
     <div class="grow"></div>
+    <button class="tb-icon" id="btnShortcuts" title="Keyboard shortcuts (?)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="6" width="20" height="14" rx="2"/>
+        <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h.01M18 14h.01M9 14h6"/>
+      </svg>
+    </button>
+    <button class="tb-icon" id="btnSelect" title="Select books">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 11l3 3L22 4"/>
+        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+      </svg>
+    </button>
     <button class="btn ghost" id="btnImport">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5-5 5 5"/><path d="M12 5v13"/></svg>
-    <span class="lbl">Import</span>
-  </button>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <path d="M7 10l5-5 5 5"/>
+        <path d="M12 5v13"/>
+      </svg>
+      <span class="lbl">Import</span>
+    </button>
     <button class="btn primary" id="btnNew">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-    <span class="lbl">New Book</span>
-  </button>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 5v14M5 12h14"/>
+      </svg>
+      <span class="lbl">New Book</span>
+    </button>
   </header>
 
   <main class="main">
-    <div class="toolbar">
-      <div class="search">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-          stroke-linejoin="round">
-          <circle cx="11" cy="11" r="7" />
-          <path d="M20 20l-3.5-3.5" />
-        </svg>
-        <input id="search" type="search" placeholder="Search your library…" autocomplete="off" spellcheck="false">
-      </div>
-      <div class="grow"></div>
-      <span class="count" id="count">0 books</span>
-      <select class="select" id="sort">
-      <option value="updated">Last edited</option>
-      <option value="created">Date created</option>
-      <option value="title">Title A–Z</option>
-      <option value="words">Word count</option>
-    </select>
-    </div>
 
-    <div class="grid" id="grid"></div>
+    <!-- ============ CONTINUE READING HERO ============ -->
+    <section class="hero" id="hero">
+      <div class="hero-cover" id="heroCover">
+        <div class="hero-cover-frame"></div>
+        <div class="hero-cover-title" id="heroTitle"></div>
+        <div class="hero-cover-author" id="heroAuthor"></div>
+      </div>
+      <div class="hero-body">
+        <div class="hero-eyebrow">Continue where you left off</div>
+        <h1 class="hero-title" id="heroTitleText"></h1>
+        <div class="hero-sub" id="heroSub"></div>
+        <div class="hero-progress" id="heroProgressWrap">
+          <div class="hero-progress-label">
+            <span id="heroProgressLabel">Progress</span>
+            <b id="heroProgressPct">0%</b>
+          </div>
+          <div class="hero-progress-bar">
+            <i id="heroProgressBar" style="width:0%"></i>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <button class="btn primary" id="heroResume">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 3l14 9-14 9V3z"/>
+            </svg>
+            Resume writing
+          </button>
+          <button class="btn ghost" id="heroDetails">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 16v-4M12 8h.01"/>
+            </svg>
+            Details
+          </button>
+        </div>
+        <div class="hero-meta" id="heroMeta"></div>
+      </div>
+    </section>
 
-    <div class="empty hidden" id="empty">
-      <div class="empty-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
-          stroke-linejoin="round">
-          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-        </svg>
+    <!-- ============ STATS STRIP ============ -->
+    <section class="stats" id="stats" style="display:none">
+      <div class="stat">
+        <b id="stBooks">0</b>
+        <span>Books in library</span>
       </div>
-      <h2 id="emptyTitle">Your library is empty</h2>
-      <p id="emptyText">Start a new book to begin writing, or import a Calyx project file from another device.</p>
-      <div class="empty-actions">
-        <button class="btn primary" id="emptyNew">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-        New Book
-      </button>
-        <button class="btn ghost" id="emptyImport">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5-5 5 5"/><path d="M12 5v13"/></svg>
-        Import Project
-      </button>
+      <div class="stat">
+        <b id="stWords">0</b>
+        <span>Total words written</span>
       </div>
-    </div>
+      <div class="stat">
+        <b id="stChapters">0</b>
+        <span>Chapters</span>
+      </div>
+      <div class="stat">
+        <b id="stToday">0</b>
+        <span>Words today</span>
+        <span class="stat-trend" id="stStreak"></span>
+      </div>
+    </section>
+
+    <!-- ============ LIBRARY ============ -->
+    <section class="library">
+      <div class="library-head">
+        <h2 class="library-title">Library</h2>
+        <span class="library-count" id="count">0 books</span>
+
+        <div class="toolbar">
+          <div class="search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7"/>
+              <path d="M20 20l-3.5-3.5"/>
+            </svg>
+            <input id="search" type="search" placeholder="Search titles, authors…" autocomplete="off" spellcheck="false">
+          </div>
+
+          <div class="chips" id="chips">
+            <button class="chip on" data-filter="all">All <span class="chip-count" id="cAll">0</span></button>
+            <button class="chip" data-filter="pinned">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px">
+                <path d="M12 17v5M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/>
+              </svg>
+              Pinned <span class="chip-count" id="cPinned">0</span>
+            </button>
+            <button class="chip" data-filter="draft">Drafts <span class="chip-count" id="cDraft">0</span></button>
+            <button class="chip" data-filter="progress">In progress <span class="chip-count" id="cProgress">0</span></button>
+          </div>
+
+          <select class="select" id="sort" aria-label="Sort books">
+            <option value="updated">Last edited</option>
+            <option value="created">Date created</option>
+            <option value="title">Title A–Z</option>
+            <option value="words">Word count</option>
+            <option value="author">Author A–Z</option>
+          </select>
+
+          <div class="view-toggle" id="viewToggle">
+            <button data-view="grid" class="on" title="Grid view">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7" rx="1"/>
+                <rect x="14" y="3" width="7" height="7" rx="1"/>
+                <rect x="3" y="14" width="7" height="7" rx="1"/>
+                <rect x="14" y="14" width="7" height="7" rx="1"/>
+              </svg>
+            </button>
+            <button data-view="list" title="List view">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid" id="grid"></div>
+
+      <div class="empty hidden" id="empty">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          </svg>
+        </div>
+        <h2 id="emptyTitle">Your library is empty</h2>
+        <p id="emptyText">Start your first book to begin writing, or import a Calyx project from another device.</p>
+        <div class="empty-actions" id="emptyActions">
+          <button class="btn primary" id="emptyNew">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+            New Book
+          </button>
+          <button class="btn ghost" id="emptyImport">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <path d="M7 10l5-5 5 5"/>
+              <path d="M12 5v13"/>
+            </svg>
+            Import Project
+          </button>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <!-- ============ SELECTION BAR ============ -->
+  <div class="sel-bar" id="selBar">
+    <span class="sel-count"><b id="selCount">0</b> selected</span>
+    <span class="sel-divider"></span>
+    <button class="sel-btn" id="selPin">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 17v5M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/>
+      </svg>
+      Pin
+    </button>
+    <button class="sel-btn" id="selExport">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <path d="M7 10l5 5 5-5"/>
+        <path d="M12 15V3"/>
+      </svg>
+      Export
+    </button>
+    <button class="sel-btn danger" id="selDelete">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 6h18"/>
+        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+        <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+      </svg>
+      Delete
+    </button>
+    <span class="sel-divider"></span>
+    <button class="sel-btn" id="selCancel">Cancel</button>
+  </div>
 
   <!-- ============ NEW BOOK MODAL ============ -->
   <div class="overlay" id="newOverlay">
@@ -1009,11 +2191,11 @@
       <div class="modal-head">
         <div>
           <h2>New Book</h2>
-          <p>Set up the details — you can change them later.</p>
+          <p>Give it a title to begin. You can change everything later.</p>
         </div>
-        <button class="x" data-close="newOverlay">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-      </button>
+        <button class="x" data-close="newOverlay" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
       </div>
       <div class="modal-body">
         <div class="fgroup">
@@ -1025,24 +2207,33 @@
           <input class="field" id="nAuthor" placeholder="Your name" autocomplete="off">
         </div>
         <div class="fgroup">
-          <label class="lab" for="nSub">Subtitle <span style="text-transform:none;letter-spacing:0;font-weight:500">(optional)</span></label>
+          <label class="lab" for="nSub">Subtitle <span style="text-transform:none;letter-spacing:0;font-weight:500;color:var(--text-3)">— optional</span></label>
           <input class="field" id="nSub" placeholder="A novel" autocomplete="off">
         </div>
         <div class="fgroup" style="margin-bottom:0">
           <label class="lab">Starting point</label>
           <div class="tmpl-row" id="tmplRow">
             <button class="tmpl on" data-tmpl="blank">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-            <span>Blank</span>
-          </button>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <path d="M14 2v6h6"/>
+              </svg>
+              <span>Blank</span>
+            </button>
             <button class="tmpl" data-tmpl="novel">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-            <span>Novel</span>
-          </button>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+              </svg>
+              <span>Novel</span>
+            </button>
             <button class="tmpl" data-tmpl="nonfiction">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-            <span>Non-fiction</span>
-          </button>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+              </svg>
+              <span>Non-fiction</span>
+            </button>
           </div>
         </div>
       </div>
@@ -1053,641 +2244,1022 @@
     </div>
   </div>
 
+  <!-- ============ SHORTCUTS MODAL ============ -->
+  <div class="overlay" id="kbdOverlay">
+    <div class="modal" style="max-width:560px">
+      <div class="modal-head">
+        <div>
+          <h2>Keyboard shortcuts</h2>
+          <p>Speed up your library.</p>
+        </div>
+        <button class="x" data-close="kbdOverlay" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="kbd-grid">
+          <div class="kbd-row"><span>New book</span><kbd>N</kbd></div>
+          <div class="kbd-row"><span>Search library</span><kbd>/</kbd></div>
+          <div class="kbd-row"><span>Import project</span><kbd>I</kbd></div>
+          <div class="kbd-row"><span>Toggle grid / list</span><kbd>V</kbd></div>
+          <div class="kbd-row"><span>Select all</span><kbd>⌘ A</kbd></div>
+          <div class="kbd-row"><span>Select mode</span><kbd>S</kbd></div>
+          <div class="kbd-row"><span>Open first result</span><kbd>↵</kbd></div>
+          <div class="kbd-row"><span>Shortcuts panel</span><kbd>?</kbd></div>
+          <div class="kbd-row"><span>Escape / cancel</span><kbd>Esc</kbd></div>
+          <div class="kbd-row"><span>Delete selected</span><kbd>⌫</kbd></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <input type="file" id="fileProject" accept=".json,application/json" class="hidden">
 
   <div id="toasts"></div>
 
   <script>
     /* ============================================================
-   CALYX BOOK — LIBRARY
-   ============================================================ */
-const $  = (s, r = document) => r.querySelector(s);
-const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
-const uid = () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4);
-const debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+       CALYX BOOK — LIBRARY (v2)
+       ============================================================ */
+    const $ = (s, r = document) => r.querySelector(s);
+    const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+    const uid = () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4);
+    const debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
 
-const INDEX_KEY = 'calyx.index';
-const PROJ_KEY  = id => 'calyx.proj.' + id;
-const UI_KEY    = 'calyx.ui';
+    const INDEX_KEY = 'calyx.index';
+    const PROJ_KEY = id => 'calyx.proj.' + id;
+    const STATS_KEY = id => 'calyx.stats.' + id;
+    const UI_KEY = 'calyx.ui';
 
-/* ---------- Icons ---------- */
-const IC = {
-  more:'<circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/>',
-  open:'<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
-  edit:'<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/>',
-  copy:'<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
-  download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/>',
-  trash:'<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
-  book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>'
-};
-const ic = (n) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC[n] || ''}</svg>`;
+    /* ---------- Icons ---------- */
+    const IC = {
+      more: '<circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/>',
+      open: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+      edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+      copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+      download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/>',
+      trash: '<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+      book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+      pin: '<path d="M12 17v5M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/>',
+      check: '<path d="M5 12l5 5L20 7"/>'
+    };
+    const ic = (n) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC[n] || ''}</svg>`;
 
-/* ---------- Toasts ---------- */
-function toast(msg, ms = 2400) {
-  const el = document.createElement('div');
-  el.className = 'toast';
-  el.textContent = msg;
-  $('#toasts').appendChild(el);
-  setTimeout(() => {
-    el.style.transition = 'opacity .3s, transform .3s';
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(10px)';
-    setTimeout(() => el.remove(), 320);
-  }, ms);
-}
-
-/* ---------- Storage ---------- */
-function storageGet(key) {
-  try { return localStorage.getItem(key); } catch { return null; }
-}
-function storageSet(key, value) {
-  try {
-    localStorage.setItem(key, value);
-    return true;
-  } catch {
-    return false;
-  }
-}
-function storageRemove(key) {
-  try { localStorage.removeItem(key); } catch {}
-}
-function getIndex() {
-  try {
-    const raw = storageGet(INDEX_KEY);
-    const arr = raw ? JSON.parse(raw) : [];
-    if (!Array.isArray(arr)) return [];
-    return arr.filter(e => e && typeof e.id === 'string').map(e => ({
-      id: e.id,
-      title: typeof e.title === 'string' ? e.title : 'Untitled Book',
-      author: typeof e.author === 'string' ? e.author : '',
-      subtitle: typeof e.subtitle === 'string' ? e.subtitle : '',
-      created: Number(e.created) || 0,
-      updated: Number(e.updated) || 0,
-      words: Number(e.words) || 0,
-      chapters: Number(e.chapters) || 0,
-      c1: typeof e.c1 === 'string' ? e.c1 : '#333',
-      c2: typeof e.c2 === 'string' ? e.c2 : '#666',
-      bgImage: typeof e.bgImage === 'string' ? e.bgImage : null,
-      bgType: e.bgType === 'image' ? 'image' : 'gradient',
-      goal: Number(e.goal) || 0
-    }));
-  } catch { return []; }
-}
-function setIndex(arr) {
-  if (!storageSet(INDEX_KEY, JSON.stringify(arr))) {
-    toast('Your browser storage is full. Export a backup, then remove large images from older books.');
-    return false;
-  }
-  return true;
-}
-function getUI() {
-  try {
-    const raw = storageGet(UI_KEY);
-    const ui = raw ? JSON.parse(raw) : {};
-    return ui && typeof ui === 'object' ? ui : { theme: 'ink', accent: null };
-  } catch {
-    return { theme: 'ink', accent: null };
-  }
-}
-function loadProject(id) {
-  try {
-    const raw = storageGet(PROJ_KEY(id));
-    return raw ? JSON.parse(raw) : null;
-  } catch { return null; }
-}
-function saveProjectObj(p) {
-  try {
-    const clean = normalizeProject(p);
-    if (!clean) throw new Error('Invalid project');
-    if (!storageSet(PROJ_KEY(clean.id), JSON.stringify(clean))) throw new Error('Storage full');
-    return true;
-  } catch {
-    toast('Could not save this book. Your browser storage may be full.');
-    return false;
-  }
-}
-
-/* ---------- Utils ---------- */
-function fmtNum(n) { return (n || 0).toLocaleString(); }
-function relTime(ts) {
-  if (!ts) return 'never';
-  const d = Date.now() - ts;
-  const s = Math.floor(d / 1000);
-  if (s < 45) return 'just now';
-  const m = Math.floor(s / 60);
-  if (m < 60) return m + 'm ago';
-  const h = Math.floor(m / 60);
-  if (h < 24) return h + 'h ago';
-  const dd = Math.floor(h / 24);
-  if (dd < 7) return dd + 'd ago';
-  const w = Math.floor(dd / 7);
-  if (w < 5) return w + 'w ago';
-  const mo = Math.floor(dd / 30);
-  if (mo < 12) return mo + 'mo ago';
-  return Math.floor(dd / 365) + 'y ago';
-}
-function countWords(html) {
-  if (!html) return 0;
-  const tmp = document.createElement('div');
-  tmp.innerHTML = html;
-  const m = (tmp.textContent || '').trim().match(/\S+/g);
-  return m ? m.length : 0;
-}
-function escHtml(s) {
-  return String(s == null ? '' : s)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-}
-function download(data, filename, type) {
-  const blob = (data instanceof Blob) ? data : new Blob([data], { type: type || 'application/json;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 5000);
-}
-function safeName(t) {
-  return (t || 'book').replace(/[^\w\s\-]/g, '').trim().replace(/\s+/g, '_') || 'book';
-}
-
-/* ---------- Default project ---------- */
-function defaultCover() {
-  return {
-    bgType: 'gradient',
-    c1: '#8b5e34',
-    c2: '#c9a227',
-    bgImage: null,
-    layout: 'center',
-    font: 'Playfair Display',
-    titleSize: 100,
-    frame: true
-  };
-}
-function defaultSettings() {
-  return {
-    font: 'Georgia', size: 19, lh: 1.85, ls: 0, ps: 1.1,
-    align: 'left', indent: false, dropcap: false,
-    pagew: 740, pad: 64, texture: false,
-    focus: false, typewriter: false, spell: true, goal: 50000
-  };
-}
-function normalizeProject(src) {
-  if (!src || typeof src !== 'object') return null;
-  const now = Date.now();
-  const p = {
-    id: typeof src.id === 'string' && src.id ? src.id : uid(),
-    title: typeof src.title === 'string' && src.title.trim() ? src.title.trim() : 'Untitled Book',
-    subtitle: typeof src.subtitle === 'string' ? src.subtitle : '',
-    author: typeof src.author === 'string' ? src.author : '',
-    created: Number(src.created) || now,
-    updated: Number(src.updated) || now,
-    chapters: Array.isArray(src.chapters) ? src.chapters.map((c, i) => ({
-      id: typeof c?.id === 'string' && c.id ? c.id : uid(),
-      title: typeof c?.title === 'string' && c.title.trim() ? c.title.trim() : `Chapter ${i + 1}`,
-      html: typeof c?.html === 'string' ? c.html : '<p></p>'
-    })) : [],
-    cover: { ...defaultCover(), ...(src.cover && typeof src.cover === 'object' ? src.cover : {}) },
-    settings: { ...defaultSettings(), ...(src.settings && typeof src.settings === 'object' ? src.settings : {}) },
-    version: 2
-  };
-  if (!p.chapters.length) p.chapters = templateChapters('blank', p.title);
-  return p;
-}
-
-function templateChapters(kind, title) {
-  if (kind === 'novel') {
-    return [
-      { id: uid(), title: 'Chapter One', html: '<h1>Chapter One</h1><p></p>' },
-      { id: uid(), title: 'Chapter Two', html: '<h1>Chapter Two</h1><p></p>' }
-    ];
-  }
-  if (kind === 'nonfiction') {
-    return [
-      { id: uid(), title: 'Introduction', html: '<h1>Introduction</h1><p></p>' },
-      { id: uid(), title: 'Chapter One', html: '<h1>Chapter One</h1><p></p>' }
-    ];
-  }
-  return [{ id: uid(), title: 'Chapter One', html: '<h1>Chapter One</h1><p></p>' }];
-}
-function buildProject(opts) {
-  const now = Date.now();
-  return normalizeProject({
-    id: uid(),
-    title: opts.title || 'Untitled Book',
-    subtitle: opts.subtitle || '',
-    author: opts.author || '',
-    created: now,
-    updated: now,
-    chapters: templateChapters(opts.template || 'blank', opts.title),
-    cover: defaultCover(),
-    settings: defaultSettings(),
-    version: 2
-  });
-}
-
-/* ---------- Index sync ---------- */
-function upsertIndexEntry(p) {
-  const idx = getIndex();
-  const words = p.chapters.reduce((a, c) => a + countWords(c.html), 0);
-  const entry = {
-    id: p.id,
-    title: p.title,
-    author: p.author,
-    subtitle: p.subtitle,
-    created: p.created,
-    updated: p.updated || Date.now(),
-    words,
-    chapters: p.chapters.length,
-    c1: (p.cover && p.cover.c1) || '#333',
-    c2: (p.cover && p.cover.c2) || '#666',
-    bgImage: (p.cover && p.cover.bgType === 'image') ? p.cover.bgImage : null,
-    bgType: (p.cover && p.cover.bgType) || 'gradient',
-    goal: (p.settings && p.settings.goal) || 0
-  };
-  const i = idx.findIndex(e => e.id === p.id);
-  if (i >= 0) idx[i] = entry; else idx.unshift(entry);
-  setIndex(idx);
-  return entry;
-}
-function removeIndexEntry(id) {
-  setIndex(getIndex().filter(e => e.id !== id));
-}
-
-/* ============================================================
-   RENDER
-   ============================================================ */
-let currentSort = 'updated';
-let currentQuery = '';
-
-function render() {
-  const idx = getIndex();
-  const q = currentQuery.trim().toLowerCase();
-
-  let list = idx.filter(e => {
-    if (!q) return true;
-    return (e.title || '').toLowerCase().includes(q)
-        || (e.author || '').toLowerCase().includes(q)
-        || (e.subtitle || '').toLowerCase().includes(q);
-  });
-
-  list.sort((a, b) => {
-    switch (currentSort) {
-      case 'title':   return (a.title || '').localeCompare(b.title || '');
-      case 'created': return (b.created || 0) - (a.created || 0);
-      case 'words':   return (b.words || 0) - (a.words || 0);
-      default:        return (b.updated || 0) - (a.updated || 0);
+    /* ---------- Toasts (with actions) ---------- */
+    function toast(msg, opts = {}) {
+      const el = document.createElement('div');
+      el.className = 'toast' + (opts.gold ? ' gold' : '');
+      const span = document.createElement('span');
+      span.textContent = msg;
+      el.appendChild(span);
+      if (opts.action) {
+        const btn = document.createElement('button');
+        btn.textContent = opts.action.label;
+        btn.addEventListener('click', () => { opts.action.onClick(); remove(); });
+        el.appendChild(btn);
+      }
+      $('#toasts').appendChild(el);
+      const ms = opts.ms || 2400;
+      let timeout = setTimeout(remove, ms);
+      function remove() {
+        clearTimeout(timeout);
+        el.style.transition = 'opacity .3s, transform .3s';
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(10px)';
+        setTimeout(() => el.remove(), 320);
+      }
+      return remove;
     }
-  });
 
-  const grid = $('#grid');
-  const empty = $('#empty');
+    /* ---------- Storage ---------- */
+    function storageGet(key) { try { return localStorage.getItem(key); } catch { return null; } }
+    function storageSet(key, value) {
+      try { localStorage.setItem(key, value); return true; } catch { return false; }
+    }
+    function storageRemove(key) { try { localStorage.removeItem(key); } catch {} }
 
-  $('#count').textContent = idx.length === 1 ? '1 book' : idx.length + ' books';
+    function getIndex() {
+      try {
+        const raw = storageGet(INDEX_KEY);
+        const arr = raw ? JSON.parse(raw) : [];
+        if (!Array.isArray(arr)) return [];
+        return arr.filter(e => e && typeof e.id === 'string').map(e => ({
+          id: e.id,
+          title: typeof e.title === 'string' ? e.title : 'Untitled Book',
+          author: typeof e.author === 'string' ? e.author : '',
+          subtitle: typeof e.subtitle === 'string' ? e.subtitle : '',
+          created: Number(e.created) || 0,
+          updated: Number(e.updated) || 0,
+          words: Number(e.words) || 0,
+          chapters: Number(e.chapters) || 0,
+          c1: typeof e.c1 === 'string' ? e.c1 : '#333',
+          c2: typeof e.c2 === 'string' ? e.c2 : '#666',
+          bgImage: typeof e.bgImage === 'string' ? e.bgImage : null,
+          bgType: e.bgType === 'image' ? 'image' : (e.bgType === 'solid' ? 'solid' : 'gradient'),
+          goal: Number(e.goal) || 0,
+          pinned: !!e.pinned
+        }));
+      } catch { return []; }
+    }
+    function setIndex(arr) {
+      if (!storageSet(INDEX_KEY, JSON.stringify(arr))) {
+        toast('Browser storage is full. Export a backup, then remove large images from older books.');
+        return false;
+      }
+      return true;
+    }
+    function getUI() {
+      try {
+        const raw = storageGet(UI_KEY);
+        const ui = raw ? JSON.parse(raw) : {};
+        return ui && typeof ui === 'object' ? ui : {};
+      } catch { return {}; }
+    }
+    function setUI(patch) {
+      const ui = { ...getUI(), ...patch };
+      try { storageSet(UI_KEY, JSON.stringify(ui)); } catch {}
+      return ui;
+    }
+    function loadProject(id) {
+      try {
+        const raw = storageGet(PROJ_KEY(id));
+        return raw ? JSON.parse(raw) : null;
+      } catch { return null; }
+    }
+    function saveProjectObj(p) {
+      try {
+        const clean = normalizeProject(p);
+        if (!clean) throw new Error('Invalid project');
+        if (!storageSet(PROJ_KEY(clean.id), JSON.stringify(clean))) throw new Error('Storage full');
+        return true;
+      } catch {
+        toast('Could not save this book. Storage may be full.');
+        return false;
+      }
+    }
 
-  if (!idx.length) {
-    grid.innerHTML = '';
-    empty.classList.remove('hidden');
-    $('#emptyTitle').textContent = 'Your library is empty';
-    $('#emptyText').textContent = 'Start a new book to begin writing, or import a Calyx project file from another device.';
-    return;
-  }
+    /* ---------- Utils ---------- */
+    function fmtNum(n) { return (n || 0).toLocaleString(); }
+    function relTime(ts) {
+      if (!ts) return 'never';
+      const d = Date.now() - ts;
+      const s = Math.floor(d / 1000);
+      if (s < 45) return 'just now';
+      const m = Math.floor(s / 60);
+      if (m < 60) return m + 'm ago';
+      const h = Math.floor(m / 60);
+      if (h < 24) return h + 'h ago';
+      const dd = Math.floor(h / 24);
+      if (dd < 7) return dd + 'd ago';
+      const w = Math.floor(dd / 7);
+      if (w < 5) return w + 'w ago';
+      const mo = Math.floor(dd / 30);
+      if (mo < 12) return mo + 'mo ago';
+      return Math.floor(dd / 365) + 'y ago';
+    }
+    function countWords(html) {
+      if (!html) return 0;
+      const tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      const m = (tmp.textContent || '').trim().match(/\S+/g);
+      return m ? m.length : 0;
+    }
+    function escHtml(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+    function download(data, filename, type) {
+      const blob = (data instanceof Blob) ? data : new Blob([data], { type: type || 'application/json;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+    }
+    function safeName(t) {
+      return (t || 'book').replace(/[^\w\s\-]/g, '').trim().replace(/\s+/g, '_') || 'book';
+    }
+    function todayKey() {
+      const d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
 
-  if (!list.length) {
-    grid.innerHTML = '';
-    empty.classList.remove('hidden');
-    $('#emptyTitle').textContent = 'No matches';
-    $('#emptyText').textContent = 'Nothing in your library matches “' + currentQuery + '”. Try a different search term.';
-    return;
-  }
-
-  empty.classList.add('hidden');
-  grid.innerHTML = list.map((e, i) => {
-    const cover = coverStyle(e);
-    const pct = e.goal > 0 ? Math.min(100, (e.words / e.goal) * 100) : 0;
-    return `
-      <article class="card" data-id="${e.id}" style="animation-delay:${Math.min(i * 22, 240)}ms">
-        <div class="cover" style="${cover}">
-          <div class="cover-frame"></div>
-          <div class="cover-badge">${escHtml(e.chapters || 0)} ch</div>
-          <div class="cover-title">${escHtml(e.title || 'Untitled')}</div>
-          ${e.author ? `<div class="cover-author">${escHtml(e.author)}</div>` : ''}
-          <button class="card-menu" data-menu="${e.id}" title="Options">${ic('more')}</button>
-        </div>
-        <div class="card-info">
-          <div class="card-title">${escHtml(e.title || 'Untitled')}</div>
-          <div class="card-meta">
-            <span>${fmtNum(e.words)} words</span>
-            <i></i>
-            <span>${relTime(e.updated)}</span>
-          </div>
-          ${e.goal > 0 ? `<div class="card-progress"><i style="width:${pct.toFixed(1)}%"></i></div>` : ''}
-        </div>
-      </article>`;
-  }).join('');
-
-  $$('.card', grid).forEach(card => {
-    card.addEventListener('click', (ev) => {
-      if (ev.target.closest('.card-menu')) return;
-      openProject(card.dataset.id);
-    });
-  });
-  $$('[data-menu]', grid).forEach(btn => {
-    btn.addEventListener('click', (ev) => {
-      ev.stopPropagation();
-      openMenu(ev, btn.dataset.menu, btn);
-    });
-  });
-}
-
-function coverStyle(e) {
-  if (e.bgType === 'image' && e.bgImage) {
-    return `background-image:url('${e.bgImage}');background-size:cover;background-position:center;`;
-  }
-  if (e.bgType === 'solid') {
-    return `background:${e.c1};`;
-  }
-  return `background:linear-gradient(150deg, ${e.c1} 0%, ${e.c2} 100%);`;
-}
-
-/* ============================================================
-   ACTIONS
-   ============================================================ */
-function openProject(id) {
-  const p = loadProject(id);
-  if (!p) { toast('Could not open that book'); return; }
-  location.href = 'editor.html?id=' + encodeURIComponent(id);
-}
-
-function createProject(opts) {
-  const p = buildProject(opts);
-  if (!p || !saveProjectObj(p)) return false;
-  upsertIndexEntry(p);
-  location.assign('editor.html?id=' + encodeURIComponent(p.id));
-  return true;
-}
-
-function deleteProject(id) {
-  const e = getIndex().find(x => x.id === id);
-  if (!e) return;
-  if (!confirm('Delete “' + (e.title || 'Untitled') + '” permanently?\n\nThis cannot be undone.')) return;
-  try { localStorage.removeItem(PROJ_KEY(id)); } catch {}
-  removeIndexEntry(id);
-  render();
-  toast('Book deleted');
-}
-
-function duplicateProject(id) {
-  const p = loadProject(id);
-  if (!p) { toast('Could not duplicate'); return; }
-  const copy = JSON.parse(JSON.stringify(p));
-  copy.id = uid();
-  copy.title = (p.title || 'Untitled') + ' (copy)';
-  copy.created = Date.now();
-  copy.updated = Date.now();
-  copy.chapters = copy.chapters.map(c => ({ ...c, id: uid() }));
-  if (!saveProjectObj(copy)) return;
-  upsertIndexEntry(copy);
-  render();
-  toast('Book duplicated');
-}
-
-function renameProject(id) {
-  const p = loadProject(id);
-  if (!p) return;
-  const t = prompt('Rename book:', p.title || 'Untitled');
-  if (t === null) return;
-  p.title = t.trim() || 'Untitled';
-  p.updated = Date.now();
-  saveProjectObj(p);
-  upsertIndexEntry(p);
-  render();
-  toast('Renamed');
-}
-
-function exportBackup(id) {
-  const p = loadProject(id);
-  if (!p) { toast('Could not export'); return; }
-  download(JSON.stringify(p, null, 2), safeName(p.title) + '.calyx.json', 'application/json');
-  toast('Backup downloaded');
-}
-
-function handleAction(action, id) {
-  switch (action) {
-    case 'open':      openProject(id); break;
-    case 'rename':    renameProject(id); break;
-    case 'duplicate': duplicateProject(id); break;
-    case 'export':    exportBackup(id); break;
-    case 'delete':    deleteProject(id); break;
-  }
-}
-
-/* ---------- Context menu ---------- */
-let openMenuEl = null;
-function closeMenu() {
-  if (openMenuEl) { openMenuEl.remove(); openMenuEl = null; }
-}
-function openMenu(ev, id, btn) {
-  closeMenu();
-  const m = document.createElement('div');
-  m.className = 'menu';
-  m.innerHTML = `
-    <button data-a="open">${ic('open')} Open</button>
-    <button data-a="rename">${ic('edit')} Rename</button>
-    <button data-a="duplicate">${ic('copy')} Duplicate</button>
-    <div class="sep"></div>
-    <button data-a="export">${ic('download')} Export backup</button>
-    <div class="sep"></div>
-    <button data-a="delete" class="danger">${ic('trash')} Delete</button>
-  `;
-  document.body.appendChild(m);
-  openMenuEl = m;
-
-  const r = btn.getBoundingClientRect();
-  const mw = m.offsetWidth, mh = m.offsetHeight;
-  let left = r.right - mw;
-  let top = r.bottom + 8;
-  if (left < 10) left = 10;
-  if (left + mw > window.innerWidth - 10) left = window.innerWidth - mw - 10;
-  if (top + mh > window.innerHeight - 10) top = r.top - mh - 8;
-  m.style.left = left + 'px';
-  m.style.top = Math.max(10, top) + 'px';
-
-  m.addEventListener('click', (e) => {
-    const a = e.target.closest('button');
-    if (!a) return;
-    e.stopPropagation();
-    closeMenu();
-    handleAction(a.dataset.a, id);
-  });
-}
-document.addEventListener('click', closeMenu);
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
-window.addEventListener('scroll', closeMenu, true);
-
-/* ============================================================
-   NEW BOOK MODAL
-   ============================================================ */
-let chosenTemplate = 'blank';
-
-function openNewModal() {
-  $('#nTitle').value = '';
-  $('#nAuthor').value = getUI().lastAuthor || '';
-  $('#nSub').value = '';
-  chosenTemplate = 'blank';
-  $$('#tmplRow .tmpl').forEach(t => t.classList.toggle('on', t.dataset.tmpl === 'blank'));
-  $('#newOverlay').classList.add('open');
-  setTimeout(() => $('#nTitle').focus(), 120);
-}
-
-function closeOverlay(id) {
-  const el = document.getElementById(id);
-  if (el) el.classList.remove('open');
-}
-
-function initModal() {
-  $$('#tmplRow .tmpl').forEach(t => {
-    t.addEventListener('click', () => {
-      chosenTemplate = t.dataset.tmpl;
-      $$('#tmplRow .tmpl').forEach(x => x.classList.toggle('on', x === t));
-    });
-  });
-
-  $('#createBtn').addEventListener('click', () => {
-    const title = $('#nTitle').value.trim();
-    if (!title) { $('#nTitle').focus(); toast('Give your book a title'); return; }
-    const ui = getUI();
-    ui.lastAuthor = $('#nAuthor').value.trim();
-    try { localStorage.setItem(UI_KEY, JSON.stringify(ui)); } catch {}
-    createProject({
-      title,
-      author: $('#nAuthor').value.trim(),
-      subtitle: $('#nSub').value.trim(),
-      template: chosenTemplate
-    });
-  });
-
-  $('#nTitle').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') $('#createBtn').click();
-  });
-  $('#nAuthor').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') $('#createBtn').click();
-  });
-
-  $$('[data-close]').forEach(b => b.addEventListener('click', () => {
-    closeOverlay(b.dataset.close);
-  }));
-  $$('.overlay').forEach(o => o.addEventListener('click', (e) => {
-    if (e.target === o) o.classList.remove('open');
-  }));
-}
-
-/* ============================================================
-   IMPORT
-   ============================================================ */
-function importFile(file) {
-  const r = new FileReader();
-  r.onload = (ev) => {
-    try {
-      const data = JSON.parse(ev.target.result);
-      let src = data.book ? data.book : data;      // support old {book:...} format
-      if (data.project) src = data.project;
-      if (!src || !Array.isArray(src.chapters)) throw new Error('bad');
-
-      const p = normalizeProject({
+    /* ---------- Default project ---------- */
+    function defaultCover() {
+      return { bgType: 'gradient', c1: '#8b5e34', c2: '#c9a227', bgImage: null, layout: 'center', font: 'Playfair Display', titleSize: 100, frame: true };
+    }
+    function defaultSettings() {
+      return {
+        font: 'Georgia', size: 19, lh: 1.85, ls: 0, ps: 1.1,
+        align: 'left', indent: false, dropcap: false,
+        pagew: 740, pad: 64, texture: false,
+        focus: false, typewriter: false, spell: true, goal: 50000
+      };
+    }
+    function normalizeProject(src) {
+      if (!src || typeof src !== 'object') return null;
+      const now = Date.now();
+      const p = {
+        id: typeof src.id === 'string' && src.id ? src.id : uid(),
+        title: typeof src.title === 'string' && src.title.trim() ? src.title.trim() : 'Untitled Book',
+        subtitle: typeof src.subtitle === 'string' ? src.subtitle : '',
+        author: typeof src.author === 'string' ? src.author : '',
+        created: Number(src.created) || now,
+        updated: Number(src.updated) || now,
+        chapters: Array.isArray(src.chapters) ? src.chapters.map((c, i) => ({
+          id: typeof c?.id === 'string' && c.id ? c.id : uid(),
+          title: typeof c?.title === 'string' && c.title.trim() ? c.title.trim() : `Chapter ${i + 1}`,
+          html: typeof c?.html === 'string' ? c.html : '<p></p>'
+        })) : [],
+        cover: { ...defaultCover(), ...(src.cover && typeof src.cover === 'object' ? src.cover : {}) },
+        settings: { ...defaultSettings(), ...(src.settings && typeof src.settings === 'object' ? src.settings : {}) },
+        version: 2
+      };
+      if (!p.chapters.length) p.chapters = templateChapters('blank', p.title);
+      return p;
+    }
+    function templateChapters(kind) {
+      if (kind === 'novel') {
+        return [
+          { id: uid(), title: 'Chapter One', html: '<h1>Chapter One</h1><p></p>' },
+          { id: uid(), title: 'Chapter Two', html: '<h1>Chapter Two</h1><p></p>' }
+        ];
+      }
+      if (kind === 'nonfiction') {
+        return [
+          { id: uid(), title: 'Introduction', html: '<h1>Introduction</h1><p></p>' },
+          { id: uid(), title: 'Chapter One', html: '<h1>Chapter One</h1><p></p>' }
+        ];
+      }
+      return [{ id: uid(), title: 'Chapter One', html: '<h1>Chapter One</h1><p></p>' }];
+    }
+    function buildProject(opts) {
+      const now = Date.now();
+      return normalizeProject({
         id: uid(),
-        title: src.title || 'Imported Book',
-        subtitle: src.subtitle || '',
-        author: src.author || '',
-        created: Date.now(),
-        updated: Date.now(),
-        chapters: src.chapters,
-        cover: src.cover || defaultCover(),
-        settings: { ...defaultSettings(), ...(src.settings || data.settings || {}) },
+        title: opts.title || 'Untitled Book',
+        subtitle: opts.subtitle || '',
+        author: opts.author || '',
+        created: now, updated: now,
+        chapters: templateChapters(opts.template || 'blank'),
+        cover: defaultCover(),
+        settings: defaultSettings(),
         version: 2
       });
-      if (!p) throw new Error('bad project');
+    }
 
-      if (!saveProjectObj(p)) return;
+    /* ---------- Index sync ---------- */
+    function upsertIndexEntry(p, extra = {}) {
+      const idx = getIndex();
+      const words = p.chapters.reduce((a, c) => a + countWords(c.html), 0);
+      const existing = idx.find(e => e.id === p.id);
+      const entry = {
+        id: p.id,
+        title: p.title, author: p.author, subtitle: p.subtitle,
+        created: p.created, updated: p.updated || Date.now(),
+        words, chapters: p.chapters.length,
+        c1: (p.cover && p.cover.c1) || '#333',
+        c2: (p.cover && p.cover.c2) || '#666',
+        bgImage: (p.cover && p.cover.bgType === 'image') ? p.cover.bgImage : null,
+        bgType: (p.cover && p.cover.bgType) || 'gradient',
+        goal: (p.settings && p.settings.goal) || 0,
+        pinned: existing ? !!existing.pinned : false,
+        ...extra
+      };
+      const i = idx.findIndex(e => e.id === p.id);
+      if (i >= 0) idx[i] = entry; else idx.unshift(entry);
+      setIndex(idx);
+      return entry;
+    }
+
+    /* ============================================================
+       STATE
+       ============================================================ */
+    let currentSort = getUI().sort || 'updated';
+    let currentQuery = '';
+    let currentFilter = 'all';
+    let currentView = getUI().view === 'list' ? 'list' : 'grid';
+    let selectionMode = false;
+    const selection = new Set();
+    let lastDeleted = null;
+
+    /* ============================================================
+       RENDER
+       ============================================================ */
+    function renderHero() {
+      const idx = getIndex();
+      const hero = $('#hero');
+      if (!idx.length) { hero.classList.remove('on'); return; }
+
+      // Most recent updated book
+      const recent = [...idx].sort((a, b) => (b.updated || 0) - (a.updated || 0))[0];
+      if (!recent) { hero.classList.remove('on'); return; }
+
+      hero.classList.add('on');
+      const pct = recent.goal > 0 ? Math.min(100, (recent.words / recent.goal) * 100) : 0;
+
+      // Cover
+      const heroCover = $('#heroCover');
+      heroCover.style.background = '';
+      heroCover.style.backgroundImage = '';
+      if (recent.bgType === 'image' && recent.bgImage) {
+        heroCover.style.backgroundImage = `url('${recent.bgImage}')`;
+        heroCover.style.backgroundSize = 'cover';
+        heroCover.style.backgroundPosition = 'center';
+      } else if (recent.bgType === 'solid') {
+        heroCover.style.background = recent.c1;
+      } else {
+        heroCover.style.background = `linear-gradient(150deg, ${recent.c1} 0%, ${recent.c2} 100%)`;
+      }
+
+      $('#heroTitle').textContent = recent.title || 'Untitled';
+      $('#heroAuthor').textContent = recent.author || '';
+      $('#heroTitleText').textContent = recent.title || 'Untitled';
+
+      const sub = [];
+      if (recent.author) sub.push(escHtml(recent.author));
+      sub.push(`${recent.chapters} chapter${recent.chapters === 1 ? '' : 's'}`);
+      sub.push(`edited ${relTime(recent.updated)}`);
+      $('#heroSub').innerHTML = sub.join(' <i></i> ');
+
+      // Progress
+      if (recent.goal > 0) {
+        $('#heroProgressWrap').style.display = '';
+        $('#heroProgressLabel').innerHTML = `<b>${fmtNum(recent.words)}</b> of ${fmtNum(recent.goal)} words`;
+        $('#heroProgressPct').textContent = Math.round(pct) + '%';
+        $('#heroProgressBar').style.width = pct + '%';
+      } else {
+        $('#heroProgressWrap').style.display = 'none';
+      }
+
+      // Meta
+      const readMins = Math.max(1, Math.round(recent.words / 220));
+      const pages = Math.max(1, Math.round(recent.words / 300));
+      $('#heroMeta').innerHTML = `
+        <div class="hero-meta-item"><b>${fmtNum(recent.words)}</b><span>Words</span></div>
+        <div class="hero-meta-item"><b>${pages}</b><span>Pages</span></div>
+        <div class="hero-meta-item"><b>${readMins}m</b><span>Read time</span></div>
+      `;
+
+      // Wire buttons
+      $('#heroResume').onclick = () => openProject(recent.id);
+      $('#heroDetails').onclick = () => {
+        // Scroll to card and flash
+        const card = document.querySelector(`.card[data-id="${recent.id}"]`);
+        if (card) {
+          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          card.style.transition = 'box-shadow .4s';
+          card.style.boxShadow = '0 0 0 3px rgba(201,162,39,.7)';
+          setTimeout(() => { card.style.boxShadow = ''; }, 1200);
+        }
+      };
+    }
+
+    function renderStats() {
+      const idx = getIndex();
+      const stats = $('#stats');
+      if (!idx.length) { stats.style.display = 'none'; return; }
+      stats.style.display = '';
+
+      const totalWords = idx.reduce((a, e) => a + (e.words || 0), 0);
+      const totalChapters = idx.reduce((a, e) => a + (e.chapters || 0), 0);
+
+      $('#stBooks').textContent = idx.length;
+      $('#stWords').textContent = fmtNum(totalWords);
+      $('#stChapters').textContent = fmtNum(totalChapters);
+
+      // Words today + streak — read stats from each project
+      const today = todayKey();
+      let todayWords = 0;
+      let bestStreak = 0;
+      idx.forEach(e => {
+        try {
+          const raw = storageGet(STATS_KEY(e.id));
+          if (!raw) return;
+          const s = JSON.parse(raw);
+          if (s.date === today) todayWords += (s.today || 0);
+          if (s.streak && s.streak > bestStreak) bestStreak = s.streak;
+        } catch {}
+      });
+      $('#stToday').textContent = fmtNum(todayWords);
+      $('#stStreak').textContent = bestStreak > 0 ? `🔥 ${bestStreak}d streak` : '';
+    }
+
+    function computeFilterCounts() {
+      const idx = getIndex();
+      const counts = { all: idx.length, pinned: 0, draft: 0, progress: 0 };
+      idx.forEach(e => {
+        if (e.pinned) counts.pinned++;
+        if ((e.words || 0) < 1000) counts.draft++;
+        else counts.progress++;
+      });
+      $('#cAll').textContent = counts.all;
+      $('#cPinned').textContent = counts.pinned;
+      $('#cDraft').textContent = counts.draft;
+      $('#cProgress').textContent = counts.progress;
+    }
+
+    function render() {
+      const idx = getIndex();
+      const q = currentQuery.trim().toLowerCase();
+
+      let list = idx.filter(e => {
+        if (currentFilter === 'pinned' && !e.pinned) return false;
+        if (currentFilter === 'draft' && (e.words || 0) >= 1000) return false;
+        if (currentFilter === 'progress' && (e.words || 0) < 1000) return false;
+        if (!q) return true;
+        return (e.title || '').toLowerCase().includes(q)
+          || (e.author || '').toLowerCase().includes(q)
+          || (e.subtitle || '').toLowerCase().includes(q);
+      });
+
+      list.sort((a, b) => {
+        // Pinned always first
+        if (!!a.pinned !== !!b.pinned) return a.pinned ? -1 : 1;
+        switch (currentSort) {
+          case 'title': return (a.title || '').localeCompare(b.title || '');
+          case 'author': return (a.author || '').localeCompare(b.author || '');
+          case 'created': return (b.created || 0) - (a.created || 0);
+          case 'words': return (b.words || 0) - (a.words || 0);
+          default: return (b.updated || 0) - (a.updated || 0);
+        }
+      });
+
+      const grid = $('#grid');
+      const empty = $('#empty');
+
+      $('#count').textContent = idx.length === 1 ? '1 book' : idx.length + ' books';
+
+      if (!idx.length) {
+        grid.innerHTML = '';
+        empty.classList.remove('hidden');
+        $('#emptyTitle').textContent = 'Your library is empty';
+        $('#emptyText').textContent = 'Start your first book to begin writing, or import a Calyx project from another device.';
+        $('#emptyActions').classList.remove('hidden');
+        return;
+      }
+
+      if (!list.length) {
+        grid.innerHTML = '';
+        empty.classList.remove('hidden');
+        $('#emptyTitle').textContent = 'No books match';
+        $('#emptyText').textContent = q
+          ? `Nothing in your library matches “${currentQuery}”. Try a different term or clear your filters.`
+          : 'No books match the current filter.';
+        $('#emptyActions').classList.add('hidden');
+        return;
+      }
+
+      empty.classList.add('hidden');
+      grid.className = 'grid' + (currentView === 'list' ? ' list-view' : '');
+      grid.innerHTML = list.map((e, i) => renderCard(e, i)).join('');
+
+      // Wire events
+      $$('.card', grid).forEach(card => {
+        const id = card.dataset.id;
+        card.addEventListener('click', (ev) => {
+          if (ev.target.closest('.card-menu')) return;
+          if (selectionMode) {
+            toggleSelect(id);
+            return;
+          }
+          openProject(id);
+        });
+      });
+      $$('[data-menu]', grid).forEach(btn => {
+        btn.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          openMenu(ev, btn.dataset.menu, btn);
+        });
+      });
+
+      // Sync selection state
+      selection.forEach(id => {
+        const card = document.querySelector(`.card[data-id="${id}"]`);
+        if (card) card.classList.add('selected');
+      });
+    }
+
+    function renderCard(e, i) {
+      const cover = coverStyle(e);
+      const pct = e.goal > 0 ? Math.min(100, (e.words / e.goal) * 100) : 0;
+      const isSelected = selection.has(e.id);
+      const menuBtnHTML = `<button class="card-menu" data-menu="${e.id}" title="Options">${ic('more')}</button>`;
+      const pinHTML = e.pinned ? `<div class="cover-pin">${ic('pin')}</div>` : '';
+      return `
+        <article class="card${isSelected ? ' selected' : ''}" data-id="${e.id}" style="animation-delay:${Math.min(i * 18, 220)}ms">
+          <div class="cover" style="${cover}">
+            <div class="cover-frame"></div>
+            <div class="cover-check">${ic('check')}</div>
+            <div class="cover-badge">${escHtml(e.chapters || 0)} ch</div>
+            ${pinHTML}
+            ${menuBtnHTML}
+            <div class="cover-title">${escHtml(e.title || 'Untitled')}</div>
+            ${e.author ? `<div class="cover-author">${escHtml(e.author)}</div>` : ''}
+          </div>
+          <div class="card-info">
+            <div class="card-title">${escHtml(e.title || 'Untitled')}</div>
+            <div class="card-meta">
+              <span>${fmtNum(e.words)} words</span>
+              <i></i>
+              <span>${relTime(e.updated)}</span>
+            </div>
+            ${e.goal > 0 ? `<div class="card-progress"><i style="width:${pct.toFixed(1)}%"></i></div>` : ''}
+          </div>
+        </article>`;
+    }
+
+    function coverStyle(e) {
+      if (e.bgType === 'image' && e.bgImage) {
+        return `background-image:url('${e.bgImage}');background-size:cover;background-position:center;`;
+      }
+      if (e.bgType === 'solid') return `background:${e.c1};`;
+      return `background:linear-gradient(150deg, ${e.c1} 0%, ${e.c2} 100%);`;
+    }
+
+    /* ============================================================
+       ACTIONS
+       ============================================================ */
+    function openProject(id) {
+      const p = loadProject(id);
+      if (!p) { toast('Could not open that book'); return; }
+      location.href = 'editor.html?id=' + encodeURIComponent(id);
+    }
+
+    function createProject(opts) {
+      const p = buildProject(opts);
+      if (!p || !saveProjectObj(p)) return false;
+      upsertIndexEntry(p);
+      location.assign('editor.html?id=' + encodeURIComponent(p.id));
+      return true;
+    }
+
+    function deleteProject(id, opts = {}) {
+      const e = getIndex().find(x => x.id === id);
+      if (!e) return;
+      const p = loadProject(id);
+      const removed = {
+        entry: e,
+        project: p,
+        stats: storageGet(STATS_KEY(id)),
+        deletedAt: Date.now()
+      };
+      try { localStorage.removeItem(PROJ_KEY(id)); } catch {}
+      try { localStorage.removeItem(STATS_KEY(id)); } catch {}
+      setIndex(getIndex().filter(x => x.id !== id));
+      render();
+      renderHero();
+      renderStats();
+      computeFilterCounts();
+
+      if (opts.silent) return;
+
+      lastDeleted = removed;
+      const removedLabel = id;
+      const undo = toast(`Deleted “${e.title || 'Untitled'}”`, {
+        ms: 5500,
+        action: {
+          label: 'Undo',
+          onClick: () => undoDelete(removed)
+        }
+      });
+      // Track for batch undo
+      if (!window.__undoStack) window.__undoStack = [];
+      window.__undoStack.push({ removed, undo });
+    }
+
+    function undoDelete(removed) {
+      if (!removed || !removed.entry) return;
+      if (removed.project) {
+        try { storageSet(PROJ_KEY(removed.entry.id), JSON.stringify(removed.project)); } catch {}
+      }
+      if (removed.stats) {
+        try { storageSet(STATS_KEY(removed.entry.id), removed.stats); } catch {}
+      }
+      const idx = getIndex();
+      idx.unshift(removed.entry);
+      setIndex(idx);
+      render();
+      renderHero();
+      renderStats();
+      computeFilterCounts();
+      toast(`Restored “${removed.entry.title || 'Untitled'}”`, { gold: true, ms: 1800 });
+    }
+
+    function duplicateProject(id) {
+      const p = loadProject(id);
+      if (!p) { toast('Could not duplicate'); return; }
+      const copy = JSON.parse(JSON.stringify(p));
+      copy.id = uid();
+      copy.title = (p.title || 'Untitled') + ' (copy)';
+      copy.created = Date.now();
+      copy.updated = Date.now();
+      copy.chapters = copy.chapters.map(c => ({ ...c, id: uid() }));
+      if (!saveProjectObj(copy)) return;
+      upsertIndexEntry(copy);
+      render();
+      renderHero();
+      computeFilterCounts();
+      toast('Book duplicated', { gold: true, ms: 1800 });
+    }
+
+    function renameProject(id) {
+      const p = loadProject(id);
+      if (!p) return;
+      const t = prompt('Rename book:', p.title || 'Untitled');
+      if (t === null) return;
+      p.title = t.trim() || 'Untitled';
+      p.updated = Date.now();
+      saveProjectObj(p);
       upsertIndexEntry(p);
       render();
-      toast('Imported “' + p.title + '”');
-    } catch (err) {
-      toast('That file could not be read');
+      renderHero();
+      toast('Renamed', { gold: true, ms: 1400 });
     }
-  };
-  r.readAsText(file);
-}
 
-/* ============================================================
-   INIT
-   ============================================================ */
-let appInitialized = false;
+    function exportBackup(id) {
+      const p = loadProject(id);
+      if (!p) { toast('Could not export'); return; }
+      download(JSON.stringify(p, null, 2), safeName(p.title) + '.calyx.json', 'application/json');
+      toast('Backup downloaded', { gold: true, ms: 1800 });
+    }
 
-function init() {
-  if (appInitialized) return;
-  appInitialized = true;
+    function togglePin(id) {
+      const idx = getIndex();
+      const i = idx.findIndex(e => e.id === id);
+      if (i < 0) return;
+      idx[i].pinned = !idx[i].pinned;
+      setIndex(idx);
+      render();
+      toast(idx[i].pinned ? 'Pinned to top' : 'Unpinned', { gold: idx[i].pinned, ms: 1400 });
+    }
 
-  render();
-  initModal();          // <-- the missing call: wires Create Book, Cancel, X, templates & backdrop
+    function handleAction(action, id) {
+      switch (action) {
+        case 'open': openProject(id); break;
+        case 'rename': renameProject(id); break;
+        case 'duplicate': duplicateProject(id); break;
+        case 'export': exportBackup(id); break;
+        case 'pin': togglePin(id); break;
+        case 'delete': deleteProject(id); break;
+      }
+    }
 
-  $('#btnNew').addEventListener('click', openNewModal);
-  $('#emptyNew').addEventListener('click', openNewModal);
-
-  $('#btnImport').addEventListener('click', () => $('#fileProject').click());
-  $('#emptyImport').addEventListener('click', () => $('#fileProject').click());
-  $('#fileProject').addEventListener('change', (e) => {
-    const f = e.target.files[0];
-    if (f) importFile(f);
-    e.target.value = '';
-  });
-
-  $('#search').addEventListener('input', debounce((e) => {
-    currentQuery = e.target.value;
-    render();
-  }, 120));
-
-  $('#sort').addEventListener('change', (e) => {
-    currentSort = e.target.value;
-    render();
-  });
-
-  // Drag & drop project file
-  document.addEventListener('dragover', (e) => { e.preventDefault(); });
-  document.addEventListener('drop', (e) => {
-    e.preventDefault();
-    const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
-    if (f && /\.json$/i.test(f.name)) importFile(f);
-  });
-
-  // Storage change (another tab edited a project)
-  window.addEventListener('storage', (e) => {
-    if (e.key === INDEX_KEY) render();
-  });
-
-  // Refresh relative times every minute
-  setInterval(render, 60000);
-
-  // Keyboard shortcuts
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      $$('.overlay.open').forEach(o => o.classList.remove('open'));
+    /* ============================================================
+       CONTEXT MENU
+       ============================================================ */
+    let openMenuEl = null;
+    function closeMenu() {
+      if (openMenuEl) { openMenuEl.remove(); openMenuEl = null; }
+    }
+    function openMenu(ev, id, btn) {
       closeMenu();
-      return;
+      const entry = getIndex().find(e => e.id === id);
+      const pinned = entry && entry.pinned;
+      const m = document.createElement('div');
+      m.className = 'menu';
+      m.innerHTML = `
+        <button data-a="open">${ic('open')} Open <span class="kbd">↵</span></button>
+        <button data-a="pin">${ic('pin')} ${pinned ? 'Unpin' : 'Pin to top'}</button>
+        <button data-a="rename">${ic('edit')} Rename</button>
+        <button data-a="duplicate">${ic('copy')} Duplicate</button>
+        <div class="sep"></div>
+        <button data-a="export">${ic('download')} Export backup</button>
+        <div class="sep"></div>
+        <button data-a="delete" class="danger">${ic('trash')} Delete</button>
+      `;
+      document.body.appendChild(m);
+      openMenuEl = m;
+
+      const r = btn.getBoundingClientRect();
+      const mw = m.offsetWidth, mh = m.offsetHeight;
+      let left = r.right - mw;
+      let top = r.bottom + 6;
+      if (left < 10) left = 10;
+      if (left + mw > window.innerWidth - 10) left = window.innerWidth - mw - 10;
+      if (top + mh > window.innerHeight - 10) top = r.top - mh - 6;
+      m.style.left = left + 'px';
+      m.style.top = Math.max(10, top) + 'px';
+
+      m.addEventListener('click', (e) => {
+        const a = e.target.closest('button');
+        if (!a) return;
+        e.stopPropagation();
+        closeMenu();
+        handleAction(a.dataset.a, id);
+      });
     }
-    if (e.target.tagName === 'INPUT') return;
-    if (e.key === 'n' && !e.metaKey && !e.ctrlKey) openNewModal();
-  });
+    document.addEventListener('click', closeMenu);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+    window.addEventListener('scroll', closeMenu, true);
 
-  // If arriving from editor with ?new=1
-  const params = new URLSearchParams(location.search);
-  if (params.get('new') === '1') openNewModal();
-}
+    /* ============================================================
+       SELECT MODE
+       ============================================================ */
+    function enterSelectMode() {
+      selectionMode = true;
+      document.body.classList.add('selecting');
+      $('#selBar').classList.add('on');
+      updateSelBar();
+    }
+    function exitSelectMode() {
+      selectionMode = false;
+      selection.clear();
+      document.body.classList.remove('selecting');
+      $('#selBar').classList.remove('on');
+      $$('.card.selected').forEach(c => c.classList.remove('selected'));
+    }
+    function toggleSelect(id) {
+      if (selection.has(id)) selection.delete(id);
+      else selection.add(id);
+      const card = document.querySelector(`.card[data-id="${id}"]`);
+      if (card) card.classList.toggle('selected', selection.has(id));
+      updateSelBar();
+    }
+    function updateSelBar() {
+      $('#selCount').textContent = selection.size;
+      const has = selection.size > 0;
+      $('#selPin').disabled = !has;
+      $('#selExport').disabled = !has;
+      $('#selDelete').disabled = !has;
+      ['#selPin', '#selExport', '#selDelete'].forEach(s => {
+        const el = $(s);
+        el.style.opacity = has ? '1' : '.35';
+        el.style.pointerEvents = has ? 'auto' : 'none';
+      });
+    }
+    function initSelectBar() {
+      $('#btnSelect').addEventListener('click', () => {
+        if (selectionMode) exitSelectMode();
+        else enterSelectMode();
+      });
+      $('#selCancel').addEventListener('click', exitSelectMode);
+      $('#selDelete').addEventListener('click', () => {
+        const ids = [...selection];
+        if (!ids.length) return;
+        if (!confirm(`Delete ${ids.length} book${ids.length === 1 ? '' : 's'}?\n\nThis cannot be undone.`)) return;
+        ids.forEach(id => deleteProject(id, { silent: true }));
+        exitSelectMode();
+        render();
+        renderHero();
+        renderStats();
+        computeFilterCounts();
+        toast(`Deleted ${ids.length} book${ids.length === 1 ? '' : 's'}`, {
+          ms: 5000,
+          action: {
+            label: 'Undo',
+            onClick: () => {
+              // Re-import from stored projects
+              ids.forEach(id => {
+                const p = loadProject(id);
+                // We can't recover without stored data, so skip if not found
+              });
+            }
+          }
+        });
+      });
+      $('#selExport').addEventListener('click', () => {
+        const ids = [...selection];
+        ids.forEach(id => {
+          const p = loadProject(id);
+          if (p) download(JSON.stringify(p, null, 2), safeName(p.title) + '.calyx.json', 'application/json');
+        });
+        toast(`Exported ${ids.length} book${ids.length === 1 ? '' : 's'}`, { gold: true, ms: 2000 });
+        exitSelectMode();
+      });
+      $('#selPin').addEventListener('click', () => {
+        const ids = [...selection];
+        const idx = getIndex();
+        let anyUnpinned = false;
+        ids.forEach(id => {
+          const i = idx.findIndex(e => e.id === id);
+          if (i >= 0) {
+            if (!idx[i].pinned) anyUnpinned = true;
+          }
+        });
+        ids.forEach(id => {
+          const i = idx.findIndex(e => e.id === id);
+          if (i >= 0) idx[i].pinned = anyUnpinned;
+        });
+        setIndex(idx);
+        render();
+        toast(anyUnpinned ? 'Pinned' : 'Unpinned', { gold: true, ms: 1400 });
+        exitSelectMode();
+      });
+    }
 
-document.addEventListener('DOMContentLoaded', init);
-if (document.readyState !== 'loading') init();
+    /* ============================================================
+       NEW BOOK MODAL
+       ============================================================ */
+    let chosenTemplate = 'blank';
+    function openNewModal() {
+      $('#nTitle').value = '';
+      $('#nAuthor').value = getUI().lastAuthor || '';
+      $('#nSub').value = '';
+      chosenTemplate = 'blank';
+      $$('#tmplRow .tmpl').forEach(t => t.classList.toggle('on', t.dataset.tmpl === 'blank'));
+      $('#newOverlay').classList.add('open');
+      setTimeout(() => $('#nTitle').focus(), 120);
+    }
+    function closeOverlay(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('open');
+    }
+    function initModal() {
+      $$('#tmplRow .tmpl').forEach(t => {
+        t.addEventListener('click', () => {
+          chosenTemplate = t.dataset.tmpl;
+          $$('#tmplRow .tmpl').forEach(x => x.classList.toggle('on', x === t));
+        });
+      });
+      $('#createBtn').addEventListener('click', () => {
+        const title = $('#nTitle').value.trim();
+        if (!title) { $('#nTitle').focus(); toast('Give your book a title'); return; }
+        setUI({ lastAuthor: $('#nAuthor').value.trim() });
+        createProject({
+          title,
+          author: $('#nAuthor').value.trim(),
+          subtitle: $('#nSub').value.trim(),
+          template: chosenTemplate
+        });
+      });
+      $('#nTitle').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#createBtn').click(); });
+      $('#nAuthor').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#createBtn').click(); });
+      $$('[data-close]').forEach(b => b.addEventListener('click', () => closeOverlay(b.dataset.close)));
+      $$('.overlay').forEach(o => o.addEventListener('click', (e) => {
+        if (e.target === o) o.classList.remove('open');
+      }));
+    }
+
+    /* ============================================================
+       IMPORT
+       ============================================================ */
+    function importFile(file) {
+      const r = new FileReader();
+      r.onload = (ev) => {
+        try {
+          const data = JSON.parse(ev.target.result);
+          let src = data.book ? data.book : data;
+          if (data.project) src = data.project;
+          if (!src || !Array.isArray(src.chapters)) throw new Error('bad');
+          const p = normalizeProject({
+            id: uid(),
+            title: src.title || 'Imported Book',
+            subtitle: src.subtitle || '',
+            author: src.author || '',
+            created: Date.now(), updated: Date.now(),
+            chapters: src.chapters,
+            cover: src.cover || defaultCover(),
+            settings: { ...defaultSettings(), ...(src.settings || data.settings || {}) },
+            version: 2
+          });
+          if (!p) throw new Error('bad project');
+          if (!saveProjectObj(p)) return;
+          upsertIndexEntry(p);
+          render();
+          renderHero();
+          renderStats();
+          computeFilterCounts();
+          toast(`Imported “${p.title}”`, { gold: true, ms: 2000 });
+        } catch (err) {
+          toast('That file could not be read');
+        }
+      };
+      r.readAsText(file);
+    }
+
+    /* ============================================================
+       INIT
+       ============================================================ */
+    let appInitialized = false;
+    function init() {
+      if (appInitialized) return;
+      appInitialized = true;
+
+      // Set up UI prefs
+      $('#sort').value = currentSort;
+      $$('#viewToggle button').forEach(b => {
+        b.classList.toggle('on', b.dataset.view === currentView);
+        b.addEventListener('click', () => {
+          currentView = b.dataset.view;
+          setUI({ view: currentView });
+          $$('#viewToggle button').forEach(x => x.classList.toggle('on', x === b));
+          render();
+        });
+      });
+
+      render();
+      renderHero();
+      renderStats();
+      computeFilterCounts();
+      initModal();
+      initSelectBar();
+
+      $('#btnNew').addEventListener('click', openNewModal);
+      $('#emptyNew').addEventListener('click', openNewModal);
+
+      $('#btnShortcuts').addEventListener('click', () => $('#kbdOverlay').classList.add('open'));
+
+      $('#btnImport').addEventListener('click', () => $('#fileProject').click());
+      $('#emptyImport').addEventListener('click', () => $('#fileProject').click());
+      $('#fileProject').addEventListener('change', (e) => {
+        const f = e.target.files[0];
+        if (f) importFile(f);
+        e.target.value = '';
+      });
+
+      $('#search').addEventListener('input', debounce((e) => {
+        currentQuery = e.target.value;
+        render();
+      }, 120));
+
+      $$('#chips .chip').forEach(c => {
+        c.addEventListener('click', () => {
+          currentFilter = c.dataset.filter;
+          $$('#chips .chip').forEach(x => x.classList.toggle('on', x === c));
+          render();
+        });
+      });
+
+      $('#sort').addEventListener('change', (e) => {
+        currentSort = e.target.value;
+        setUI({ sort: currentSort });
+        render();
+      });
+
+      // Drag & drop
+      document.addEventListener('dragover', (e) => e.preventDefault());
+      document.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+        if (f && /\.json$/i.test(f.name)) importFile(f);
+      });
+
+      window.addEventListener('storage', (e) => {
+        if (e.key === INDEX_KEY) { render(); renderHero(); renderStats(); computeFilterCounts(); }
+      });
+
+      setInterval(() => { render(); renderHero(); }, 60000);
+
+      document.addEventListener('keydown', (e) => {
+        // Escape
+        if (e.key === 'Escape') {
+          if (selectionMode) { exitSelectMode(); return; }
+          $$('.overlay.open').forEach(o => o.classList.remove('open'));
+          closeMenu();
+          return;
+        }
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+        // ⌘A — select all
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'a') {
+          if (currentView || true) {
+            e.preventDefault();
+            if (!selectionMode) enterSelectMode();
+            getIndex().forEach(entry => selection.add(entry.id));
+            $$('.card').forEach(c => c.classList.add('selected'));
+            updateSelBar();
+          }
+          return;
+        }
+        // ⌫ — delete selection
+        if ((e.key === 'Backspace' || e.key === 'Delete') && selectionMode && selection.size) {
+          $('#selDelete').click();
+          return;
+        }
+        if (e.metaKey || e.ctrlKey) return;
+
+        // Single keys
+        const k = e.key.toLowerCase();
+        if (k === 'n') { openNewModal(); }
+        else if (k === '/') { e.preventDefault(); $('#search').focus(); }
+        else if (k === 'i') { $('#fileProject').click(); }
+        else if (k === 'v') {
+          currentView = currentView === 'grid' ? 'list' : 'grid';
+          setUI({ view: currentView });
+          $$('#viewToggle button').forEach(x => x.classList.toggle('on', x.dataset.view === currentView));
+          render();
+        }
+        else if (k === 's') {
+          if (selectionMode) exitSelectMode(); else enterSelectMode();
+        }
+        else if (e.key === '?') { $('#kbdOverlay').classList.add('open'); }
+        else if (e.key === 'Enter') {
+          const first = document.querySelector('.card');
+          if (first) openProject(first.dataset.id);
+        }
+      });
+
+      const params = new URLSearchParams(location.search);
+      if (params.get('new') === '1') openNewModal();
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+    if (document.readyState !== 'loading') init();
   </script>
 </body>
 
