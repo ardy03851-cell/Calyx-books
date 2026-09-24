@@ -1274,7 +1274,6 @@ function templateChapters(kind, title) {
 }
 function buildProject(opts) {
   const now = Date.now();
-  const ui = getUI();
   return normalizeProject({
     id: uid(),
     title: opts.title || 'Untitled Book',
@@ -1368,7 +1367,6 @@ function render() {
   grid.innerHTML = list.map((e, i) => {
     const cover = coverStyle(e);
     const pct = e.goal > 0 ? Math.min(100, (e.words / e.goal) * 100) : 0;
-    const initial = (e.title || '?').trim().charAt(0).toUpperCase();
     return `
       <article class="card" data-id="${e.id}" style="animation-delay:${Math.min(i * 22, 240)}ms">
         <div class="cover" style="${cover}">
@@ -1544,6 +1542,11 @@ function openNewModal() {
   setTimeout(() => $('#nTitle').focus(), 120);
 }
 
+function closeOverlay(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('open');
+}
+
 function initModal() {
   $$('#tmplRow .tmpl').forEach(t => {
     t.addEventListener('click', () => {
@@ -1569,9 +1572,12 @@ function initModal() {
   $('#nTitle').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') $('#createBtn').click();
   });
+  $('#nAuthor').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') $('#createBtn').click();
+  });
 
   $$('[data-close]').forEach(b => b.addEventListener('click', () => {
-    $('#' + b.dataset.close).classList.remove('open');
+    closeOverlay(b.dataset.close);
   }));
   $$('.overlay').forEach(o => o.addEventListener('click', (e) => {
     if (e.target === o) o.classList.remove('open');
@@ -1623,7 +1629,9 @@ let appInitialized = false;
 function init() {
   if (appInitialized) return;
   appInitialized = true;
+
   render();
+  initModal();          // <-- the missing call: wires Create Book, Cancel, X, templates & backdrop
 
   $('#btnNew').addEventListener('click', openNewModal);
   $('#emptyNew').addEventListener('click', openNewModal);
@@ -1662,8 +1670,13 @@ function init() {
   // Refresh relative times every minute
   setInterval(render, 60000);
 
-  // Keyboard shortcut: N for new
+  // Keyboard shortcuts
   document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      $$('.overlay.open').forEach(o => o.classList.remove('open'));
+      closeMenu();
+      return;
+    }
     if (e.target.tagName === 'INPUT') return;
     if (e.key === 'n' && !e.metaKey && !e.ctrlKey) openNewModal();
   });
