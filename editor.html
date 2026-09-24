@@ -1,0 +1,4023 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Calyx Book">
+  <meta name="theme-color" content="#0a0c0f">
+  <meta name="description" content="Calyx Book — writing studio.">
+  <title>Calyx Book — Editor</title>
+  <link rel="icon" type="image/png" href="assets/icon.png">
+  <link rel="apple-touch-icon" href="assets/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ============================================================
+   BASE / TOKENS
+   ============================================================ */
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden
+    }
+
+    body {
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overscroll-behavior: none;
+    }
+
+    :root {
+      --bg: #0a0c0f;
+      --bg-2: #0e1116;
+      --surface: #14181e;
+      --surface-2: #1a1f27;
+      --surface-3: #232933;
+      --border: rgba(255, 255, 255, .08);
+      --border-hi: rgba(255, 255, 255, .16);
+      --text: #e9edf2;
+      --text-2: #98a3b2;
+      --text-3: #68727f;
+      --accent: #c9a227;
+      --accent-hi: #e0b83d;
+      --paper: #fffaf0;
+      --paper-text: #1a1a1a;
+      --shadow: rgba(0, 0, 0, .7);
+      --hover: rgba(255, 255, 255, .055);
+      --radius: 12px;
+      --radius-sm: 8px;
+      --top-h: 56px;
+      --doc-font: Georgia, serif;
+      --doc-size: 19px;
+      --doc-lh: 1.85;
+      --doc-ls: 0px;
+      --doc-ps: 1.1em;
+      --page-w: 740px;
+      --page-pad: 64px;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font-family: inherit;
+      font-size: inherit;
+      color: inherit
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      background: none;
+      padding: 0
+    }
+
+    .grow {
+      flex: 1
+    }
+
+    .hidden {
+      display: none !important
+    }
+
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, .14);
+      border-radius: 8px;
+      border: 3px solid transparent;
+      background-clip: content-box
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, .24);
+      background-clip: content-box
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent
+    }
+
+    ::selection {
+      background: rgba(201, 162, 39, .32);
+      color: inherit
+    }
+
+    /* ============================================================
+   APP SHELL
+   ============================================================ */
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+      height: 100vh
+    }
+
+    /* ---------- Top bar ---------- */
+    .topbar {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 12px;
+      height: calc(var(--top-h) + env(safe-area-inset-top));
+      padding-top: env(safe-area-inset-top);
+      background: rgba(10, 12, 15, .9);
+      backdrop-filter: blur(18px) saturate(1.4);
+      -webkit-backdrop-filter: blur(18px) saturate(1.4);
+      border-bottom: 1px solid var(--border);
+      z-index: 60;
+      position: relative;
+    }
+
+    .tb-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      color: var(--text-2);
+      transition: .14s;
+    }
+
+    .tb-btn svg {
+      width: 18px;
+      height: 18px
+    }
+
+    .tb-btn:hover {
+      background: var(--hover);
+      color: var(--text)
+    }
+
+    .tb-btn:active {
+      transform: scale(.94)
+    }
+
+    .tb-btn.on {
+      background: var(--accent);
+      color: #17130a
+    }
+
+    .book-title {
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text);
+      max-width: 340px;
+      min-width: 80px;
+      flex: 0 1 auto;
+      outline: none;
+      transition: .14s;
+      letter-spacing: -.1px;
+    }
+
+    .book-title:hover {
+      background: var(--hover)
+    }
+
+    .book-title:focus {
+      background: var(--surface);
+      border-color: var(--border-hi)
+    }
+
+    .save-state {
+      font-size: 11.5px;
+      color: var(--text-3);
+      padding: 0 8px;
+      white-space: nowrap;
+      transition: .2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .save-state::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--text-3);
+      transition: .2s;
+    }
+
+    .save-state.saving::before {
+      background: var(--accent);
+      animation: pulse 1s ease infinite
+    }
+
+    .save-state.saved::before {
+      background: #4a9d5c
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .35
+      }
+    }
+
+    .top-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      transition: .14s;
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+
+    .top-btn svg {
+      width: 15px;
+      height: 15px
+    }
+
+    .top-btn:active {
+      transform: scale(.97)
+    }
+
+    .top-btn.ghost {
+      background: rgba(255, 255, 255, .045);
+      border: 1px solid var(--border);
+      color: var(--text-2)
+    }
+
+    .top-btn.ghost:hover {
+      background: var(--hover);
+      color: var(--text);
+      border-color: var(--border-hi)
+    }
+
+    .top-btn.primary {
+      background: linear-gradient(140deg, var(--accent), var(--accent-hi));
+      color: #17130a;
+      box-shadow: 0 8px 22px -10px rgba(201, 162, 39, .7)
+    }
+
+    .top-btn.primary:hover {
+      filter: brightness(1.06)
+    }
+
+    .top-btn .lbl {
+      display: inline
+    }
+
+    /* ============================================================
+   MAIN GRID
+   ============================================================ */
+    .main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 248px minmax(0, 1fr) 320px;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .sidebar {
+      background: var(--bg-2);
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: calc(24px + env(safe-area-inset-bottom));
+    }
+
+    .sidebar.left {
+      border-right: 1px solid var(--border)
+    }
+
+    .sidebar.right {
+      border-left: 1px solid var(--border)
+    }
+
+    .side-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 16px 14px 10px;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: var(--bg-2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .side-head h3 {
+      margin: 0;
+      font-size: 10.5px;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: var(--text-3);
+      font-weight: 700;
+    }
+
+    .mini-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      color: var(--text-2);
+      transition: .14s;
+      flex: 0 0 auto;
+    }
+
+    .mini-btn svg {
+      width: 14px;
+      height: 14px
+    }
+
+    .mini-btn:hover {
+      background: var(--hover);
+      color: var(--text)
+    }
+
+    /* ---------- Chapters ---------- */
+    .chapter-list {
+      padding: 8px
+    }
+
+    .chapter {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 10px;
+      border-radius: 8px;
+      margin-bottom: 2px;
+      transition: .12s;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+
+    .chapter:hover {
+      background: var(--hover)
+    }
+
+    .chapter.active {
+      background: var(--surface);
+      border-color: var(--border-hi)
+    }
+
+    .chapter.active::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 8px;
+      bottom: 8px;
+      width: 2px;
+      background: var(--accent);
+      border-radius: 0 2px 2px 0;
+    }
+
+    .chapter {
+      position: relative
+    }
+
+    .ch-num {
+      width: 22px;
+      height: 22px;
+      flex: 0 0 auto;
+      border-radius: 6px;
+      display: grid;
+      place-items: center;
+      font-size: 10.5px;
+      font-weight: 700;
+      background: var(--surface-2);
+      color: var(--text-3);
+      font-variant-numeric: tabular-nums;
+      transition: .14s;
+    }
+
+    .chapter.active .ch-num {
+      background: var(--accent);
+      color: #17130a
+    }
+
+    .ch-body {
+      flex: 1;
+      min-width: 0
+    }
+
+    .ch-title {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      letter-spacing: -.05px;
+    }
+
+    .ch-meta {
+      font-size: 10.5px;
+      color: var(--text-3);
+      margin-top: 2px;
+      font-variant-numeric: tabular-nums
+    }
+
+    .ch-tools {
+      display: flex;
+      gap: 1px;
+      opacity: 0;
+      transition: .14s
+    }
+
+    .chapter:hover .ch-tools,
+    .chapter.active .ch-tools {
+      opacity: 1
+    }
+
+    .ch-tools button {
+      width: 22px;
+      height: 22px;
+      border-radius: 5px;
+      display: grid;
+      place-items: center;
+      color: var(--text-3);
+    }
+
+    .ch-tools button svg {
+      width: 12px;
+      height: 12px
+    }
+
+    .ch-tools button:hover {
+      background: var(--surface-2);
+      color: var(--text)
+    }
+
+    @media(hover:none) {
+      .ch-tools {
+        opacity: 1
+      }
+    }
+
+    /* ---------- Stats ---------- */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 12px
+    }
+
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    .stat b {
+      display: block;
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -.3px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat span {
+      font-size: 9.5px;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: .9px;
+      font-weight: 600;
+    }
+
+    .goal-wrap {
+      padding: 2px 14px 14px
+    }
+
+    .goal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 7px;
+      font-size: 11px;
+      color: var(--text-3);
+    }
+
+    .goal-head b {
+      color: var(--text-2);
+      font-weight: 600;
+      font-variant-numeric: tabular-nums
+    }
+
+    .goalbar {
+      height: 5px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, .06);
+      overflow: hidden
+    }
+
+    .goalbar i {
+      display: block;
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-hi));
+      transition: width .5s cubic-bezier(.3, 1, .4, 1);
+    }
+
+    /* ============================================================
+   EDITOR
+   ============================================================ */
+    .editor-wrap {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      background: var(--bg-2);
+      position: relative;
+    }
+
+    .toolbar {
+      flex: 0 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 2px;
+      padding: 7px 10px;
+      background: rgba(10, 12, 15, .85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 20;
+    }
+
+    .tbt {
+      min-width: 32px;
+      height: 32px;
+      padding: 0 8px;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      color: var(--text-2);
+      transition: .12s;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .tbt svg {
+      width: 15px;
+      height: 15px
+    }
+
+    .tbt:hover {
+      background: var(--hover);
+      color: var(--text)
+    }
+
+    .tbt:active {
+      transform: scale(.93)
+    }
+
+    .tbt.on {
+      background: rgba(201, 162, 39, .15);
+      color: var(--accent)
+    }
+
+    .tb-sep {
+      width: 1px;
+      height: 20px;
+      background: var(--border);
+      margin: 0 5px
+    }
+
+    .tb-select {
+      height: 32px;
+      border-radius: 7px;
+      background: rgba(255, 255, 255, .045);
+      border: 1px solid var(--border);
+      padding: 0 26px 0 10px;
+      font-size: 12.5px;
+      outline: none;
+      max-width: 120px;
+      color: var(--text-2);
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%2398a3b2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 9px center;
+      transition: .14s;
+    }
+
+    .tb-select:hover {
+      background-color: var(--hover)
+    }
+
+    .tb-select:focus {
+      border-color: rgba(201, 162, 39, .5)
+    }
+
+    /* ---------- Editor scroll area ---------- */
+    .editor-scroll {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 34px 18px 140px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .page {
+      width: var(--page-w);
+      max-width: 100%;
+      min-height: calc(100% - 20px);
+      background: var(--paper);
+      color: var(--paper-text);
+      border-radius: 4px;
+      box-shadow:
+        0 24px 60px -24px var(--shadow),
+        0 0 0 1px rgba(0, 0, 0, .05);
+      padding: var(--page-pad);
+      outline: none;
+      font-family: var(--doc-font);
+      font-size: var(--doc-size);
+      line-height: var(--doc-lh);
+      letter-spacing: var(--doc-ls);
+      word-wrap: break-word;
+      transition: width .2s, background .25s, color .25s;
+      position: relative;
+    }
+
+    body.texture .page {
+      background-image:
+        radial-gradient(circle at 20% 30%, rgba(0, 0, 0, .016) 0 1px, transparent 1px),
+        radial-gradient(circle at 70% 70%, rgba(0, 0, 0, .012) 0 1px, transparent 1px);
+      background-size: 22px 22px, 17px 17px;
+    }
+
+    .page>*:first-child {
+      margin-top: 0
+    }
+
+    .page p {
+      margin: 0 0 var(--doc-ps)
+    }
+
+    .page h1 {
+      font-size: 1.9em;
+      line-height: 1.25;
+      margin: 0 0 .65em;
+      font-weight: 700;
+      letter-spacing: -.015em
+    }
+
+    .page h2 {
+      font-size: 1.5em;
+      line-height: 1.3;
+      margin: 1.5em 0 .55em;
+      font-weight: 700;
+      letter-spacing: -.01em
+    }
+
+    .page h3 {
+      font-size: 1.2em;
+      line-height: 1.35;
+      margin: 1.3em 0 .45em;
+      font-weight: 700
+    }
+
+    .page blockquote {
+      margin: 1.3em 0;
+      padding: .2em 0 .2em 1.1em;
+      border-left: 3px solid var(--accent);
+      font-style: italic;
+      opacity: .92;
+    }
+
+    .page pre {
+      background: rgba(127, 127, 127, .12);
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: .85em;
+      white-space: pre-wrap;
+      margin: 1.3em 0;
+      line-height: 1.55;
+    }
+
+    .page ul,
+    .page ol {
+      margin: 0 0 var(--doc-ps);
+      padding-left: 1.5em
+    }
+
+    .page li {
+      margin: .3em 0
+    }
+
+    .page a {
+      color: var(--accent);
+      text-decoration: underline;
+      text-underline-offset: 2px
+    }
+
+    .page hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      opacity: .22;
+      margin: 2.2em auto;
+      width: 38%
+    }
+
+    .page img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px
+    }
+
+    .page table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 1em 0
+    }
+
+    .page td,
+    .page th {
+      border: 1px solid rgba(127, 127, 127, .35);
+      padding: 8px 10px
+    }
+
+    .page .page-break {
+      display: block;
+      height: 0;
+      border-top: 1px dashed var(--accent);
+      opacity: .5;
+      margin: 2.5em 0;
+      position: relative;
+      contenteditable: false;
+    }
+
+    .page .page-break::after {
+      content: "page break";
+      position: absolute;
+      right: 0;
+      top: -8px;
+      background: var(--paper);
+      padding: 0 7px;
+      font-family: Inter, sans-serif;
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      opacity: .85;
+    }
+
+    .page.indent p {
+      text-indent: 1.7em;
+      margin-bottom: .25em
+    }
+
+    .page.indent p:first-of-type {
+      text-indent: 0
+    }
+
+    .page.dropcap>p:first-of-type::first-letter {
+      float: left;
+      font-size: 3.6em;
+      line-height: .85;
+      padding: .04em .1em 0 0;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .page.align-center {
+      text-align: center
+    }
+
+    .page.align-justify {
+      text-align: justify;
+      hyphens: auto
+    }
+
+    .page:empty::before {
+      content: "Start writing…";
+      color: rgba(0, 0, 0, .22);
+      pointer-events: none;
+    }
+
+    body.theme-dark .page:empty::before {
+      color: rgba(255, 255, 255, .18)
+    }
+
+    /* ---------- Image blocks ---------- */
+    .img-block {
+      position: relative;
+      margin: 1.6em auto;
+      display: block;
+      width: 70%;
+      text-align: center;
+      max-width: 100%;
+      transition: opacity .15s;
+    }
+
+    .img-block img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 5px
+    }
+
+    .img-block figcaption {
+      font-size: .78em;
+      opacity: .65;
+      margin-top: .6em;
+      font-style: italic;
+      outline: none;
+      text-align: center;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: .14s;
+    }
+
+    .img-block figcaption:focus {
+      background: rgba(127, 127, 127, .1)
+    }
+
+    .img-block.selected {
+      outline: 2px solid var(--accent);
+      outline-offset: 6px;
+      border-radius: 4px
+    }
+
+    .img-block.dragging {
+      opacity: .35
+    }
+
+    .img-block .h {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid #fff;
+      display: none;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, .3);
+      touch-action: none;
+      z-index: 5;
+    }
+
+    .img-block.selected .h {
+      display: grid;
+      place-items: center;
+      color: #17130a;
+      font-size: 12px;
+      font-weight: 700
+    }
+
+    .img-block .h.resize {
+      right: -14px;
+      bottom: -14px;
+      cursor: nwse-resize
+    }
+
+    .img-block .h.move {
+      left: -14px;
+      top: -14px;
+      cursor: grab
+    }
+
+    .img-block.drop-target {
+      outline: 2px dashed var(--accent-hi);
+      outline-offset: 6px
+    }
+
+    #imgBar {
+      position: fixed;
+      z-index: 200;
+      display: none;
+      gap: 2px;
+      padding: 5px;
+      background: var(--surface);
+      border: 1px solid var(--border-hi);
+      border-radius: 11px;
+      box-shadow: 0 18px 42px -14px rgba(0, 0, 0, .9);
+    }
+
+    #imgBar button {
+      min-width: 30px;
+      height: 30px;
+      padding: 0 8px;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      color: var(--text-2);
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: .12s;
+    }
+
+    #imgBar button svg {
+      width: 14px;
+      height: 14px
+    }
+
+    #imgBar button:hover {
+      background: var(--hover);
+      color: var(--text)
+    }
+
+    #imgBar .d {
+      width: 1px;
+      background: var(--border);
+      margin: 4px 3px
+    }
+
+    /* ---------- Status bar ---------- */
+    .statusbar {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 7px 18px;
+      padding-bottom: calc(7px + env(safe-area-inset-bottom));
+      background: rgba(10, 12, 15, .85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--text-3);
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .statusbar b {
+      color: var(--text-2);
+      font-weight: 600;
+      font-variant-numeric: tabular-nums
+    }
+
+    .statusbar .sb-item {
+      display: flex;
+      align-items: center;
+      gap: 5px
+    }
+
+    .statusbar .sb-item svg {
+      width: 12px;
+      height: 12px;
+      opacity: .6
+    }
+
+    .statusbar .sb-right {
+      margin-left: auto;
+      display: flex;
+      gap: 14px
+    }
+
+    /* ---------- Focus mode ---------- */
+    body.focus-mode .sidebar {
+      display: none
+    }
+
+    body.focus-mode .main {
+      grid-template-columns: minmax(0, 1fr)
+    }
+
+    body.focus-mode .topbar {
+      opacity: .4;
+      transition: .3s
+    }
+
+    body.focus-mode .topbar:hover {
+      opacity: 1
+    }
+
+    body.focus-mode .toolbar {
+      opacity: .35;
+      transition: .3s
+    }
+
+    body.focus-mode .toolbar:hover {
+      opacity: 1
+    }
+
+    body.focus-mode .page {
+      width: min(820px, 100%)
+    }
+
+    /* ============================================================
+   RIGHT PANEL — TABS
+   ============================================================ */
+    .tabs {
+      display: flex;
+      gap: 2px;
+      padding: 10px 10px 0;
+      position: sticky;
+      top: 0;
+      z-index: 6;
+      background: var(--bg-2);
+    }
+
+    .tab {
+      flex: 1;
+      padding: 9px 4px;
+      border-radius: 8px 8px 0 0;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-3);
+      text-align: center;
+      transition: .14s;
+      letter-spacing: .2px;
+    }
+
+    .tab:hover {
+      color: var(--text-2);
+      background: var(--hover)
+    }
+
+    .tab.active {
+      color: var(--text);
+      background: var(--surface);
+      box-shadow: inset 0 -2px 0 var(--accent);
+    }
+
+    .pane {
+      display: none;
+      padding: 14px
+    }
+
+    .pane.active {
+      display: block
+    }
+
+    .sect {
+      margin-bottom: 22px
+    }
+
+    .sect>h4 {
+      margin: 0 0 11px;
+      font-size: 10px;
+      letter-spacing: 1.3px;
+      text-transform: uppercase;
+      color: var(--text-3);
+      font-weight: 700;
+    }
+
+    .theme-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px
+    }
+
+    .theme-card {
+      border-radius: 9px;
+      padding: 8px 5px 6px;
+      border: 1.5px solid transparent;
+      background: var(--surface);
+      text-align: center;
+      transition: .14s;
+      cursor: pointer;
+    }
+
+    .theme-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--border-hi)
+    }
+
+    .theme-card.active {
+      border-color: var(--accent)
+    }
+
+    .theme-sw {
+      height: 32px;
+      border-radius: 5px;
+      display: flex;
+      overflow: hidden;
+      margin-bottom: 6px;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .2);
+    }
+
+    .theme-sw i {
+      flex: 1
+    }
+
+    .theme-card span {
+      font-size: 9.5px;
+      color: var(--text-3);
+      font-weight: 600;
+      letter-spacing: .2px
+    }
+
+    .theme-card.active span {
+      color: var(--text)
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 11px;
+    }
+
+    .row label {
+      font-size: 12px;
+      color: var(--text-2);
+      flex: 1
+    }
+
+    .row .val {
+      font-size: 11px;
+      color: var(--text-2);
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      min-width: 40px;
+      text-align: right;
+    }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 3px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, .1);
+      outline: none;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg-2);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, .4);
+      transition: .14s;
+    }
+
+    input[type=range]::-webkit-slider-thumb:hover {
+      background: var(--accent-hi)
+    }
+
+    input[type=range]::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg-2);
+      cursor: pointer;
+    }
+
+    .field {
+      width: 100%;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      outline: none;
+      font-size: 13px;
+      transition: .14s;
+    }
+
+    .field::placeholder {
+      color: var(--text-3)
+    }
+
+    .field:focus {
+      border-color: rgba(201, 162, 39, .5);
+      background: rgba(255, 255, 255, .055)
+    }
+
+    .switch {
+      width: 38px;
+      height: 22px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .12);
+      position: relative;
+      transition: .2s;
+      flex: 0 0 auto;
+      cursor: pointer;
+    }
+
+    .switch::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      transition: .2s;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .35);
+    }
+
+    .switch.on {
+      background: var(--accent)
+    }
+
+    .switch.on::after {
+      transform: translateX(16px)
+    }
+
+    .font-preview {
+      background: var(--paper);
+      color: var(--paper-text);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 11px;
+      text-align: center;
+      font-size: 16px;
+      line-height: 1.5;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .06);
+      transition: .2s;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px
+    }
+
+    .chip {
+      padding: 7px 12px;
+      border-radius: 18px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-2);
+      transition: .14s;
+    }
+
+    .chip:hover {
+      background: var(--hover);
+      color: var(--text)
+    }
+
+    .chip.on {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #17130a
+    }
+
+    .swatches {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap
+    }
+
+    .swatch {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      transition: .14s;
+    }
+
+    .swatch:hover {
+      transform: scale(1.09)
+    }
+
+    .swatch.on {
+      border-color: #fff;
+      box-shadow: 0 0 0 2px var(--accent)
+    }
+
+    /* ============================================================
+   MODALS
+   ============================================================ */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(5, 7, 9, .72);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .overlay.open {
+      display: flex;
+      animation: fadeIn .16s ease
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 720px;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      background: #14181e;
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 16px;
+      box-shadow: 0 50px 100px -30px rgba(0, 0, 0, .95);
+      animation: modalIn .22s cubic-bezier(.2, 1.1, .4, 1);
+      overflow: hidden;
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(.97) translateY(10px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 22px 14px;
+      flex: 0 0 auto;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-head h2 {
+      margin: 0;
+      font-size: 15.5px;
+      font-weight: 700;
+      letter-spacing: -.2px
+    }
+
+    .modal-head .sub {
+      margin: 3px 0 0;
+      font-size: 12px;
+      color: var(--text-3)
+    }
+
+    .modal-body {
+      padding: 18px 22px;
+      overflow-y: auto;
+      flex: 1;
+      min-height: 0
+    }
+
+    .modal-foot {
+      padding: 14px 22px;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      border-top: 1px solid var(--border);
+      flex: 0 0 auto;
+      flex-wrap: wrap;
+      padding-bottom: calc(14px + env(safe-area-inset-bottom));
+    }
+
+    .x {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      color: var(--text-3);
+      transition: .14s;
+    }
+
+    .x svg {
+      width: 17px;
+      height: 17px
+    }
+
+    .x:hover {
+      background: var(--hover);
+      color: var(--text)
+    }
+
+    /* Export grid */
+    .export-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 10px;
+    }
+
+    .exp-card {
+      text-align: left;
+      padding: 14px;
+      border-radius: 11px;
+      background: rgba(255, 255, 255, .03);
+      border: 1px solid var(--border);
+      transition: .16s;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      cursor: pointer;
+    }
+
+    .exp-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(201, 162, 39, .5);
+      background: rgba(201, 162, 39, .06);
+    }
+
+    .exp-ico {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(140deg, var(--accent), var(--accent-hi));
+      color: #17130a;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .3px;
+    }
+
+    .exp-card b {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 3px;
+      letter-spacing: -.1px
+    }
+
+    .exp-card p {
+      margin: 0;
+      font-size: 11.5px;
+      color: var(--text-3);
+      line-height: 1.5
+    }
+
+    /* Font picker */
+    .font-search {
+      position: sticky;
+      top: 0;
+      background: var(--surface);
+      padding: 0 0 14px;
+      z-index: 3;
+      margin: -18px -22px 0;
+      padding: 18px 22px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .font-cats {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 10px
+    }
+
+    .font-item {
+      padding: 11px 13px;
+      border-radius: 9px;
+      font-size: 15px;
+      transition: .1s;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid transparent;
+    }
+
+    .font-item:hover {
+      background: var(--hover)
+    }
+
+    .font-item.on {
+      background: var(--surface-2);
+      border-color: var(--accent)
+    }
+
+    .font-item small {
+      font-size: 9.5px;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      flex: 0 0 auto;
+      font-family: Inter, sans-serif;
+    }
+
+    .font-group-label {
+      font-size: 10px;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--text-3);
+      font-weight: 700;
+      padding: 14px 4px 6px;
+      position: sticky;
+      top: 80px;
+      background: var(--surface);
+      z-index: 2;
+    }
+
+    /* Cover designer */
+    .cover-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 20px;
+    }
+
+    @media(max-width:820px) {
+      .cover-layout {
+        grid-template-columns: 1fr
+      }
+    }
+
+    .cover-stage {
+      background: var(--bg-2);
+      border-radius: 12px;
+      padding: 16px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--border);
+      min-height: 340px;
+    }
+
+    #coverCanvas {
+      width: 100%;
+      max-width: 300px;
+      height: auto;
+      border-radius: 5px;
+      box-shadow: 0 26px 60px -24px rgba(0, 0, 0, .9);
+    }
+
+    /* Toasts */
+    #toasts {
+      position: fixed;
+      bottom: calc(24px + env(safe-area-inset-bottom));
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 500;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .toast {
+      padding: 11px 18px;
+      border-radius: 11px;
+      background: #1b2028;
+      border: 1px solid rgba(255, 255, 255, .12);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: 0 18px 44px -14px rgba(0, 0, 0, .9);
+      animation: toastIn .24s cubic-bezier(.3, 1, .4, 1);
+      max-width: 86vw;
+      text-align: center;
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    /* Backdrop for drawers */
+    .backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .5);
+      z-index: 45;
+      display: none;
+      top: calc(var(--top-h) + env(safe-area-inset-top));
+    }
+
+    .backdrop.on {
+      display: block
+    }
+
+    /* Print area */
+    #printArea {
+      display: none
+    }
+
+    /* ============================================================
+   RESPONSIVE
+   ============================================================ */
+    @media(max-width:1180px) {
+      .main {
+        grid-template-columns: minmax(0, 1fr)
+      }
+
+      .sidebar {
+        position: fixed;
+        top: calc(var(--top-h) + env(safe-area-inset-top));
+        bottom: 0;
+        width: 300px;
+        z-index: 50;
+        transition: transform .26s cubic-bezier(.3, 1, .4, 1);
+        box-shadow: 0 0 60px rgba(0, 0, 0, .6);
+      }
+
+      .sidebar.left {
+        left: 0;
+        transform: translateX(-104%)
+      }
+
+      .sidebar.right {
+        right: 0;
+        transform: translateX(104%)
+      }
+
+      .sidebar.open {
+        transform: none !important
+      }
+    }
+
+    @media(max-width:720px) {
+      .top-btn .lbl {
+        display: none
+      }
+
+      .top-btn {
+        padding: 8px 10px
+      }
+
+      .book-title {
+        max-width: 150px;
+        font-size: 13.5px
+      }
+
+      .save-state {
+        display: none
+      }
+    }
+
+    @media(max-width:640px) {
+      .editor-scroll {
+        padding: 14px 8px 120px
+      }
+
+      .page {
+        padding: 34px 22px;
+        border-radius: 3px
+      }
+
+      :root {
+        --page-pad: 34px
+      }
+
+      .statusbar {
+        gap: 10px;
+        font-size: 10.5px;
+        padding: 6px 12px
+      }
+
+      .statusbar .sb-item svg {
+        display: none
+      }
+    }
+
+    @media print {
+      body {
+        overflow: visible;
+        background: #fff
+      }
+
+      .app,
+      .overlay,
+      #toasts,
+      #imgBar,
+      .backdrop {
+        display: none !important
+      }
+
+      #printArea {
+        display: block !important
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app">
+    <!-- ================= TOP BAR ================= -->
+    <header class="topbar">
+      <button class="tb-btn" id="btnBack" title="Back to library">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    </button>
+      <button class="tb-btn" id="btnChapters" title="Chapters">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    </button>
+      <input class="book-title" id="bookTitle" value="Untitled Book" spellcheck="false" aria-label="Book title">
+      <span class="save-state" id="saveState">Saved</span>
+      <div class="grow"></div>
+      <button class="tb-btn" id="btnFocus" title="Focus mode">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+    </button>
+      <button class="top-btn ghost" id="btnCover">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+      <span class="lbl">Cover</span>
+    </button>
+      <button class="top-btn primary" id="btnExport">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+      <span class="lbl">Export</span>
+    </button>
+      <button class="tb-btn" id="btnSettings" title="Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
+    </header>
+
+    <div class="main">
+      <!-- ================= LEFT SIDEBAR ================= -->
+      <aside class="sidebar left" id="leftPanel">
+        <div class="side-head">
+          <h3>Chapters</h3>
+          <button class="mini-btn" id="btnAddChapter" title="Add chapter">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        </div>
+        <div class="chapter-list" id="chapterList"></div>
+
+        <div class="side-head" style="border-top:1px solid var(--border)">
+          <h3>Statistics</h3>
+        </div>
+        <div class="stat-grid">
+          <div class="stat"><b id="stWords">0</b><span>Words</span></div>
+          <div class="stat"><b id="stChapters">1</b><span>Chapters</span></div>
+          <div class="stat"><b id="stPages">0</b><span>Pages</span></div>
+          <div class="stat"><b id="stTime">0m</b><span>Read time</span></div>
+        </div>
+        <div class="goal-wrap">
+          <div class="goal-head">
+            <span>Word goal</span>
+            <b id="goalLabel">—</b>
+          </div>
+          <div class="goalbar"><i id="goalFill" style="width:0%"></i></div>
+        </div>
+      </aside>
+
+      <!-- ================= EDITOR ================= -->
+      <section class="editor-wrap">
+        <div class="toolbar" id="toolbar">
+          <button class="tbt" data-cmd="undo" title="Undo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M3 13a9 9 0 1 0 3-7.7L3 7"/></svg>
+        </button>
+          <button class="tbt" data-cmd="redo" title="Redo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"/><path d="M21 13a9 9 0 1 1-3-7.7L21 7"/></svg>
+        </button>
+          <span class="tb-sep"></span>
+          <select class="tb-select" id="blockStyle" title="Paragraph style">
+          <option value="p">Paragraph</option>
+          <option value="h1">Heading 1</option>
+          <option value="h2">Heading 2</option>
+          <option value="h3">Heading 3</option>
+          <option value="blockquote">Quote</option>
+          <option value="pre">Code block</option>
+        </select>
+          <span class="tb-sep"></span>
+          <button class="tbt" data-cmd="bold" title="Bold" style="font-weight:800">B</button>
+          <button class="tbt" data-cmd="italic" title="Italic" style="font-style:italic;font-family:Georgia,serif">I</button>
+          <button class="tbt" data-cmd="underline" title="Underline" style="text-decoration:underline;text-underline-offset:2px">U</button>
+          <button class="tbt" data-cmd="strikeThrough" title="Strikethrough" style="text-decoration:line-through">S</button>
+          <span class="tb-sep"></span>
+          <button class="tbt" data-cmd="insertUnorderedList" title="Bulleted list">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4" cy="6" r="1.2" fill="currentColor"/><circle cx="4" cy="12" r="1.2" fill="currentColor"/><circle cx="4" cy="18" r="1.2" fill="currentColor"/></svg>
+        </button>
+          <button class="tbt" data-cmd="insertOrderedList" title="Numbered list">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6h10M10 12h10M10 18h10"/><path d="M4 6h1v4M4 10h2M4 14h2v4H4"/></svg>
+        </button>
+          <button class="tbt" id="btnQuote" title="Blockquote">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
+        </button>
+          <button class="tbt" id="btnHr" title="Divider">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12h16"/></svg>
+        </button>
+          <span class="tb-sep"></span>
+          <button class="tbt" data-cmd="justifyLeft" title="Align left">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h12M3 18h16"/></svg>
+        </button>
+          <button class="tbt" data-cmd="justifyCenter" title="Center">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M6 12h12M5 18h14"/></svg>
+        </button>
+          <button class="tbt" data-cmd="justifyRight" title="Align right">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M9 12h12M5 18h16"/></svg>
+        </button>
+          <span class="tb-sep"></span>
+          <button class="tbt" id="btnLink" title="Insert link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        </button>
+          <button class="tbt" id="btnImage" title="Insert image">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        </button>
+          <button class="tbt" id="btnPageBreak" title="Page break">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6"/></svg>
+        </button>
+          <button class="tbt" id="btnClear" title="Clear formatting">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M5 20h6"/><path d="M13 4l-5 16"/><path d="M17 14l5 5M22 14l-5 5"/></svg>
+        </button>
+        </div>
+
+        <div class="editor-scroll" id="editorScroll">
+          <div class="page" id="editor" contenteditable="true" spellcheck="true"></div>
+        </div>
+
+        <div class="statusbar">
+          <span class="sb-item"><b id="sbWords">0</b> words</span>
+          <span class="sb-item"><b id="sbChars">0</b> characters</span>
+          <span class="sb-item"><b id="sbPara">0</b> paragraphs</span>
+          <span class="sb-item" id="sbChapter">Chapter 1</span>
+          <span class="sb-right">
+          <span class="sb-item"><b id="sbSaved">All changes saved</b></span>
+          </span>
+        </div>
+      </section>
+
+      <!-- ================= RIGHT SIDEBAR ================= -->
+      <aside class="sidebar right" id="rightPanel">
+        <div class="tabs">
+          <button class="tab active" data-tab="theme">Theme</button>
+          <button class="tab" data-tab="type">Type</button>
+          <button class="tab" data-tab="layout">Layout</button>
+          <button class="tab" data-tab="book">Book</button>
+        </div>
+
+        <!-- THEME PANE -->
+        <div class="pane active" data-pane="theme">
+          <div class="sect">
+            <h4>Studio Theme</h4>
+            <div class="theme-grid" id="themeGrid"></div>
+          </div>
+          <div class="sect">
+            <h4>Accent Color</h4>
+            <div class="swatches" id="accentSwatches"></div>
+          </div>
+        </div>
+
+        <!-- TYPE PANE -->
+        <div class="pane" data-pane="type">
+          <div class="sect">
+            <h4>Document Font</h4>
+            <div class="font-preview" id="fontPreview">The quick brown fox jumps over the lazy dog.</div>
+            <button class="chip" id="btnFontPicker" style="width:100%;padding:11px 12px;border-radius:9px;text-align:center">Choose from 300+ fonts</button>
+          </div>
+          <div class="sect">
+            <h4>Typography</h4>
+            <div class="row"><label>Font size</label><span class="val" id="vSize">19</span></div>
+            <input type="range" id="rSize" min="12" max="36" step="1">
+            <div class="row" style="margin-top:14px"><label>Line height</label><span class="val" id="vLh">1.85</span>
+            </div>
+            <input type="range" id="rLh" min="1.2" max="2.8" step="0.05">
+            <div class="row" style="margin-top:14px"><label>Letter spacing</label><span class="val" id="vLs">0</span>
+            </div>
+            <input type="range" id="rLs" min="-1" max="3" step="0.1">
+            <div class="row" style="margin-top:14px">
+              <label>Paragraph spacing</label><span class="val" id="vPs">1.1</span></div>
+            <input type="range" id="rPs" min="0" max="2.5" step="0.05">
+          </div>
+          <div class="sect">
+            <h4>Paragraph</h4>
+            <div class="chip-row" id="alignChips">
+              <button class="chip on" data-align="left">Left</button>
+              <button class="chip" data-align="center">Center</button>
+              <button class="chip" data-align="justify">Justify</button>
+            </div>
+            <div class="row" style="margin-top:14px"><label>First-line indent</label>
+              <div class="switch" id="swIndent"></div>
+            </div>
+            <div class="row"><label>Drop cap</label>
+              <div class="switch" id="swDropcap"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LAYOUT PANE -->
+        <div class="pane" data-pane="layout">
+          <div class="sect">
+            <h4>Page</h4>
+            <div class="row"><label>Page width</label><span class="val" id="vPagew">740</span></div>
+            <input type="range" id="rPagew" min="480" max="1100" step="10">
+            <div class="row" style="margin-top:14px"><label>Padding</label><span class="val" id="vPad">64</span></div>
+            <input type="range" id="rPad" min="20" max="120" step="2">
+            <div class="row" style="margin-top:14px"><label>Paper texture</label>
+              <div class="switch" id="swTexture"></div>
+            </div>
+          </div>
+          <div class="sect">
+            <h4>Writing Comfort</h4>
+            <div class="row"><label>Focus mode</label>
+              <div class="switch" id="swFocus"></div>
+            </div>
+            <div class="row"><label>Typewriter scrolling</label>
+              <div class="switch" id="swTypewriter"></div>
+            </div>
+            <div class="row"><label>Spell check</label>
+              <div class="switch on" id="swSpell"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BOOK PANE -->
+        <div class="pane" data-pane="book">
+          <div class="sect">
+            <h4>Details</h4>
+            <input class="field" id="fTitle" placeholder="Title" style="margin-bottom:8px">
+            <input class="field" id="fSubtitle" placeholder="Subtitle" style="margin-bottom:8px">
+            <input class="field" id="fAuthor" placeholder="Author">
+          </div>
+          <div class="sect">
+            <h4>Word Goal</h4>
+            <input class="field" id="fGoal" type="number" min="0" step="1000" placeholder="50000">
+          </div>
+          <div class="sect">
+            <h4>Project</h4>
+            <button class="chip" id="btnBackup" style="width:100%;padding:11px 12px;border-radius:9px;text-align:center;margin-bottom:8px">Download backup</button>
+            <button class="chip" id="btnDelete" style="width:100%;padding:11px 12px;border-radius:9px;text-align:center;color:#ef7b7b;border-color:rgba(239,123,123,.3)">Delete this book</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="backdrop" id="backdrop"></div>
+
+  <!-- ============ IMAGE TOOLBAR ============ -->
+  <div id="imgBar">
+    <button data-img="left" title="Float left">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h8M3 18h12"/></svg>
+  </button>
+    <button data-img="center" title="Center">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 12h8M6 18h12"/></svg>
+  </button>
+    <button data-img="right" title="Float right">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M13 12h8M9 18h12"/></svg>
+  </button>
+    <span class="d"></span>
+    <button data-img="smaller" title="Smaller">−</button>
+    <button data-img="bigger" title="Bigger">+</button>
+    <span class="d"></span>
+    <button data-img="full" title="Full width">100%</button>
+    <button data-img="half" title="Half width">50%</button>
+    <span class="d"></span>
+    <button data-img="caption" title="Toggle caption">Caption</button>
+    <button data-img="replace" title="Replace">Replace</button>
+    <button data-img="delete" title="Delete">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+  </button>
+  </div>
+
+  <!-- ============ EXPORT MODAL ============ -->
+  <div class="overlay" id="exportOverlay">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <h2>Export your book</h2>
+          <p class="sub">Choose a format. All exports use your book's current content and cover.</p>
+        </div>
+        <button class="x" data-close="exportOverlay">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+      </div>
+      <div class="modal-body">
+        <div class="export-grid" id="exportGrid"></div>
+        <p style="font-size:11.5px;color:var(--text-3);margin-top:16px;line-height:1.6">
+          Tip: <b style="color:var(--text-2)">PDF</b> opens your browser's print dialog — choose "Save as PDF" for a
+          print-ready file with proper page breaks.
+          <b style="color:var(--text-2)">EPUB</b> works with Apple Books, Kindle (via conversion), and most e-readers.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ FONT MODAL ============ -->
+  <div class="overlay" id="fontOverlay">
+    <div class="modal" style="max-width:620px">
+      <div class="modal-head">
+        <div>
+          <h2>Choose a font</h2>
+          <p class="sub">Over 300 typefaces, organized by category.</p>
+        </div>
+        <button class="x" data-close="fontOverlay">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+      </div>
+      <div class="modal-body" style="padding-top:0">
+        <div class="font-search">
+          <input class="field" id="fontSearch" placeholder="Search fonts…" autocomplete="off" spellcheck="false">
+          <div class="font-cats" id="fontCats"></div>
+        </div>
+        <div id="fontList" style="padding-top:6px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ COVER MODAL ============ -->
+  <div class="overlay" id="coverOverlay">
+    <div class="modal" style="max-width:900px">
+      <div class="modal-head">
+        <div>
+          <h2>Cover Designer</h2>
+          <p class="sub">Design a cover for your book. Saved with your project.</p>
+        </div>
+        <button class="x" data-close="coverOverlay">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+      </div>
+      <div class="modal-body">
+        <div class="cover-layout">
+          <div class="cover-stage"><canvas id="coverCanvas" width="800" height="1200"></canvas></div>
+          <div>
+            <div class="sect">
+              <h4>Background</h4>
+              <div class="chip-row" id="bgTypeChips">
+                <button class="chip on" data-bg="gradient">Gradient</button>
+                <button class="chip" data-bg="solid">Solid</button>
+                <button class="chip" data-bg="image">Image</button>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+                <label style="font-size:11px;color:var(--text-3);flex:1">Color A</label>
+                <input type="color" id="cvC1" value="#8b5e34" style="width:42px;height:30px;border:none;background:none;padding:0;cursor:pointer">
+                <label style="font-size:11px;color:var(--text-3);flex:1">Color B</label>
+                <input type="color" id="cvC2" value="#c9a227" style="width:42px;height:30px;border:none;background:none;padding:0;cursor:pointer">
+              </div>
+              <button class="chip" id="cvUpload" style="width:100%;padding:10px;border-radius:8px;margin-top:10px;text-align:center">Upload background image</button>
+            </div>
+            <div class="sect">
+              <h4>Layout</h4>
+              <div class="chip-row" id="cvLayoutChips">
+                <button class="chip" data-lay="top">Top</button>
+                <button class="chip on" data-lay="center">Center</button>
+                <button class="chip" data-lay="bottom">Bottom</button>
+              </div>
+              <div class="row" style="margin-top:14px">
+                <label>Title size</label><span class="val" id="vCvSize">100</span></div>
+              <input type="range" id="cvSize" min="50" max="180" step="2">
+              <div class="row" style="margin-top:14px"><label>Frame border</label>
+                <div class="switch on" id="cvFrame"></div>
+              </div>
+            </div>
+            <div class="sect">
+              <h4>Cover Font</h4>
+              <select class="field" id="cvFont" style="cursor:pointer"></select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="chip" data-close="coverOverlay" style="padding:9px 14px;border-radius:8px">Close</button>
+        <button class="top-btn primary" id="cvDownload">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+        <span>Download PNG</span>
+      </button>
+      </div>
+    </div>
+  </div>
+
+  <input type="file" id="fileImage" accept="image/*" class="hidden">
+  <input type="file" id="fileBgImage" accept="image/*" class="hidden">
+
+  <div id="toasts"></div>
+  <div id="printArea"></div>
+
+  <script>
+    /* ============================================================
+   CALYX BOOK — EDITOR
+   ============================================================ */
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const uid = () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4);
+const debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+
+const INDEX_KEY = 'calyx.index';
+const PROJ_KEY  = id => 'calyx.proj.' + id;
+const UI_KEY    = 'calyx.ui';
+
+/* ============================================================
+   THEMES
+   ============================================================ */
+const THEMES = {
+  ink:        { bg:'#0a0c0f', bg2:'#0e1116', surface:'#14181e', surface2:'#1a1f27', border:'rgba(255,255,255,.08)', borderHi:'rgba(255,255,255,.16)', text:'#e9edf2', text2:'#98a3b2', text3:'#68727f', paper:'#fffaf0', paperText:'#1a1a1a' },
+  graphite:   { bg:'#101215', bg2:'#15181c', surface:'#1c2026', surface2:'#242931', border:'rgba(255,255,255,.08)', borderHi:'rgba(255,255,255,.16)', text:'#e5e8ec', text2:'#9aa1ab', text3:'#6a727d', paper:'#f7f8f9', paperText:'#191c20' },
+  midnight:   { bg:'#060a14', bg2:'#0a1120', surface:'#0f1830', surface2:'#152040', border:'rgba(255,255,255,.09)', borderHi:'rgba(255,255,255,.18)', text:'#e1e8f5', text2:'#8fa0bd', text3:'#5f7290', paper:'#0f1626', paperText:'#dbe6f5' },
+  slate:      { bg:'#0d1420', bg2:'#131b2a', surface:'#1a2436', surface2:'#223047', border:'rgba(255,255,255,.08)', borderHi:'rgba(255,255,255,.17)', text:'#e3e9f2', text2:'#93a2ba', text3:'#5f6f88', paper:'#f8fafc', paperText:'#0f172a' },
+  forest:     { bg:'#0a120c', bg2:'#0f1a12', surface:'#15241a', surface2:'#1d3123', border:'rgba(255,255,255,.08)', borderHi:'rgba(255,255,255,.17)', text:'#e2eee5', text2:'#8fa998', text3:'#5b7562', paper:'#f7f5ec', paperText:'#1a251c' },
+  oxblood:    { bg:'#14080a', bg2:'#1a0c10', surface:'#241015', surface2:'#30181e', border:'rgba(255,255,255,.08)', borderHi:'rgba(255,255,255,.17)', text:'#efe4e5', text2:'#b09296', text3:'#7a5a5f', paper:'#fbf3ee', paperText:'#2a1818' },
+  noir:       { bg:'#000000', bg2:'#080808', surface:'#111111', surface2:'#1a1a1a', border:'rgba(255,255,255,.09)', borderHi:'rgba(255,255,255,.19)', text:'#ededed', text2:'#8f8f8f', text3:'#5c5c5c', paper:'#f5f5f5', paperText:'#0d0d0d' },
+  cocoa:      { bg:'#150f0a', bg2:'#1c150e', surface:'#261c14', surface2:'#33261b', border:'rgba(255,255,255,.08)', borderHi:'rgba(255,255,255,.18)', text:'#eee3d6', text2:'#b09781', text3:'#7d6852', paper:'#f7efe4', paperText:'#2a1f18' },
+  ocean:      { bg:'#04151a', bg2:'#082028', surface:'#0d2e39', surface2:'#123d4c', border:'rgba(255,255,255,.08)', borderHi:'rgba(255,255,255,.18)', text:'#dff2f6', text2:'#84aab5', text3:'#557a85', paper:'#f2fbfd', paperText:'#07222c' },
+  plum:       { bg:'#130c18', bg2:'#1b1022', surface:'#26172f', surface2:'#33203e', border:'rgba(255,255,255,.08)', borderHi:'rgba(255,255,255,.18)', text:'#ece4ef', text2:'#a595b1', text3:'#70647a', paper:'#fbf3ee', paperText:'#221626' },
+  obsidian:   { bg:'#070809', bg2:'#0c0e11', surface:'#131619', surface2:'#1c2024', border:'rgba(255,255,255,.08)', borderHi:'rgba(255,255,255,.17)', text:'#e7eaee', text2:'#939aa3', text3:'#63696f', paper:'#f8f9fa', paperText:'#121417' },
+  frost:      { bg:'#eef2f6', bg2:'#e6ebf1', surface:'#ffffff', surface2:'#f2f5f8', border:'rgba(20,30,50,.1)', borderHi:'rgba(20,30,50,.2)', text:'#1c2633', text2:'#5c6775', text3:'#8791a0', paper:'#ffffff', paperText:'#141c26' },
+  ivory:      { bg:'#f4f1ea', bg2:'#eae6dc', surface:'#ffffff', surface2:'#f2efe6', border:'rgba(60,50,30,.1)', borderHi:'rgba(60,50,30,.2)', text:'#2a2418', text2:'#6b6250', text3:'#938a78', paper:'#ffffff', paperText:'#24201a' },
+  manuscript: { bg:'#efe8d8', bg2:'#e5ddcb', surface:'#f8f2e3', surface2:'#ebe3d0', border:'rgba(70,55,30,.14)', borderHi:'rgba(70,55,30,.24)', text:'#2e2418', text2:'#6e6250', text3:'#968a74', paper:'#fdf8ec', paperText:'#2a2118' },
+  sepia:      { bg:'#e2d4bb', bg2:'#d8c8ab', surface:'#efe3c9', surface2:'#e4d5b8', border:'rgba(70,55,30,.16)', borderHi:'rgba(70,55,30,.26)', text:'#2e2418', text2:'#6e6250', text3:'#94886e', paper:'#f7ecd5', paperText:'#2a2018' },
+  parchment:  { bg:'#f2ead7', bg2:'#e8dfc7', surface:'#faf4e6', surface2:'#efe6d1', border:'rgba(70,55,30,.15)', borderHi:'rgba(70,55,30,.25)', text:'#2b2419', text2:'#6b6250', text3:'#918873', paper:'#fffaf0', paperText:'#2a2318' }
+};
+
+const ACCENTS = [
+  '#c9a227','#d4af37','#e0b83d','#b8860b',
+  '#8b5cf6','#6366f1','#3b82f6','#0ea5e9',
+  '#14b8a6','#10b981','#22c55e','#84cc16',
+  '#ef4444','#dc2626','#e11d48','#ec4899',
+  '#f97316','#ea580c','#a16207','#71717a'
+];
+
+const DARK_THEMES = new Set(['ink','graphite','midnight','slate','forest','oxblood','noir','cocoa','ocean','plum','obsidian']);
+
+/* ============================================================
+   FONTS
+   ============================================================ */
+const SYSTEM_FONTS = new Set(['Georgia','Times New Roman','Palatino','Baskerville','Garamond','Arial','Helvetica','Verdana','Tahoma','Trebuchet MS','Courier New','system-ui']);
+
+const FONT_GROUPS = {
+  'Serif': ['Playfair Display','Merriweather','Lora','Crimson Text','Crimson Pro','EB Garamond','Libre Baskerville','Cormorant Garamond','Cormorant','Spectral','Source Serif 4','Bitter','Noto Serif','PT Serif','Domine','Cardo','Vollkorn','Alegreya','Arvo','Roboto Slab','Zilla Slab','Josefin Slab','Abril Fatface','Old Standard TT','Gilda Display','Marcellus','Cinzel','Prata','Yeseva One','DM Serif Display','DM Serif Text','Frank Ruhl Libre','Literata','Newsreader','Petrona','Faustina','Gelasio','Brygada 1918','Bodoni Moda','Italiana','Forum','Tenor Sans','Amiri','Markazi Text','Trirong','Tinos','Antic Didone','Antic Slab','Bree Serif','Cutive','David Libre','Arapey','Balthazar','Belgrano','Bentham','Brawler','Copse','Della Respira','Esteban','Fanwood Text','Gowun Batang','Gupter','Hahmlet','IBM Plex Serif','Judson','Karma','Kreon','Lustria','Marko One','Mate','Neuton','Noticia Text','Ovo','Podkova','Poly','Prociono','Quattrocento','Radley','Rasa','Rokkitt','Rosarivo','Rufina','Sanchez','Sawarabi Mincho','Scope One','Sorts Mill Goudy','Suez One','Suranna','Suravaram','Tienne','Ultra','Unna','Vesper Libre','Yrsa','Baskervville','Bellefair','BioRhyme','Buenard','Cormorant Upright','Eczar','Enriqueta','Fjord One','Gantari','Gentium Book Plus','Grenze','Halant','Ibarra Real Nova','Inknut Antiqua','Kaisei Decol','Kurale','Laila','Manuale','Martel','Metamorphous','Mirza','News Cycle','Nova Cut','Nova Oval','Nova Round','Nova Slim','Nova Square','Oldenburg','Orienta','Peddana','Ramaraja','Rhodium Libre','Sahitya','Salsa','Sansita','Sarala','Sitara','Sofia Sans','Sree Krushnadevaraya','Sumana','Sura','Tajawal','Vibes','Yatra One'],
+  'Sans Serif': ['Inter','Inter Tight','Roboto','Open Sans','Lato','Montserrat','Poppins','Nunito','Nunito Sans','Raleway','Rubik','Work Sans','Karla','Mulish','Manrope','DM Sans','Outfit','Sora','Space Grotesk','Plus Jakarta Sans','Figtree','Barlow','Barlow Semi Condensed','Archivo','Archivo Narrow','Asap','Cabin','Catamaran','Chivo','Commissioner','Exo 2','Fira Sans','Heebo','Hind','IBM Plex Sans','Jost','Kanit','Lexend','Libre Franklin','Maven Pro','Noto Sans','Overpass','Oxygen','PT Sans','Public Sans','Quicksand','Rajdhani','Red Hat Display','Red Hat Text','Roboto Condensed','Source Sans 3','Titillium Web','Ubuntu','Urbanist','Varela Round','Assistant','Comfortaa','Dosis','Epilogue','Kumbh Sans','Livvic','Monda','Orbitron','Oswald','Prompt','Questrial','Sarabun','Signika','League Spartan','Syne','Teko','Unbounded','Antonio','Bebas Neue','Big Shoulders Display','Chakra Petch','Fjalla One','Staatliches','Archivo Black','Righteous','Bai Jamjuree','Cabin Condensed','Cairo','Cuprum','Didact Gothic','Economica','Encode Sans','Expletus Sans','Gudea','Hanken Grotesk','Instrument Sans','Josefin Sans','Julius Sans One','K2D','Kodchasan','KoHo','Lekton','M PLUS Rounded 1c','Mada','Maitree','Mitr','Nobile','Noto Sans Display','Numans','Overlock','Pathway Gothic One','Philosopher','Play','Pontano Sans','Pridi','Rambla','Rationale','Readex Pro','Roboto Flex','Ruda','Ruluko','Russo One','Saira','Saira Condensed','Sansita Swashed','Schibsted Grotesk','Signika Negative','Smooch Sans','Spline Sans','Thasadith','Trispace','Truculenta','Ubuntu Condensed','Vazirmatn','Wix Madefor Display','Wix Madefor Text','Yantramanav','Anek Latin','Albert Sans','Bricolage Grotesque','Gabarito','Onest','Geologica','Familjen Grotesk','Darker Grotesque','Golos Text','Alexandria','Anek Odia','Anek Tamil','Anek Malayalam','Anek Gujarati','Anek Gurmukhi','Anek Bangla','Anek Kannada','Anek Telugu','Almarai'],
+  'Monospace': ['JetBrains Mono','Fira Code','Source Code Pro','IBM Plex Mono','Space Mono','Roboto Mono','Ubuntu Mono','Inconsolata','Cousine','Anonymous Pro','Share Tech Mono','VT323','Courier Prime','Cutive Mono','Overpass Mono','Red Hat Mono','Azeret Mono','Martian Mono','DM Mono','Nanum Gothic Coding','Fira Mono','Oxygen Mono','Syne Mono','Xanh Mono','Major Mono Display','Nova Mono','Spline Sans Mono','Chivo Mono','Kode Mono','Fragment Mono','Sometype Mono','Victor Mono','Reddit Mono','Noto Sans Mono','Ubuntu Sans Mono'],
+  'Handwriting': ['Caveat','Dancing Script','Great Vibes','Satisfy','Shadows Into Light','Indie Flower','Kalam','Patrick Hand','Permanent Marker','Rock Salt','Sacramento','Amatic SC','Courgette','Cookie','Damion','Gloria Hallelujah','Homemade Apple','Marck Script','Nanum Pen Script','Parisienne','Pinyon Script','Tangerine','Yellowtail','Allura','Alex Brush','Berkshire Swash','Italianno','La Belle Aurore','Mrs Saint Delafield','Petit Formal Script','Qwigley','Rouge Script','Seaweed Script','Style Script','Bad Script','Bilbo Swash Caps','Cedarville Cursive','Coming Soon','Covered By Your Grace','Crafty Girls','Dawning of a New Day','Englebert','Felipa','Give You Glory','Gochi Hand','Handlee','Just Another Hand','Just Me Again Down Here','Kristi','Leckerli One','Loved by the King','Merienda','Meie Script','Monsieur La Doulaise','Mr Dafoe','Mr De Haviland','Nothing You Could Do','Over the Rainbow','Reenie Beanie','Ruthie','Shadows Into Light Two','Sriracha','Stalemate','Swanky and Moo Moo','The Girl Next Door','Waiting for the Sunrise','Walter Turncoat','Zeyada','Kaushan Script','Amita','Arizonia','Bonbon','Butterfly Kids','Caveat Brush','Delius','Delius Swash Caps','Delius Unicase','Dr Sugiyama','Engagement','Euphoria Script','Grand Hotel','Herr Von Muellerhoff','Island Moments','Klee One','Lakki Reddy','League Script','Meddon','Norican','Nova Script','Pacifico','Pangolin','Pattaya','Rancho','Redressed','Rochester','Romanesco','Ruge Boogie','Schoolbell','Sue Ellen Francisco','Sunshiney'],
+  'Display': ['Bungee','Bungee Shade','Monoton','Audiowide','Press Start 2P','Silkscreen','Syncopate','Unica One','Bahiana','Chonburi','Faster One','Limelight','Megrim','Metal','Nosifer','Poiret One','Rye','Special Elite','Stardos Stencil','Creepster','Eater','Frijole','Griffy','Iceland','Jolly Lodger','Kelly Slab','Lovers Quarrel','Miltonian','Oregano','Paprika','Ribeye','Sancreek','Spirax','Trochut','Vampiro One','Wendy One','Yanone Kaffeesatz','Fascinate','Fascinate Inline','Fredericka the Great','Gravitas One','Jacques Francois Shadow','Knewave','Lemon','Life Savers','Lilita One','Lobster','Lobster Two','Luckiest Guy','Maiden Orange','MedievalSharp','Mountains of Christmas','Offside','Oleo Script','Original Surfer','Piedra','Pirata One','Plaster','Prosto One','Rammetto One','Ribeye Marrow','Ruslan Display','Seymour One','Shrikhand','Simonetta','Skranji','Snowburst One','Sofia','Spicy Rice','Stalinist One','Supermercado One','Titan One','Trade Winds','UnifrakturCook','UnifrakturMaguntia','Vast Shadow','Wallpoet','Wellfleet','Alfa Slab One','Bevan','Black Ops One','Bowlby One','Bowlby One SC','Bubblegum Sans','Bungee Inline','Bungee Outline','Carter One','Chewy','Concert One','Contrail One','Diplomata','Diplomata SC','Emblema One','Flavors','Fontdiner Swanky','Fredoka One','Galada','Gorditas','Graduate','Hanalei','Jockey One','Jomhuria','Kavoon','Lemonada','Londrina Solid','Miltonian Tattoo','Modak','Monofett','Nabla','Niconne','Oi','Passion One','Patua One','Peralta','Racing Sans One','Rakkas','Sigmar One','Slackey','Smokum','Sniglet','Squada One','Yeseva One']
+};
+
+const FONT_LIST = (() => {
+  const seen = new Set(); const out = [];
+  const add = (name, cat) => {
+    const k = name.toLowerCase(); if (seen.has(k)) return;
+    seen.add(k); out.push({ name, cat, system: SYSTEM_FONTS.has(name) });
+  };
+  ['Georgia','Times New Roman','Palatino','Baskerville','Garamond','Arial','Helvetica','Verdana','Tahoma','Trebuchet MS','Courier New'].forEach(n => add(n, 'System'));
+  Object.entries(FONT_GROUPS).forEach(([c, arr]) => arr.forEach(n => add(n, c)));
+  return out;
+})();
+
+const loadedFonts = new Set();
+function loadFont(name, cb) {
+  if (!name || SYSTEM_FONTS.has(name)) { cb && cb(); return; }
+  if (loadedFonts.has(name)) { cb && cb(); return; }
+  loadedFonts.add(name);
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = 'https://fonts.googleapis.com/css2?family=' +
+    encodeURIComponent(name).replace(/%20/g, '+') + '&display=swap';
+  link.onload = () => cb && cb();
+  link.onerror = () => cb && cb();
+  document.head.appendChild(link);
+}
+
+/* ============================================================
+   UTILS
+   ============================================================ */
+function toast(msg, ms = 2400) {
+  const el = document.createElement('div');
+  el.className = 'toast'; el.textContent = msg;
+  $('#toasts').appendChild(el);
+  setTimeout(() => {
+    el.style.transition = 'opacity .3s, transform .3s';
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(10px)';
+    setTimeout(() => el.remove(), 320);
+  }, ms);
+}
+function countWords(html) {
+  if (!html) return 0;
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  const m = (tmp.textContent || '').trim().match(/\S+/g);
+  return m ? m.length : 0;
+}
+function escXml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+}
+function escHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function download(data, filename, type) {
+  const blob = (data instanceof Blob) ? data : new Blob([data], { type: type || 'application/octet-stream' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
+function safeName(t) {
+  return (t || 'book').replace(/[^\w\s\-]/g, '').trim().replace(/\s+/g, '_') || 'book';
+}
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const params = new URLSearchParams(location.search);
+const projectId = params.get('id');
+let project = null;
+let currentIdx = 0;
+let currentTheme = 'ink';
+let currentAccent = null;
+
+function loadProject() {
+  if (!projectId) return null;
+  try {
+    const raw = localStorage.getItem(PROJ_KEY(projectId));
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+function saveProject(silent) {
+  if (!project) return;
+  project.updated = Date.now();
+  // ensure current chapter is synced
+  if (project.chapters[currentIdx]) {
+    project.chapters[currentIdx].html = editor.innerHTML;
+  }
+  try {
+    localStorage.setItem(PROJ_KEY(project.id), JSON.stringify(project));
+    // update index entry
+    updateIndexEntry();
+    if (!silent) setSaveState('saved');
+  } catch (e) {
+    toast('Storage limit reached — export a backup to be safe.');
+  }
+}
+
+function updateIndexEntry() {
+  try {
+    const raw = localStorage.getItem(INDEX_KEY);
+    const idx = raw ? JSON.parse(raw) : [];
+    const words = project.chapters.reduce((a, c) => a + countWords(c.html), 0);
+    const entry = {
+      id: project.id,
+      title: project.title,
+      author: project.author,
+      subtitle: project.subtitle,
+      created: project.created,
+      updated: project.updated || Date.now(),
+      words,
+      chapters: project.chapters.length,
+      c1: (project.cover && project.cover.c1) || '#333',
+      c2: (project.cover && project.cover.c2) || '#666',
+      bgImage: (project.cover && project.cover.bgType === 'image') ? project.cover.bgImage : null,
+      bgType: (project.cover && project.cover.bgType) || 'gradient',
+      goal: (project.settings && project.settings.goal) || 0
+    };
+    const i = idx.findIndex(e => e.id === project.id);
+    if (i >= 0) idx[i] = entry; else idx.unshift(entry);
+    localStorage.setItem(INDEX_KEY, JSON.stringify(idx));
+  } catch {}
+}
+
+let saveTimer = null;
+function setSaveState(state) {
+  const el = $('#saveState');
+  el.classList.remove('saving','saved');
+  if (state === 'saving') { el.textContent = 'Saving…'; el.classList.add('saving'); }
+  else if (state === 'saved') { el.textContent = 'Saved'; el.classList.add('saved'); $('#sbSaved').textContent = 'All changes saved'; }
+  else { el.textContent = 'Unsaved'; }
+}
+const saveDebounced = debounce(() => saveProject(false), 700);
+
+/* ============================================================
+   THEME APPLICATION
+   ============================================================ */
+function applyTheme(name) {
+  const t = THEMES[name] || THEMES.ink;
+  const r = document.documentElement.style;
+  r.setProperty('--bg', t.bg);
+  r.setProperty('--bg-2', t.bg2);
+  r.setProperty('--surface', t.surface);
+  r.setProperty('--surface-2', t.surface2);
+  r.setProperty('--border', t.border);
+  r.setProperty('--border-hi', t.borderHi);
+  r.setProperty('--text', t.text);
+  r.setProperty('--text-2', t.text2);
+  r.setProperty('--text-3', t.text3);
+  r.setProperty('--paper', t.paper);
+  r.setProperty('--paper-text', t.paperText);
+
+  if (currentAccent) {
+    r.setProperty('--accent', currentAccent);
+    r.setProperty('--accent-hi', currentAccent);
+  } else {
+    r.setProperty('--accent', '#c9a227');
+    r.setProperty('--accent-hi', '#e0b83d');
+  }
+  document.documentElement.dataset.theme = name;
+  document.body.classList.toggle('theme-dark', DARK_THEMES.has(name));
+
+  // theme-color meta
+  let meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', t.bg);
+}
+
+function applyTypography() {
+  if (!project) return;
+  const s = project.settings;
+  const r = document.documentElement.style;
+  const stack = SYSTEM_FONTS.has(s.font)
+    ? `"${s.font}", ${/Courier|Mono/i.test(s.font) ? 'monospace' : 'serif'}`
+    : `"${s.font}", Georgia, serif`;
+  r.setProperty('--doc-font', stack);
+  r.setProperty('--doc-size', s.size + 'px');
+  r.setProperty('--doc-lh', s.lh);
+  r.setProperty('--doc-ls', s.ls + 'px');
+  r.setProperty('--doc-ps', s.ps + 'em');
+  r.setProperty('--page-w', s.pagew + 'px');
+  r.setProperty('--page-pad', s.pad + 'px');
+
+  const page = editor;
+  page.classList.toggle('indent', s.indent);
+  page.classList.toggle('dropcap', s.dropcap);
+  page.classList.remove('align-center','align-justify');
+  if (s.align === 'center') page.classList.add('align-center');
+  if (s.align === 'justify') page.classList.add('align-justify');
+  page.spellcheck = s.spell;
+
+  document.body.classList.toggle('texture', s.texture);
+  document.body.classList.toggle('focus-mode', s.focus);
+
+  loadFont(s.font, () => {
+    const fp = $('#fontPreview');
+    if (fp) fp.style.fontFamily = `"${s.font}", Georgia, serif`;
+  });
+  const fp = $('#fontPreview');
+  if (fp) fp.style.fontFamily = `"${s.font}", Georgia, serif`;
+}
+
+/* ============================================================
+   EDITOR
+   ============================================================ */
+const editor = $('#editor');
+const editorScroll = $('#editorScroll');
+
+function initEditor() {
+  try { document.execCommand('defaultParagraphSeparator', false, 'p'); } catch {}
+
+  editor.addEventListener('input', () => {
+    project.chapters[currentIdx].html = editor.innerHTML;
+    updateStats();
+    setSaveState('saving');
+    saveDebounced();
+  });
+
+  editor.addEventListener('keyup', () => { updateBlockStyle(); typewriterScroll(); });
+  editor.addEventListener('mouseup', updateBlockStyle);
+  document.addEventListener('selectionchange', () => {
+    if (document.activeElement === editor) updateBlockStyle();
+  });
+
+  editor.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') {
+      e.preventDefault(); saveProject(); setSaveState('saved'); toast('Saved');
+    }
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'b') { e.preventDefault(); document.execCommand('bold'); }
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'i') { e.preventDefault(); document.execCommand('italic'); }
+  });
+
+  editor.addEventListener('paste', (e) => {
+    const items = e.clipboardData && e.clipboardData.items;
+    if (!items) return;
+    for (const it of items) {
+      if (it.type && it.type.startsWith('image/')) {
+        e.preventDefault();
+        const f = it.getAsFile();
+        if (f) readImageFile(f);
+        return;
+      }
+    }
+  });
+
+  editor.addEventListener('dragover', (e) => e.preventDefault());
+  editor.addEventListener('drop', (e) => {
+    const files = e.dataTransfer && e.dataTransfer.files;
+    if (files && files.length && files[0].type.startsWith('image/')) {
+      e.preventDefault();
+      Array.from(files).forEach(readImageFile);
+    }
+  });
+
+  editor.addEventListener('pointerdown', onEditorPointerDown);
+  document.addEventListener('pointerdown', (e) => {
+    if (!editor.contains(e.target) && !$('#imgBar').contains(e.target)) deselectImage();
+  }, true);
+}
+
+function updateBlockStyle() {
+  try {
+    let v = document.queryCommandValue('formatBlock').toLowerCase();
+    if (v === 'div' || v === '') v = 'p';
+    const sel = $('#blockStyle');
+    if ([...sel.options].some(o => o.value === v)) sel.value = v;
+  } catch {}
+  ['bold','italic','underline','strikeThrough'].forEach(c => {
+    const b = document.querySelector(`.tbt[data-cmd="${c}"]`);
+    if (!b) return;
+    try { b.classList.toggle('on', document.queryCommandState(c)); } catch {}
+  });
+}
+
+function typewriterScroll() {
+  if (!project.settings.typewriter) return;
+  const sel = window.getSelection();
+  if (!sel.rangeCount) return;
+  const r = sel.getRangeAt(0).getBoundingClientRect();
+  if (!r.height) return;
+  const box = editorScroll.getBoundingClientRect();
+  const target = box.top + box.height * 0.42;
+  const delta = r.top - target;
+  if (Math.abs(delta) > 6) editorScroll.scrollTop += delta;
+}
+
+function initToolbar() {
+  $('#toolbar').addEventListener('mousedown', (e) => {
+    if (e.target.closest('.tbt')) e.preventDefault();
+  });
+  $$('.tbt[data-cmd]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      editor.focus();
+      document.execCommand(btn.dataset.cmd, false, null);
+      updateBlockStyle();
+      project.chapters[currentIdx].html = editor.innerHTML;
+      saveDebounced();
+    });
+  });
+  $('#blockStyle').addEventListener('change', (e) => {
+    editor.focus();
+    document.execCommand('formatBlock', false, e.target.value.toUpperCase());
+    project.chapters[currentIdx].html = editor.innerHTML;
+    saveDebounced();
+  });
+  $('#btnQuote').addEventListener('click', () => {
+    editor.focus();
+    document.execCommand('formatBlock', false, 'BLOCKQUOTE');
+    saveDebounced();
+  });
+  $('#btnHr').addEventListener('click', () => {
+    editor.focus();
+    document.execCommand('insertHTML', false, '<hr><p><br></p>');
+    saveDebounced();
+  });
+  $('#btnPageBreak').addEventListener('click', () => {
+    editor.focus();
+    document.execCommand('insertHTML', false, '<div class="page-break" contenteditable="false"></div><p><br></p>');
+    saveDebounced();
+  });
+  $('#btnClear').addEventListener('click', () => {
+    editor.focus();
+    document.execCommand('removeFormat');
+    document.execCommand('formatBlock', false, 'P');
+    saveDebounced();
+  });
+  $('#btnLink').addEventListener('click', () => {
+    const url = prompt('Link URL:', 'https://');
+    if (url) { editor.focus(); document.execCommand('createLink', false, url); saveDebounced(); }
+  });
+  $('#btnImage').addEventListener('click', () => {
+    const inp = $('#fileImage');
+    inp.dataset.mode = 'insert';
+    inp.click();
+  });
+}
+
+/* ============================================================
+   CHAPTERS
+   ============================================================ */
+function renderChapters() {
+  const list = $('#chapterList');
+  list.innerHTML = '';
+  project.chapters.forEach((ch, i) => {
+    const w = countWords(ch.html);
+    const el = document.createElement('div');
+    el.className = 'chapter' + (i === currentIdx ? ' active' : '');
+    el.innerHTML = `
+      <span class="ch-num">${i + 1}</span>
+      <div class="ch-body">
+        <div class="ch-title"></div>
+        <div class="ch-meta">${w.toLocaleString()} words</div>
+      </div>
+      <div class="ch-tools">
+        <button data-act="up" title="Move up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg></button>
+        <button data-act="down" title="Move down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+        <button data-act="del" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      </div>`;
+    $('.ch-title', el).textContent = ch.title;
+    el.addEventListener('click', (e) => {
+      const act = e.target.closest('button') && e.target.closest('button').dataset.act;
+      if (act) {
+        e.stopPropagation();
+        if (act === 'del') deleteChapter(i);
+        if (act === 'up' && i > 0) swapChapters(i, i - 1);
+        if (act === 'down' && i < project.chapters.length - 1) swapChapters(i, i + 1);
+        return;
+      }
+      selectChapter(i);
+    });
+    el.addEventListener('dblclick', (e) => {
+      if (e.target.closest('button')) return;
+      renameChapter(i);
+    });
+    list.appendChild(el);
+  });
+  updateStats();
+}
+
+function swapChapters(a, b) {
+  const c = project.chapters;
+  [c[a], c[b]] = [c[b], c[a]];
+  if (currentIdx === a) currentIdx = b;
+  else if (currentIdx === b) currentIdx = a;
+  renderChapters();
+  saveProject();
+}
+
+function selectChapter(i) {
+  if (i === currentIdx) { closeDrawers(); return; }
+  project.chapters[currentIdx].html = editor.innerHTML;
+  currentIdx = i;
+  editor.innerHTML = project.chapters[i].html || '';
+  renderChapters();
+  $('#sbChapter').textContent = project.chapters[i].title;
+  closeDrawers();
+  editorScroll.scrollTop = 0;
+  saveProject();
+}
+
+function addChapter() {
+  project.chapters[currentIdx].html = editor.innerHTML;
+  const n = project.chapters.length + 1;
+  const ch = { id: uid(), title: 'Chapter ' + n, html: `<h1>Chapter ${n}</h1><p></p>` };
+  project.chapters.push(ch);
+  currentIdx = project.chapters.length - 1;
+  editor.innerHTML = ch.html;
+  renderChapters();
+  editor.focus();
+  saveProject();
+  toast('Chapter added');
+}
+
+function deleteChapter(i) {
+  if (project.chapters.length === 1) { toast('You need at least one chapter'); return; }
+  if (!confirm('Delete "' + project.chapters[i].title + '"?')) return;
+  project.chapters.splice(i, 1);
+  currentIdx = Math.min(currentIdx, project.chapters.length - 1);
+  editor.innerHTML = project.chapters[currentIdx].html || '';
+  renderChapters();
+  saveProject();
+}
+
+function renameChapter(i) {
+  const t = prompt('Chapter title:', project.chapters[i].title);
+  if (t === null) return;
+  project.chapters[i].title = t.trim() || 'Untitled';
+  if (i === currentIdx) $('#sbChapter').textContent = project.chapters[i].title;
+  renderChapters();
+  saveProject();
+}
+
+/* ============================================================
+   STATS
+   ============================================================ */
+function updateStats() {
+  const cur = editor.innerHTML;
+  const cw = countWords(cur);
+  const text = editor.innerText || '';
+  $('#sbWords').textContent = cw.toLocaleString();
+  $('#sbChars').textContent = text.length.toLocaleString();
+  $('#sbPara').textContent = editor.querySelectorAll('p, h1, h2, h3, blockquote, li').length;
+
+  let total = 0;
+  project.chapters.forEach((c, i) => {
+    total += (i === currentIdx) ? cw : countWords(c.html);
+  });
+  const pages = Math.max(1, Math.round(total / 300));
+  $('#stWords').textContent = total.toLocaleString();
+  $('#stChapters').textContent = project.chapters.length;
+  $('#stPages').textContent = pages;
+  $('#stTime').textContent = Math.max(1, Math.round(total / 220)) + 'm';
+
+  const goal = project.settings.goal || 0;
+  const pct = goal > 0 ? Math.min(100, (total / goal) * 100) : 0;
+  $('#goalFill').style.width = pct + '%';
+  $('#goalLabel').textContent = goal > 0
+    ? total.toLocaleString() + ' / ' + goal.toLocaleString()
+    : 'not set';
+  // update ch meta word counts (regenerate)
+  const items = $$('.chapter .ch-meta');
+  project.chapters.forEach((c, i) => {
+    if (items[i]) {
+      const w = (i === currentIdx) ? cw : countWords(c.html);
+      items[i].textContent = w.toLocaleString() + ' words';
+    }
+  });
+}
+
+/* ============================================================
+   IMAGES
+   ============================================================ */
+let selectedImg = null;
+
+function readImageFile(file) {
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const url = ev.target.result;
+    if ($('#fileImage').dataset.mode === 'replace' && selectedImg) {
+      $('img', selectedImg).src = url;
+      $('#fileImage').dataset.mode = 'insert';
+      saveDebounced();
+      return;
+    }
+    insertImage(url);
+  };
+  reader.readAsDataURL(file);
+}
+
+function insertImage(src) {
+  editor.focus();
+  const html = `<figure class="img-block" contenteditable="false" style="width:70%">
+    <img src="${src}" alt="">
+    <figcaption contenteditable="true">Add a caption…</figcaption>
+  </figure><p><br></p>`;
+  document.execCommand('insertHTML', false, html);
+  project.chapters[currentIdx].html = editor.innerHTML;
+  updateStats();
+  saveDebounced();
+  toast('Image added — tap to resize or move');
+}
+
+function deselectImage() {
+  if (selectedImg) {
+    selectedImg.classList.remove('selected');
+    selectedImg = null;
+    $('#imgBar').style.display = 'none';
+  }
+}
+
+function selectImage(fig) {
+  if (selectedImg === fig) return;
+  deselectImage();
+  selectedImg = fig;
+  fig.classList.add('selected');
+  positionImgBar();
+  $('#imgBar').style.display = 'flex';
+}
+
+function positionImgBar() {
+  if (!selectedImg) return;
+  const bar = $('#imgBar');
+  const r = selectedImg.getBoundingClientRect();
+  bar.style.display = 'flex';
+  const bw = bar.offsetWidth || 320;
+  let left = r.left + r.width / 2 - bw / 2;
+  left = Math.max(8, Math.min(window.innerWidth - bw - 8, left));
+  let top = r.top - bar.offsetHeight - 12;
+  if (top < 70) top = r.bottom + 12;
+  bar.style.left = left + 'px';
+  bar.style.top = top + 'px';
+}
+
+function onEditorPointerDown(e) {
+  const fig = e.target.closest && e.target.closest('.img-block');
+  if (!fig) { deselectImage(); return; }
+  if (e.target.tagName === 'FIGCAPTION') return;
+  e.preventDefault();
+  selectImage(fig);
+  if (e.target.classList.contains('resize')) startResize(e, fig);
+  else if (e.target.classList.contains('move')) startMove(e, fig);
+}
+
+function startResize(e, fig) {
+  const startX = e.clientX;
+  const startW = fig.getBoundingClientRect().width;
+  const pageW = editor.getBoundingClientRect().width;
+  const onMove = (ev) => {
+    const delta = ev.clientX - startX;
+    let w = ((startW + delta) / pageW) * 100;
+    w = Math.max(8, Math.min(100, w));
+    fig.style.width = w.toFixed(1) + '%';
+    positionImgBar();
+  };
+  const onUp = () => {
+    window.removeEventListener('pointermove', onMove);
+    window.removeEventListener('pointerup', onUp);
+    project.chapters[currentIdx].html = editor.innerHTML;
+    saveDebounced();
+  };
+  window.addEventListener('pointermove', onMove, { passive: true });
+  window.addEventListener('pointerup', onUp);
+}
+
+function startMove(e, fig) {
+  let dropRef = null, dropBefore = true;
+  fig.classList.add('dragging');
+  const prevPE = fig.style.pointerEvents;
+  fig.style.pointerEvents = 'none';
+  const clearHl = () => $$('.img-block.drop-target', editor).forEach(el => el.classList.remove('drop-target'));
+
+  const onMove = (ev) => {
+    const el = document.elementFromPoint(ev.clientX, ev.clientY);
+    clearHl();
+    if (!el || !editor.contains(el)) { dropRef = null; return; }
+    let ref = el;
+    while (ref && ref.parentNode !== editor) ref = ref.parentNode;
+    if (!ref) { dropRef = null; return; }
+    dropRef = ref;
+    const r = ref.getBoundingClientRect();
+    dropBefore = ev.clientY < r.top + r.height / 2;
+    ref.classList.add('drop-target');
+  };
+  const onUp = () => {
+    window.removeEventListener('pointermove', onMove);
+    window.removeEventListener('pointerup', onUp);
+    fig.classList.remove('dragging');
+    fig.style.pointerEvents = prevPE;
+    clearHl();
+    if (dropRef && dropRef !== fig) {
+      if (dropBefore) editor.insertBefore(fig, dropRef);
+      else editor.insertBefore(fig, dropRef.nextSibling);
+      project.chapters[currentIdx].html = editor.innerHTML;
+      saveDebounced();
+    }
+    positionImgBar();
+  };
+  window.addEventListener('pointermove', onMove, { passive: true });
+  window.addEventListener('pointerup', onUp);
+}
+
+function initImgBar() {
+  $('#imgBar').addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn || !selectedImg) return;
+    const act = btn.dataset.img;
+    switch (act) {
+      case 'left':   selectedImg.style.marginLeft = '0'; selectedImg.style.marginRight = 'auto'; if (!selectedImg.style.width || selectedImg.style.width === '100%') selectedImg.style.width = '50%'; break;
+      case 'center': selectedImg.style.marginLeft = 'auto'; selectedImg.style.marginRight = 'auto'; break;
+      case 'right':  selectedImg.style.marginLeft = 'auto'; selectedImg.style.marginRight = '0'; if (!selectedImg.style.width || selectedImg.style.width === '100%') selectedImg.style.width = '50%'; break;
+      case 'smaller': {
+        const w = parseFloat(selectedImg.style.width) || 70;
+        selectedImg.style.width = Math.max(10, w - 10) + '%'; break;
+      }
+      case 'bigger': {
+        const w = parseFloat(selectedImg.style.width) || 70;
+        selectedImg.style.width = Math.min(100, w + 10) + '%'; break;
+      }
+      case 'full': selectedImg.style.width = '100%'; break;
+      case 'half': selectedImg.style.width = '50%'; break;
+      case 'caption': {
+        let cap = selectedImg.querySelector('figcaption');
+        if (cap) cap.remove();
+        else {
+          cap = document.createElement('figcaption');
+          cap.setAttribute('contenteditable', 'true');
+          cap.textContent = 'Add a caption…';
+          selectedImg.appendChild(cap);
+        }
+        break;
+      }
+      case 'replace': {
+        const inp = $('#fileImage');
+        inp.dataset.mode = 'replace';
+        inp.click();
+        return;
+      }
+      case 'delete':
+        selectedImg.remove();
+        deselectImage();
+        break;
+    }
+    positionImgBar();
+    project.chapters[currentIdx].html = editor.innerHTML;
+    updateStats();
+    saveDebounced();
+  });
+}
+
+window.addEventListener('scroll', () => { if (selectedImg) positionImgBar(); }, true);
+window.addEventListener('resize', () => { if (selectedImg) positionImgBar(); });
+
+/* ============================================================
+   FONT PICKER
+   ============================================================ */
+let fontCategory = 'All';
+let previewBudget = 90;
+
+function renderFontList() {
+  const q = $('#fontSearch').value.trim().toLowerCase();
+  const list = $('#fontList');
+  const cats = ['All', ...Object.keys(FONT_GROUPS), 'System'];
+  $('#fontCats').innerHTML = cats.map(c =>
+    `<button class="chip ${c === fontCategory ? 'on' : ''}" data-cat="${c}">${c}</button>`
+  ).join('');
+  $$('#fontCats .chip').forEach(b => b.addEventListener('click', () => {
+    fontCategory = b.dataset.cat;
+    renderFontList();
+  }));
+
+  let items = FONT_LIST;
+  if (fontCategory !== 'All') items = items.filter(f => f.cat === fontCategory);
+  if (q) items = items.filter(f => f.name.toLowerCase().includes(q));
+
+  list.innerHTML = '';
+  let lastCat = null;
+  items.slice(0, 500).forEach(f => {
+    if (fontCategory === 'All' && !q && f.cat !== lastCat) {
+      lastCat = f.cat;
+      const lbl = document.createElement('div');
+      lbl.className = 'font-group-label';
+      lbl.textContent = f.cat;
+      list.appendChild(lbl);
+    }
+    const el = document.createElement('div');
+    el.className = 'font-item' + (f.name === project.settings.font ? ' on' : '');
+    el.innerHTML = `<span>${f.name}</span><small>${f.system ? 'system' : f.cat.split(' ')[0]}</small>`;
+    el.addEventListener('click', () => {
+      project.settings.font = f.name;
+      loadFont(f.name);
+      applyTypography();
+      saveProject();
+      renderFontList();
+      toast(f.name + ' applied');
+    });
+    list.appendChild(el);
+    if (!f.system && previewBudget > 0) {
+      el.querySelector('span').style.fontFamily = `"${f.name}", Georgia, serif`;
+      previewBudget--;
+      loadFont(f.name);
+    }
+  });
+  if (!items.length) list.innerHTML = '<p style="color:var(--text-3);padding:20px;text-align:center">No fonts match that search.</p>';
+}
+
+function openFontPicker() {
+  previewBudget = 90;
+  $('#fontSearch').value = '';
+  fontCategory = 'All';
+  renderFontList();
+  $('#fontOverlay').classList.add('open');
+}
+
+/* ============================================================
+   COVER DESIGNER
+   ============================================================ */
+const coverCanvas = $('#coverCanvas');
+const coverCtx = coverCanvas.getContext('2d');
+
+function wrapText(ctx, text, maxWidth) {
+  const words = String(text).split(/\s+/);
+  const lines = [];
+  let line = '';
+  words.forEach(w => {
+    const test = line ? line + ' ' + w : w;
+    if (ctx.measureText(test).width > maxWidth && line) {
+      lines.push(line); line = w;
+    } else line = test;
+  });
+  if (line) lines.push(line);
+  return lines;
+}
+
+function drawCover() {
+  const cv = project.cover;
+  const W = coverCanvas.width, H = coverCanvas.height;
+  const ctx = coverCtx;
+  ctx.clearRect(0, 0, W, H);
+
+  if (cv.bgType === 'image' && cv.bgImage) {
+    const im = new Image();
+    im.onload = () => {
+      const scale = Math.max(W / im.width, H / im.height);
+      const w = im.width * scale, h = im.height * scale;
+      ctx.drawImage(im, (W - w) / 2, (H - h) / 2, w, h);
+      drawCoverOverlay(cv, W, H, ctx);
+    };
+    im.src = cv.bgImage;
+    return;
+  } else if (cv.bgType === 'gradient') {
+    const g = ctx.createLinearGradient(0, 0, W * 0.6, H);
+    g.addColorStop(0, cv.c1);
+    g.addColorStop(1, cv.c2);
+    ctx.fillStyle = g;
+  } else {
+    ctx.fillStyle = cv.c1;
+  }
+  ctx.fillRect(0, 0, W, H);
+  drawCoverOverlay(cv, W, H, ctx);
+}
+
+function drawCoverOverlay(cv, W, H, ctx) {
+  const b = project;
+
+  const vg = ctx.createRadialGradient(W / 2, H / 2, W * 0.2, W / 2, H / 2, H * 0.8);
+  vg.addColorStop(0, 'rgba(0,0,0,0)');
+  vg.addColorStop(1, 'rgba(0,0,0,0.35)');
+  ctx.fillStyle = vg;
+  ctx.fillRect(0, 0, W, H);
+
+  if (cv.frame) {
+    ctx.strokeStyle = 'rgba(255,255,255,0.78)';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(42, 42, W - 84, H - 84);
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = 'rgba(255,255,255,0.42)';
+    ctx.strokeRect(56, 56, W - 112, H - 112);
+  }
+
+  const fam = cv.font || 'Playfair Display';
+  const titleSize = (cv.titleSize / 100) * 96;
+  const maxW = W - 200;
+
+  let baseY;
+  if (cv.layout === 'top') baseY = H * 0.20;
+  else if (cv.layout === 'bottom') baseY = H * 0.62;
+  else baseY = H * 0.36;
+
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#ffffff';
+  ctx.shadowColor = 'rgba(0,0,0,0.45)';
+  ctx.shadowBlur = 18;
+
+  ctx.font = `700 ${titleSize}px "${fam}", Georgia, serif`;
+  const titleLines = wrapText(ctx, b.title || 'Untitled Book', maxW);
+  let y = baseY;
+  titleLines.forEach(l => {
+    ctx.fillText(l, W / 2, y);
+    y += titleSize * 1.12;
+  });
+
+  ctx.shadowBlur = 0;
+  if (b.subtitle) {
+    y += 6;
+    ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(W / 2 - 60, y);
+    ctx.lineTo(W / 2 + 60, y);
+    ctx.stroke();
+    y += 44;
+
+    ctx.font = `400 ${titleSize * 0.4}px "${fam}", Georgia, serif`;
+    ctx.fillStyle = 'rgba(255,255,255,0.92)';
+    const subLines = wrapText(ctx, b.subtitle, maxW);
+    subLines.forEach(l => { ctx.fillText(l, W / 2, y); y += titleSize * 0.5; });
+  }
+
+  if (b.author) {
+    ctx.font = `500 ${titleSize * 0.34}px "${fam}", Georgia, serif`;
+    ctx.fillStyle = 'rgba(255,255,255,0.95)';
+    ctx.shadowColor = 'rgba(0,0,0,0.5)';
+    ctx.shadowBlur = 12;
+    ctx.fillText(b.author.toUpperCase(), W / 2, H - 130);
+  }
+  ctx.shadowBlur = 0;
+}
+
+function coverDataURL() {
+  drawCover();
+  return coverCanvas.toDataURL('image/png');
+}
+
+function initCover() {
+  const cv = project.cover;
+  $('#cvC1').value = cv.c1 || '#8b5e34';
+  $('#cvC2').value = cv.c2 || '#c9a227';
+  $('#cvSize').value = cv.titleSize || 100;
+  $('#vCvSize').textContent = cv.titleSize || 100;
+  $('#cvFrame').classList.toggle('on', cv.frame !== false);
+
+  const popular = ['Playfair Display','Merriweather','Lora','Cormorant Garamond','Cinzel','Montserrat','Poppins','Inter','Oswald','Bebas Neue','Abril Fatface','Lobster','Pacifico','Raleway','Josefin Sans','Great Vibes','Bodoni Moda','Libre Baskerville','Marcellus','DM Serif Display'];
+  $('#cvFont').innerHTML = popular.map(f => `<option ${f === cv.font ? 'selected' : ''}>${f}</option>`).join('');
+  popular.forEach(f => loadFont(f));
+
+  $$('#bgTypeChips .chip').forEach(c => c.classList.toggle('on', c.dataset.bg === (cv.bgType || 'gradient')));
+  $$('#cvLayoutChips .chip').forEach(c => c.classList.toggle('on', c.dataset.lay === (cv.layout || 'center')));
+
+  $$('#bgTypeChips .chip').forEach(c => c.addEventListener('click', () => {
+    cv.bgType = c.dataset.bg;
+    $$('#bgTypeChips .chip').forEach(x => x.classList.toggle('on', x === c));
+    drawCover(); saveProject();
+  }));
+  $$('#cvLayoutChips .chip').forEach(c => c.addEventListener('click', () => {
+    cv.layout = c.dataset.lay;
+    $$('#cvLayoutChips .chip').forEach(x => x.classList.toggle('on', x === c));
+    drawCover(); saveProject();
+  }));
+  $('#cvC1').addEventListener('input', e => { cv.c1 = e.target.value; drawCover(); saveDebounced(); });
+  $('#cvC2').addEventListener('input', e => { cv.c2 = e.target.value; drawCover(); saveDebounced(); });
+  $('#cvSize').addEventListener('input', e => {
+    cv.titleSize = +e.target.value;
+    $('#vCvSize').textContent = cv.titleSize;
+    drawCover(); saveDebounced();
+  });
+  $('#cvFrame').addEventListener('click', () => {
+    cv.frame = !cv.frame;
+    $('#cvFrame').classList.toggle('on', cv.frame);
+    drawCover(); saveProject();
+  });
+  $('#cvFont').addEventListener('change', e => {
+    cv.font = e.target.value;
+    loadFont(cv.font, drawCover);
+    drawCover(); saveProject();
+  });
+  $('#cvUpload').addEventListener('click', () => $('#fileBgImage').click());
+  $('#fileBgImage').addEventListener('change', (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = ev => {
+      cv.bgImage = ev.target.result;
+      cv.bgType = 'image';
+      $$('#bgTypeChips .chip').forEach(x => x.classList.toggle('on', x.dataset.bg === 'image'));
+      drawCover(); saveProject();
+    };
+    r.readAsDataURL(f);
+    e.target.value = '';
+  });
+  $('#cvDownload').addEventListener('click', () => {
+    const url = coverDataURL();
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = safeName(project.title) + '_cover.png';
+    a.click();
+    toast('Cover downloaded');
+  });
+}
+
+function openCover() {
+  drawCover();
+  setTimeout(drawCover, 350);
+  $('#coverOverlay').classList.add('open');
+}
+
+/* ============================================================
+   EXPORT HELPERS
+   ============================================================ */
+function htmlToMarkdown(html) {
+  const doc = new DOMParser().parseFromString(html || '', 'text/html');
+  function walk(node) {
+    let out = '';
+    node.childNodes.forEach(n => {
+      if (n.nodeType === 3) { out += n.textContent.replace(/\s+/g, ' '); return; }
+      if (n.nodeType !== 1) return;
+      const tag = n.tagName.toLowerCase();
+      const inner = () => walk(n).trim();
+      switch (tag) {
+        case 'h1': out += '\n\n# ' + inner() + '\n\n'; break;
+        case 'h2': out += '\n\n## ' + inner() + '\n\n'; break;
+        case 'h3': out += '\n\n### ' + inner() + '\n\n'; break;
+        case 'h4': out += '\n\n#### ' + inner() + '\n\n'; break;
+        case 'h5': out += '\n\n##### ' + inner() + '\n\n'; break;
+        case 'h6': out += '\n\n###### ' + inner() + '\n\n'; break;
+        case 'p': out += '\n\n' + inner() + '\n\n'; break;
+        case 'br': out += '  \n'; break;
+        case 'strong': case 'b': out += '**' + inner() + '**'; break;
+        case 'em': case 'i': out += '*' + inner() + '*'; break;
+        case 'u': out += '<u>' + inner() + '</u>'; break;
+        case 's': case 'strike': case 'del': out += '~~' + inner() + '~~'; break;
+        case 'blockquote':
+          out += '\n\n' + inner().split('\n').map(l => '> ' + l).join('\n') + '\n\n'; break;
+        case 'ul':
+          out += '\n\n' + Array.from(n.children).map(li => '- ' + walk(li).trim()).join('\n') + '\n\n'; break;
+        case 'ol':
+          out += '\n\n' + Array.from(n.children).map((li, i) => (i + 1) + '. ' + walk(li).trim()).join('\n') + '\n\n'; break;
+        case 'hr': out += '\n\n---\n\n'; break;
+        case 'img': out += `\n\n![${n.getAttribute('alt') || ''}](${n.getAttribute('src')})\n\n`; break;
+        case 'a': out += '[' + inner() + '](' + (n.getAttribute('href') || '') + ')'; break;
+        case 'figure': out += '\n\n' + walk(n).trim() + '\n\n'; break;
+        case 'figcaption': out += '\n\n*' + inner() + '*\n\n'; break;
+        case 'pre': out += '\n\n```\n' + n.textContent + '\n```\n\n'; break;
+        case 'div':
+          if (n.classList.contains('page-break')) out += '\n\n---\n\n';
+          else out += '\n\n' + inner() + '\n\n'; break;
+        default: out += inner();
+      }
+    });
+    return out;
+  }
+  return walk(doc.body).replace(/\n{3,}/g, '\n\n').trim();
+}
+
+function htmlToRtf(html) {
+  const doc = new DOMParser().parseFromString(html || '', 'text/html');
+  const esc = s => String(s)
+    .replace(/\\/g, '\\\\').replace(/\{/g, '\\{').replace(/\}/g, '\\}')
+    .replace(/[^\x00-\x7F]/g, c => '\\u' + c.charCodeAt(0) + '?');
+  let out = '';
+  function conv(node, fmt) {
+    node.childNodes.forEach(n => {
+      if (n.nodeType === 3) {
+        const t = n.textContent;
+        if (!t) return;
+        out += (fmt.b ? '\\b ' : '') + (fmt.i ? '\\i ' : '') + esc(t) +
+               (fmt.b ? '\\b0 ' : '') + (fmt.i ? '\\i0 ' : '');
+        return;
+      }
+      if (n.nodeType !== 1) return;
+      const tag = n.tagName.toLowerCase();
+      const f = { b: fmt.b, i: fmt.i };
+      if (tag === 'strong' || tag === 'b') f.b = 1;
+      if (tag === 'em' || tag === 'i') f.i = 1;
+      if (/^h[1-3]$/.test(tag)) {
+        const sizes = { h1: 40, h2: 32, h3: 28 };
+        out += '\\par\\pard\\sb240\\sa120\\b\\fs' + sizes[tag] + ' ';
+        conv(n, {});
+        out += '\\b0\\fs24\\par\n';
+        return;
+      }
+      if (tag === 'p' || tag === 'div' || tag === 'figure') {
+        out += '\\par\\pard ';
+        conv(n, f);
+        out += '\\par\n';
+        return;
+      }
+      if (tag === 'br') { out += '\\line '; return; }
+      if (tag === 'hr') { out += '\\par\\pard\\brdrb\\brdrs\\brdrw10\\brsp20 \\par '; return; }
+      if (tag === 'li') { out += '\\par\\pard\\fi-360\\li720 \\bullet  '; conv(n, f); out += '\\par\n'; return; }
+      if (tag === 'img') { out += '[Image]'; return; }
+      conv(n, f);
+    });
+  }
+  conv(doc.body, {});
+  return '{\\rtf1\\ansi\\deff0{\\fonttbl{\\f0 Times New Roman;}}\\fs24\n' + out + '\n}';
+}
+
+const VOID_TAGS = new Set(['br','img','hr','input','meta','link','col','area','base','embed','source','track','wbr']);
+function serializeXhtml(node) {
+  let out = '';
+  node.childNodes.forEach(n => {
+    if (n.nodeType === 3) { out += escXml(n.textContent); return; }
+    if (n.nodeType === 8) return;
+    if (n.nodeType !== 1) return;
+    const t = n.tagName.toLowerCase();
+    let attrs = '';
+    for (const a of Array.from(n.attributes)) {
+      if (a.name === 'contenteditable') continue;
+      attrs += ` ${a.name}="${escXml(a.value)}"`;
+    }
+    if (VOID_TAGS.has(t)) out += `<${t}${attrs}/>`;
+    else out += `<${t}${attrs}>${serializeXhtml(n)}</${t}>`;
+  });
+  return out;
+}
+
+/* ---------- ZIP ---------- */
+const CRC_TABLE = (() => {
+  const t = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) {
+    let c = n;
+    for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+    t[n] = c >>> 0;
+  }
+  return t;
+})();
+function crc32(u8) {
+  let c = 0xFFFFFFFF;
+  for (let i = 0; i < u8.length; i++) c = CRC_TABLE[(c ^ u8[i]) & 0xFF] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+function makeZip(files) {
+  const enc = new TextEncoder();
+  const parts = [];
+  const central = [];
+  let offset = 0;
+  const now = new Date();
+  const dosTime = ((now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1)) & 0xFFFF;
+  const dosDate = (((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate()) & 0xFFFF;
+  for (const f of files) {
+    const nameU8 = enc.encode(f.name);
+    const crc = crc32(f.data);
+    const size = f.data.length;
+    const lh = new Uint8Array(30 + nameU8.length);
+    const dv = new DataView(lh.buffer);
+    dv.setUint32(0, 0x04034b50, true);
+    dv.setUint16(4, 20, true);
+    dv.setUint16(6, 0, true);
+    dv.setUint16(8, 0, true);
+    dv.setUint16(10, dosTime, true);
+    dv.setUint16(12, dosDate, true);
+    dv.setUint32(14, crc, true);
+    dv.setUint32(18, size, true);
+    dv.setUint32(22, size, true);
+    dv.setUint16(26, nameU8.length, true);
+    dv.setUint16(28, 0, true);
+    lh.set(nameU8, 30);
+    parts.push(lh, f.data);
+
+    const cd = new Uint8Array(46 + nameU8.length);
+    const d2 = new DataView(cd.buffer);
+    d2.setUint32(0, 0x02014b50, true);
+    d2.setUint16(4, 20, true);
+    d2.setUint16(6, 20, true);
+    d2.setUint16(8, 0, true);
+    d2.setUint16(10, 0, true);
+    d2.setUint16(12, dosTime, true);
+    d2.setUint16(14, dosDate, true);
+    d2.setUint32(16, crc, true);
+    d2.setUint32(20, size, true);
+    d2.setUint32(24, size, true);
+    d2.setUint16(28, nameU8.length, true);
+    d2.setUint16(30, 0, true);
+    d2.setUint16(32, 0, true);
+    d2.setUint16(34, 0, true);
+    d2.setUint16(36, 0, true);
+    d2.setUint32(38, 0, true);
+    d2.setUint32(42, offset, true);
+    cd.set(nameU8, 46);
+    central.push(cd);
+    offset += lh.length + size;
+  }
+  let cdSize = 0;
+  central.forEach(c => cdSize += c.length);
+  const eocd = new Uint8Array(22);
+  const d3 = new DataView(eocd.buffer);
+  d3.setUint32(0, 0x06054b50, true);
+  d3.setUint16(4, 0, true);
+  d3.setUint16(6, 0, true);
+  d3.setUint16(8, files.length, true);
+  d3.setUint16(10, files.length, true);
+  d3.setUint32(12, cdSize, true);
+  d3.setUint32(16, offset, true);
+  d3.setUint16(20, 0, true);
+  return new Blob([...parts, ...central, eocd], { type: 'application/epub+zip' });
+}
+
+function dataUrlToBytes(dataUrl) {
+  const m = /^data:([^;]+);base64,(.*)$/.exec(dataUrl);
+  if (!m) return null;
+  const mime = m[1];
+  const bin = atob(m[2]);
+  const u8 = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+  return { mime, bytes: u8 };
+}
+
+/* ============================================================
+   EXPORT ACTIONS
+   ============================================================ */
+const EXPORTS = [
+  { id:'pdf',   tag:'PDF',  title:'Print / PDF',        desc:'Print-ready layout with page breaks.' },
+  { id:'epub',  tag:'EPUB', title:'EPUB e-book',        desc:'Real EPUB 3 with cover. Works in Apple Books.' },
+  { id:'doc',   tag:'DOC',  title:'Word Document',      desc:'Opens natively in Word, Pages & Google Docs.' },
+  { id:'rtf',   tag:'RTF',  title:'Rich Text',          desc:'Universal rich text with headings and emphasis.' },
+  { id:'html',  tag:'HTML', title:'Web Page',           desc:'A styled, self-contained website of your book.' },
+  { id:'md',    tag:'MD',   title:'Markdown',           desc:'Perfect for Obsidian, Notion, GitHub.' },
+  { id:'txt',   tag:'TXT',  title:'Plain Text',         desc:'Clean, unstyled text — maximum compatibility.' },
+  { id:'json',  tag:'JSON', title:'Project Backup',     desc:'Full project with images and settings.' }
+];
+
+function renderExportGrid() {
+  $('#exportGrid').innerHTML = EXPORTS.map(e => `
+    <button class="exp-card" data-export="${e.id}">
+      <span class="exp-ico">${e.tag}</span>
+      <span><b>${e.title}</b><p>${e.desc}</p></span>
+    </button>`).join('');
+  $$('#exportGrid .exp-card').forEach(b => {
+    b.addEventListener('click', () => runExport(b.dataset.export));
+  });
+}
+
+function syncCurrent() {
+  project.chapters[currentIdx].html = editor.innerHTML;
+}
+
+function runExport(type) {
+  syncCurrent();
+  const b = project;
+
+  if (type === 'txt') {
+    const txt = b.chapters.map(c => {
+      const d = document.createElement('div');
+      d.innerHTML = c.html;
+      return c.title.toUpperCase() + '\n\n' + (d.innerText || '').trim();
+    }).join('\n\n\n' + '—'.repeat(30) + '\n\n\n');
+    download(txt, safeName(b.title) + '.txt', 'text/plain;charset=utf-8');
+    toast('Exported as TXT');
+    closeExport();
+  }
+  else if (type === 'md') {
+    const md = '# ' + b.title + '\n\n' +
+      (b.subtitle ? '*By ' + (b.author || 'Anonymous') + '*\n\n' : '') +
+      b.chapters.map(c => htmlToMarkdown(c.html)).join('\n\n---\n\n');
+    download(md, safeName(b.title) + '.md', 'text/markdown;charset=utf-8');
+    toast('Exported as Markdown');
+    closeExport();
+  }
+  else if (type === 'rtf') {
+    const rtf = htmlToRtf(b.chapters.map(c => `<h1>${escHtml(c.title)}</h1>` + c.html).join('<hr>'));
+    download(rtf, safeName(b.title) + '.rtf', 'application/rtf');
+    toast('Exported as RTF');
+    closeExport();
+  }
+  else if (type === 'html') {
+    const body = b.chapters.map(c => `<section class="chapter">${c.html}</section>`).join('\n');
+    const html = `<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${escHtml(b.title)}</title>
+<style>
+  body{margin:0;background:#f7f5f2;color:#241c1a;font-family:"${b.settings.font}",Georgia,serif;
+       font-size:${b.settings.size}px;line-height:${b.settings.lh};letter-spacing:${b.settings.ls}px}
+  .wrap{max-width:${b.settings.pagew}px;margin:0 auto;padding:80px 28px 140px}
+  .titlepage{text-align:center;padding:22vh 0 18vh;border-bottom:1px solid #e2dcd6;margin-bottom:80px}
+  .titlepage h1{font-size:3em;margin:0 0 .3em;letter-spacing:-.02em}
+  .titlepage h2{font-size:1.2em;font-weight:400;opacity:.7;margin:0 0 2em}
+  .titlepage p{opacity:.6;letter-spacing:.2em;text-transform:uppercase;font-size:.8em}
+  .chapter{margin-bottom:90px}
+  .chapter h1{page-break-before:always;font-size:2em;margin:0 0 1.2em;color:#c9a227}
+  h2{font-size:1.5em}h3{font-size:1.2em}
+  p{margin:0 0 ${b.settings.ps}em}
+  blockquote{border-left:3px solid #c9a227;margin:1.4em 0;padding-left:1.2em;font-style:italic;opacity:.9}
+  img{max-width:100%;border-radius:6px;display:block;margin:1.5em auto}
+  figure{margin:2em 0;text-align:center}
+  figcaption{font-size:.8em;opacity:.6;font-style:italic}
+  hr{border:none;border-top:1px solid #ccc;margin:2.5em auto;width:40%}
+  .page-break{page-break-after:always;height:0}
+  @media print{body{background:#fff}.titlepage{page-break-after:always}}
+</style></head><body>
+<div class="wrap">
+  <div class="titlepage">
+    <h1>${escHtml(b.title)}</h1>
+    ${b.subtitle ? `<h2>${escHtml(b.subtitle)}</h2>` : ''}
+    <p>${escHtml(b.author || '')}</p>
+  </div>
+  ${body}
+</div></body></html>`;
+    download(html, safeName(b.title) + '.html', 'text/html;charset=utf-8');
+    toast('Exported as HTML');
+    closeExport();
+  }
+  else if (type === 'doc') {
+    const body = b.chapters.map(c => `<div style="page-break-after:always">${c.html}</div>`).join('');
+    const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office"
+      xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="utf-8"><title>${escHtml(b.title)}</title>
+<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]-->
+<style>
+  @page{size:A4;margin:2.2cm 2cm}
+  body{font-family:"${b.settings.font}",Georgia,serif;font-size:${b.settings.size}px;line-height:${b.settings.lh};color:#1a1a1a}
+  h1{font-size:22pt;color:#c9a227}h2{font-size:16pt}h3{font-size:13pt}
+  p{margin:0 0 ${b.settings.ps}em}
+  blockquote{border-left:3px solid #c9a227;padding-left:14pt;font-style:italic}
+  img{max-width:100%}
+</style></head><body>
+<div style="text-align:center;padding:120pt 0 80pt">
+  <h1 style="font-size:34pt">${escHtml(b.title)}</h1>
+  ${b.subtitle ? `<h2 style="font-weight:400">${escHtml(b.subtitle)}</h2>` : ''}
+  <p style="letter-spacing:3pt;text-transform:uppercase">${escHtml(b.author || '')}</p>
+</div>
+${body}</body></html>`;
+    download(html, safeName(b.title) + '.doc', 'application/msword');
+    toast('Exported as Word document');
+    closeExport();
+  }
+  else if (type === 'json') {
+    download(JSON.stringify(project, null, 2), safeName(b.title) + '.calyx.json', 'application/json');
+    toast('Project backup downloaded');
+    closeExport();
+  }
+  else if (type === 'pdf') {
+    printBook();
+  }
+  else if (type === 'epub') {
+    exportEpub().catch(err => { console.error(err); toast('EPUB export failed'); });
+    closeExport();
+  }
+}
+
+function closeExport() {
+  setTimeout(() => $('#exportOverlay').classList.remove('open'), 220);
+}
+
+function printBook() {
+  const b = project;
+  const area = $('#printArea');
+  area.innerHTML = `
+    <div style="text-align:center;page-break-after:always;padding-top:35vh">
+      <h1 style="font-size:30pt;margin:0 0 10pt">${escHtml(b.title)}</h1>
+      ${b.subtitle ? `<h2 style="font-weight:400;font-size:14pt;opacity:.75;margin:0 0 30pt">${escHtml(b.subtitle)}</h2>` : ''}
+      <p style="letter-spacing:.25em;text-transform:uppercase;font-size:10pt;opacity:.7">${escHtml(b.author || '')}</p>
+    </div>
+  ` + b.chapters.map(c => `<section class="print-chapter">${c.html}</section>`).join('');
+
+  const style = document.createElement('style');
+  style.id = 'printStyle';
+  style.textContent = `
+    @media print {
+      @page { size: A4; margin: 22mm 20mm; }
+      html, body { height: auto !important; overflow: visible !important; background:#fff !important; }
+      .app, .overlay, #toasts, #imgBar, .backdrop { display: none !important; }
+      #printArea {
+        display: block !important;
+        font-family: "${b.settings.font}", Georgia, serif;
+        font-size: ${Math.max(10, b.settings.size * 0.72)}pt;
+        line-height: ${b.settings.lh};
+        color: #111; max-width: 100%;
+      }
+      #printArea .print-chapter { page-break-after: always; }
+      #printArea .print-chapter:last-child { page-break-after: auto; }
+      #printArea h1 { font-size: 20pt; margin: 0 0 14pt; }
+      #printArea h2 { font-size: 15pt; margin: 16pt 0 8pt; }
+      #printArea h3 { font-size: 12.5pt; margin: 14pt 0 6pt; }
+      #printArea p { margin: 0 0 ${b.settings.ps}em; orphans: 3; widows: 3; }
+      #printArea blockquote { border-left: 2.5pt solid #888; padding-left: 12pt; font-style: italic; margin: 12pt 0; }
+      #printArea img { max-width: 100%; page-break-inside: avoid; }
+      #printArea figure { page-break-inside: avoid; text-align: center; margin: 14pt 0; }
+      #printArea figcaption { font-size: .8em; opacity: .65; font-style: italic; }
+      #printArea hr { border: none; border-top: 1px solid #bbb; margin: 18pt auto; width: 40%; }
+      #printArea .page-break { page-break-after: always; height: 0; border: none; }
+      #printArea .img-block { width: 70% !important; margin: 14pt auto; }
+    }`;
+  document.head.appendChild(style);
+
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => {
+      style.remove();
+      $('#printArea').innerHTML = '';
+      $('#exportOverlay').classList.remove('open');
+    }, 900);
+  }, 180);
+  toast('Opening print dialog…');
+}
+
+async function exportEpub() {
+  const b = project;
+  const enc = new TextEncoder();
+  const files = [];
+  const imgFiles = [];
+  const chapterItems = [];
+
+  files.push({ name: 'mimetype', data: enc.encode('application/epub+zip') });
+  files.push({
+    name: 'META-INF/container.xml',
+    data: enc.encode(`<?xml version="1.0" encoding="UTF-8"?>
+<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
+  <rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles>
+</container>`)
+  });
+
+  const css = `body{font-family:Georgia,serif;line-height:1.6;margin:5% 6%;color:#1a1a1a;}
+h1{font-size:1.7em;margin:0 0 1em;line-height:1.25;}
+h2{font-size:1.35em;margin:1.4em 0 .6em;}
+h3{font-size:1.15em;margin:1.2em 0 .5em;}
+p{margin:0 0 1em;text-align:justify;hyphens:auto;}
+blockquote{border-left:3px solid #bbb;margin:1.2em 0;padding-left:1em;font-style:italic;}
+img{max-width:100%;height:auto;}
+figure{margin:1.4em 0;text-align:center;}
+figcaption{font-size:.8em;color:#666;font-style:italic;margin-top:.4em;}
+hr{border:none;border-top:1px solid #ccc;margin:2em auto;width:40%;}
+.page-break{page-break-after:always;}`;
+  files.push({ name: 'OEBPS/style.css', data: enc.encode(css) });
+
+  let coverName = null;
+  try {
+    const covUrl = coverDataURL();
+    const covBytes = dataUrlToBytes(covUrl);
+    if (covBytes) {
+      coverName = 'cover.png';
+      imgFiles.push({ name: 'OEBPS/' + coverName, data: covBytes.bytes });
+    }
+  } catch (e) { console.warn('cover failed', e); }
+
+  b.chapters.forEach((ch, i) => {
+    const doc = new DOMParser().parseFromString(ch.html || '', 'text/html');
+    Array.from(doc.body.querySelectorAll('img')).forEach(img => {
+      const src = img.getAttribute('src') || '';
+      if (src.startsWith('data:')) {
+        const parsed = dataUrlToBytes(src);
+        if (parsed) {
+          const ext = parsed.mime.includes('png') ? 'png'
+                    : parsed.mime.includes('gif') ? 'gif'
+                    : parsed.mime.includes('webp') ? 'webp' : 'jpg';
+          const name = `images/img${imgFiles.length + 1}.${ext}`;
+          imgFiles.push({ name: 'OEBPS/' + name, data: parsed.bytes });
+          img.setAttribute('src', name);
+        }
+      }
+      img.removeAttribute('style');
+      img.removeAttribute('contenteditable');
+    });
+    doc.body.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+
+    const inner = serializeXhtml(doc.body);
+    const hasHeading = /^\s*<h[12][\s>]/i.test(inner);
+    const titleBlock = hasHeading ? '' : `<h1>${escXml(ch.title)}</h1>`;
+    const xhtml = `<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><meta charset="utf-8"/><title>${escXml(ch.title)}</title>
+<link rel="stylesheet" type="text/css" href="style.css"/></head>
+<body>
+${titleBlock}${inner}
+</body></html>`;
+    const fname = `ch${i + 1}.xhtml`;
+    files.push({ name: 'OEBPS/' + fname, data: enc.encode(xhtml) });
+    chapterItems.push({ id: `ch${i + 1}`, href: fname, title: ch.title });
+  });
+
+  let coverXhtml = null;
+  if (coverName) {
+    coverXhtml = `<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><meta charset="utf-8"/><title>Cover</title>
+<style>body{margin:0;padding:0;text-align:center}img{max-width:100%;max-height:100%;}</style></head>
+<body><div><img src="${coverName}" alt="Cover"/></div></body></html>`;
+    files.push({ name: 'OEBPS/cover.xhtml', data: enc.encode(coverXhtml) });
+  }
+
+  const uuid = 'urn:uuid:' + (crypto.randomUUID ? crypto.randomUUID() : uid() + '-' + Date.now());
+  const modified = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
+
+  const manifest = [
+    `<item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>`,
+    `<item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>`,
+    `<item id="css" href="style.css" media-type="text/css"/>`,
+    ...(coverName ? [
+      `<item id="cover-image" href="${coverName}" media-type="image/png" properties="cover-image"/>`,
+      `<item id="cover" href="cover.xhtml" media-type="application/xhtml+xml"/>`
+    ] : []),
+    ...chapterItems.map(c => `<item id="${c.id}" href="${c.href}" media-type="application/xhtml+xml"/>`),
+    ...imgFiles.filter(f => !f.name.endsWith('cover.png')).map((f, i) => {
+      const ext = f.name.split('.').pop();
+      const mt = ext === 'png' ? 'image/png' : ext === 'gif' ? 'image/gif' : ext === 'webp' ? 'image/webp' : 'image/jpeg';
+      return `<item id="img${i + 1}" href="${f.name.replace('OEBPS/', '')}" media-type="${mt}"/>`;
+    })
+  ].join('\n    ');
+
+  const spine = [
+    ...(coverName ? [`<itemref idref="cover"/>`] : []),
+    `<itemref idref="nav"/>`,
+    ...chapterItems.map(c => `<itemref idref="${c.id}"/>`)
+  ].join('\n    ');
+
+  const opf = `<?xml version="1.0" encoding="UTF-8"?>
+<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="bookid" xml:lang="en">
+  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <dc:identifier id="bookid">${uuid}</dc:identifier>
+    <dc:title>${escXml(b.title)}</dc:title>
+    <dc:creator>${escXml(b.author || 'Unknown')}</dc:creator>
+    <dc:language>en</dc:language>
+    <meta property="dcterms:modified">${modified}</meta>
+  </metadata>
+  <manifest>
+    ${manifest}
+  </manifest>
+  <spine toc="ncx">
+    ${spine}
+  </spine>
+</package>`;
+  files.push({ name: 'OEBPS/content.opf', data: enc.encode(opf) });
+
+  const navList = chapterItems.map(c => `<li><a href="${c.href}">${escXml(c.title)}</a></li>`).join('\n      ');
+  const nav = `<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en" lang="en">
+<head><meta charset="utf-8"/><title>Contents</title>
+<link rel="stylesheet" type="text/css" href="style.css"/></head>
+<body>
+  <nav epub:type="toc" id="toc">
+    <h1>Contents</h1>
+    <ol>
+      ${navList}
+    </ol>
+  </nav>
+</body></html>`;
+  files.push({ name: 'OEBPS/nav.xhtml', data: enc.encode(nav) });
+
+  const navPoints = chapterItems.map((c, i) => `
+    <navPoint id="np${i + 1}" playOrder="${i + 1}">
+      <navLabel><text>${escXml(c.title)}</text></navLabel>
+      <content src="${c.href}"/>
+    </navPoint>`).join('');
+  const ncx = `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN" "http://www.daisy.org/z3986/2005/ncx-2005-1.dtd">
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
+  <head>
+    <meta name="dtb:uid" content="${uuid}"/>
+    <meta name="dtb:depth" content="1"/>
+    <meta name="dtb:totalPageCount" content="0"/>
+    <meta name="dtb:maxPageNumber" content="0"/>
+  </head>
+  <docTitle><text>${escXml(b.title)}</text></docTitle>
+  <navMap>${navPoints}</navMap>
+</ncx>`;
+  files.push({ name: 'OEBPS/toc.ncx', data: enc.encode(ncx) });
+
+  imgFiles.forEach(f => files.push(f));
+
+  const blob = makeZip(files);
+  download(blob, safeName(b.title) + '.epub');
+  toast('EPUB exported — open it in Apple Books!');
+}
+
+/* ============================================================
+   SETTINGS UI WIRING
+   ============================================================ */
+function renderThemeGrid() {
+  const grid = $('#themeGrid');
+  grid.innerHTML = Object.entries(THEMES).map(([key, t]) => `
+    <button class="theme-card ${currentTheme === key ? 'active' : ''}" data-theme="${key}">
+      <div class="theme-sw">
+        <i style="background:${t.bg}"></i>
+        <i style="background:${t.surface}"></i>
+        <i style="background:${t.paper}"></i>
+        <i style="background:var(--accent)"></i>
+      </div>
+      <span>${key}</span>
+    </button>`).join('');
+  $$('#themeGrid .theme-card').forEach(b => {
+    b.addEventListener('click', () => {
+      currentTheme = b.dataset.theme;
+      applyTheme(currentTheme);
+      renderThemeGrid();
+      saveUI();
+    });
+  });
+}
+
+function renderAccentSwatches() {
+  $('#accentSwatches').innerHTML =
+    `<button class="swatch ${!currentAccent ? 'on' : ''}" data-accent="" style="background:linear-gradient(140deg,#c9a227,#e0b83d)" title="Theme default"></button>` +
+    ACCENTS.map(c => `<button class="swatch ${currentAccent === c ? 'on' : ''}" data-accent="${c}" style="background:${c}"></button>`).join('');
+  $$('#accentSwatches .swatch').forEach(b => {
+    b.addEventListener('click', () => {
+      currentAccent = b.dataset.accent || null;
+      applyTheme(currentTheme);
+      renderAccentSwatches();
+      renderThemeGrid();
+      saveUI();
+    });
+  });
+}
+
+function saveUI() {
+  try {
+    const ui = JSON.parse(localStorage.getItem(UI_KEY)) || {};
+    ui.theme = currentTheme;
+    ui.accent = currentAccent;
+    localStorage.setItem(UI_KEY, JSON.stringify(ui));
+  } catch {}
+}
+
+function bindRange(id, valId, key, fmt) {
+  const el = $(id);
+  el.value = project.settings[key];
+  $(valId).textContent = fmt ? fmt(project.settings[key]) : project.settings[key];
+  el.addEventListener('input', () => {
+    const v = +el.value;
+    project.settings[key] = v;
+    $(valId).textContent = fmt ? fmt(v) : v;
+    applyTypography();
+    saveDebounced();
+  });
+}
+
+function bindSwitch(id, key, onChange) {
+  const el = $(id);
+  el.classList.toggle('on', !!project.settings[key]);
+  el.addEventListener('click', () => {
+    project.settings[key] = !project.settings[key];
+    el.classList.toggle('on', project.settings[key]);
+    applyTypography();
+    if (onChange) onChange(project.settings[key]);
+    saveProject();
+  });
+}
+
+function initSettingsUI() {
+  renderThemeGrid();
+  renderAccentSwatches();
+
+  bindRange('#rSize', '#vSize', 'size');
+  bindRange('#rLh', '#vLh', 'lh', v => (+v).toFixed(2));
+  bindRange('#rLs', '#vLs', 'ls', v => (+v).toFixed(1));
+  bindRange('#rPs', '#vPs', 'ps', v => (+v).toFixed(2));
+  bindRange('#rPagew', '#vPagew', 'pagew');
+  bindRange('#rPad', '#vPad', 'pad');
+
+  $('#btnFontPicker').addEventListener('click', openFontPicker);
+
+  $$('#alignChips .chip').forEach(c => {
+    c.classList.toggle('on', c.dataset.align === project.settings.align);
+    c.addEventListener('click', () => {
+      project.settings.align = c.dataset.align;
+      $$('#alignChips .chip').forEach(x => x.classList.toggle('on', x === c));
+      applyTypography();
+      saveProject();
+    });
+  });
+
+  bindSwitch('#swIndent', 'indent');
+  bindSwitch('#swDropcap', 'dropcap');
+  bindSwitch('#swTexture', 'texture');
+  bindSwitch('#swSpell', 'spell');
+  bindSwitch('#swTypewriter', 'typewriter');
+  bindSwitch('#swFocus', 'focus', (on) => {
+    $('#btnFocus').classList.toggle('on', on);
+  });
+  $('#btnFocus').classList.toggle('on', project.settings.focus);
+
+  // Book fields
+  $('#fTitle').value = project.title;
+  $('#fSubtitle').value = project.subtitle || '';
+  $('#fAuthor').value = project.author || '';
+  $('#fGoal').value = project.settings.goal || '';
+
+  $('#fTitle').addEventListener('input', e => {
+    project.title = e.target.value;
+    $('#bookTitle').value = e.target.value;
+    document.title = e.target.value + ' — Calyx Book';
+    saveDebounced();
+    drawCover();
+  });
+  $('#fSubtitle').addEventListener('input', e => { project.subtitle = e.target.value; saveDebounced(); drawCover(); });
+  $('#fAuthor').addEventListener('input', e => { project.author = e.target.value; saveDebounced(); drawCover(); });
+  $('#fGoal').addEventListener('input', e => {
+    project.settings.goal = +e.target.value || 0;
+    updateStats(); saveDebounced();
+  });
+
+  $('#bookTitle').addEventListener('input', e => {
+    project.title = e.target.value;
+    $('#fTitle').value = e.target.value;
+    document.title = e.target.value + ' — Calyx Book';
+    saveDebounced();
+    drawCover();
+  });
+
+  // Tabs
+  $$('.tab').forEach(t => t.addEventListener('click', () => {
+    $$('.tab').forEach(x => x.classList.toggle('active', x === t));
+    $$('.pane').forEach(p => p.classList.toggle('active', p.dataset.pane === t.dataset.tab));
+  }));
+}
+
+/* ============================================================
+   DRAWERS / MODALS
+   ============================================================ */
+function openDrawer(side) {
+  const el = side === 'left' ? $('#leftPanel') : $('#rightPanel');
+  el.classList.add('open');
+  $('#backdrop').classList.add('on');
+}
+function closeDrawers() {
+  $('#leftPanel').classList.remove('open');
+  $('#rightPanel').classList.remove('open');
+  $('#backdrop').classList.remove('on');
+}
+function toggleDrawer(side) {
+  const el = side === 'left' ? $('#leftPanel') : $('#rightPanel');
+  if (el.classList.contains('open')) closeDrawers();
+  else { closeDrawers(); openDrawer(side); }
+}
+
+function initGlobals() {
+  $('#btnBack').addEventListener('click', () => {
+    syncCurrent();
+    saveProject(true);
+    location.href = 'index.html';
+  });
+
+  $('#btnChapters').addEventListener('click', () => {
+    if (window.innerWidth > 1180) {
+      project.settings.focus = !project.settings.focus;
+      applyTypography();
+      $('#swFocus').classList.toggle('on', project.settings.focus);
+      $('#btnFocus').classList.toggle('on', project.settings.focus);
+      saveProject();
+    } else toggleDrawer('left');
+  });
+  $('#btnSettings').addEventListener('click', () => {
+    if (window.innerWidth > 1180) {
+      project.settings.focus = !project.settings.focus;
+      applyTypography();
+      $('#swFocus').classList.toggle('on', project.settings.focus);
+      $('#btnFocus').classList.toggle('on', project.settings.focus);
+      saveProject();
+    } else toggleDrawer('right');
+  });
+  $('#btnFocus').addEventListener('click', () => {
+    project.settings.focus = !project.settings.focus;
+    applyTypography();
+    $('#swFocus').classList.toggle('on', project.settings.focus);
+    $('#btnFocus').classList.toggle('on', project.settings.focus);
+    saveProject();
+  });
+  $('#backdrop').addEventListener('click', closeDrawers);
+
+  $('#btnAddChapter').addEventListener('click', addChapter);
+  $('#btnExport').addEventListener('click', () => {
+    renderExportGrid();
+    $('#exportOverlay').classList.add('open');
+  });
+  $('#btnCover').addEventListener('click', openCover);
+
+  $$('[data-close]').forEach(b => b.addEventListener('click', () => {
+    $('#' + b.dataset.close).classList.remove('open');
+  }));
+  $$('.overlay').forEach(o => o.addEventListener('click', (e) => {
+    if (e.target === o) o.classList.remove('open');
+  }));
+
+  $('#fileImage').addEventListener('change', (e) => {
+    Array.from(e.target.files).forEach(readImageFile);
+    e.target.value = '';
+  });
+
+  $('#btnBackup').addEventListener('click', () => {
+    syncCurrent();
+    download(JSON.stringify(project, null, 2), safeName(project.title) + '.calyx.json', 'application/json');
+    toast('Backup downloaded');
+  });
+
+  $('#btnDelete').addEventListener('click', () => {
+    if (!confirm('Delete "' + project.title + '" permanently? This cannot be undone.')) return;
+    try {
+      localStorage.removeItem(PROJ_KEY(project.id));
+      const raw = localStorage.getItem(INDEX_KEY);
+      const idx = raw ? JSON.parse(raw) : [];
+      localStorage.setItem(INDEX_KEY, JSON.stringify(idx.filter(e => e.id !== project.id)));
+    } catch {}
+    location.href = 'index.html';
+  });
+
+  $('#fontSearch').addEventListener('input', debounce(renderFontList, 120));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      $$('.overlay.open').forEach(o => o.classList.remove('open'));
+      closeDrawers();
+      deselectImage();
+    }
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'e') {
+      e.preventDefault();
+      renderExportGrid();
+      $('#exportOverlay').classList.add('open');
+    }
+  });
+
+  document.addEventListener('visibilitychange', () => { if (document.hidden) saveProject(true); });
+  window.addEventListener('beforeunload', () => { syncCurrent(); saveProject(true); });
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 1180) closeDrawers();
+  });
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+function hydrate() {
+  // Book fields
+  $('#bookTitle').value = project.title;
+  $('#fTitle').value = project.title;
+  $('#fSubtitle').value = project.subtitle || '';
+  $('#fAuthor').value = project.author || '';
+  $('#fGoal').value = project.settings.goal || '';
+  document.title = project.title + ' — Calyx Book';
+
+  // Editor
+  currentIdx = 0;
+  editor.innerHTML = project.chapters[currentIdx].html || '';
+  $('#sbChapter').textContent = project.chapters[currentIdx].title;
+
+  // Settings widgets
+  $('#rSize').value = project.settings.size; $('#vSize').textContent = project.settings.size;
+  $('#rLh').value = project.settings.lh; $('#vLh').textContent = (+project.settings.lh).toFixed(2);
+  $('#rLs').value = project.settings.ls; $('#vLs').textContent = (+project.settings.ls).toFixed(1);
+  $('#rPs').value = project.settings.ps; $('#vPs').textContent = (+project.settings.ps).toFixed(2);
+  $('#rPagew').value = project.settings.pagew; $('#vPagew').textContent = project.settings.pagew;
+  $('#rPad').value = project.settings.pad; $('#vPad').textContent = project.settings.pad;
+  $('#swIndent').classList.toggle('on', !!project.settings.indent);
+  $('#swDropcap').classList.toggle('on', !!project.settings.dropcap);
+  $('#swTexture').classList.toggle('on', !!project.settings.texture);
+  $('#swSpell').classList.toggle('on', project.settings.spell !== false);
+  $('#swTypewriter').classList.toggle('on', !!project.settings.typewriter);
+  $('#swFocus').classList.toggle('on', !!project.settings.focus);
+  $('#btnFocus').classList.toggle('on', !!project.settings.focus);
+  $$('#alignChips .chip').forEach(c => c.classList.toggle('on', c.dataset.align === project.settings.align));
+
+  applyTheme(currentTheme);
+  applyTypography();
+  renderChapters();
+  updateStats();
+  setSaveState('saved');
+}
+
+function boot() {
+  // load UI prefs
+  try {
+    const ui = JSON.parse(localStorage.getItem(UI_KEY)) || {};
+    if (ui.theme && THEMES[ui.theme]) currentTheme = ui.theme;
+    if (ui.accent) currentAccent = ui.accent;
+  } catch {}
+
+  // load project
+  project = loadProject();
+
+  if (!project) {
+    // No project found — show empty state and redirect
+    document.body.innerHTML = `
+      <div style="min-height:100vh;display:grid;place-items:center;padding:24px;background:#0a0c0f;color:#e9edf2;font-family:Inter,system-ui,sans-serif;text-align:center">
+        <div style="max-width:420px">
+          <div style="width:64px;height:64px;margin:0 auto 20px;border-radius:16px;background:rgba(255,255,255,.05);display:grid;place-items:center">
+            <img src="assets/icon.png" alt="" style="width:48px;height:48px;border-radius:12px">
+          </div>
+          <h1 style="font-size:20px;margin:0 0 8px;font-weight:700;letter-spacing:-.3px">Project not found</h1>
+          <p style="color:#98a3b2;font-size:13.5px;line-height:1.6;margin:0 0 24px">
+            This book may have been deleted, or the link is incorrect. Head back to your library to continue.
+          </p>
+          <a href="index.html" style="display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:9px;background:linear-gradient(140deg,#c9a227,#e0b83d);color:#17130a;text-decoration:none;font-weight:600;font-size:13.5px">
+            Back to library
+          </a>
+        </div>
+      </div>`;
+    return;
+  }
+
+  // Normalize project
+  if (!project.chapters || !project.chapters.length) {
+    project.chapters = [{ id: uid(), title: 'Chapter One', html: '<h1>Chapter One</h1><p></p>' }];
+  }
+  if (!project.cover) project.cover = {
+    bgType:'gradient', c1:'#8b5e34', c2:'#c9a227', bgImage:null,
+    layout:'center', font:'Playfair Display', titleSize:100, frame:true
+  };
+  if (!project.settings) project.settings = {};
+  const defaults = {
+    font:'Georgia', size:19, lh:1.85, ls:0, ps:1.1,
+    align:'left', indent:false, dropcap:false,
+    pagew:740, pad:64, texture:false,
+    focus:false, typewriter:false, spell:true, goal:50000
+  };
+  Object.keys(defaults).forEach(k => {
+    if (project.settings[k] === undefined) project.settings[k] = defaults[k];
+  });
+
+  // Preload fonts
+  loadFont(project.settings.font);
+  loadFont('Playfair Display');
+  loadFont('Merriweather');
+
+  // Wire up
+  initEditor();
+  initToolbar();
+  initImgBar();
+  initSettingsUI();
+  initGlobals();
+  initCover();
+  renderExportGrid();
+  hydrate();
+
+  // Greeting
+  setTimeout(() => {
+    toast('Welcome to ' + project.title, 2600);
+  }, 500);
+}
+
+document.addEventListener('DOMContentLoaded', boot);
+if (document.readyState !== 'loading') boot();
+  </script>
+</body>
+
+</html>
