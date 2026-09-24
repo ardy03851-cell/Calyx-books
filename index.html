@@ -1097,29 +1097,74 @@ function toast(msg, ms = 2400) {
 }
 
 /* ---------- Storage ---------- */
+function storageGet(key) {
+  try { return localStorage.getItem(key); } catch { return null; }
+}
+function storageSet(key, value) {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch {
+    return false;
+  }
+}
+function storageRemove(key) {
+  try { localStorage.removeItem(key); } catch {}
+}
 function getIndex() {
   try {
-    const raw = localStorage.getItem(INDEX_KEY);
+    const raw = storageGet(INDEX_KEY);
     const arr = raw ? JSON.parse(raw) : [];
-    return Array.isArray(arr) ? arr : [];
+    if (!Array.isArray(arr)) return [];
+    return arr.filter(e => e && typeof e.id === 'string').map(e => ({
+      id: e.id,
+      title: typeof e.title === 'string' ? e.title : 'Untitled Book',
+      author: typeof e.author === 'string' ? e.author : '',
+      subtitle: typeof e.subtitle === 'string' ? e.subtitle : '',
+      created: Number(e.created) || 0,
+      updated: Number(e.updated) || 0,
+      words: Number(e.words) || 0,
+      chapters: Number(e.chapters) || 0,
+      c1: typeof e.c1 === 'string' ? e.c1 : '#333',
+      c2: typeof e.c2 === 'string' ? e.c2 : '#666',
+      bgImage: typeof e.bgImage === 'string' ? e.bgImage : null,
+      bgType: e.bgType === 'image' ? 'image' : 'gradient',
+      goal: Number(e.goal) || 0
+    }));
   } catch { return []; }
 }
 function setIndex(arr) {
-  try { localStorage.setItem(INDEX_KEY, JSON.stringify(arr)); } catch (e) { toast('Storage full'); }
+  if (!storageSet(INDEX_KEY, JSON.stringify(arr))) {
+    toast('Your browser storage is full. Export a backup, then remove large images from older books.');
+    return false;
+  }
+  return true;
 }
 function getUI() {
-  try { return JSON.parse(localStorage.getItem(UI_KEY)) || { theme: 'ink', accent: null }; }
-  catch { return { theme: 'ink', accent: null }; }
+  try {
+    const raw = storageGet(UI_KEY);
+    const ui = raw ? JSON.parse(raw) : {};
+    return ui && typeof ui === 'object' ? ui : { theme: 'ink', accent: null };
+  } catch {
+    return { theme: 'ink', accent: null };
+  }
 }
 function loadProject(id) {
   try {
-    const raw = localStorage.getItem(PROJ_KEY(id));
+    const raw = storageGet(PROJ_KEY(id));
     return raw ? JSON.parse(raw) : null;
   } catch { return null; }
 }
 function saveProjectObj(p) {
-  try { localStorage.setItem(PROJ_KEY(p.id), JSON.stringify(p)); return true; }
-  catch (e) { toast('Storage limit reached'); return false; }
+  try {
+    const clean = normalizeProject(p);
+    if (!clean) throw new Error('Invalid project');
+    if (!storageSet(PROJ_KEY(clean.id), JSON.stringify(clean))) throw new Error('Storage full');
+    return true;
+  } catch {
+    toast('Could not save this book. Your browser storage may be full.');
+    return false;
+  }
 }
 
 /* ---------- Utils ---------- */
@@ -1189,6 +1234,29 @@ function defaultSettings() {
     focus: false, typewriter: false, spell: true, goal: 50000
   };
 }
+function normalizeProject(src) {
+  if (!src || typeof src !== 'object') return null;
+  const now = Date.now();
+  const p = {
+    id: typeof src.id === 'string' && src.id ? src.id : uid(),
+    title: typeof src.title === 'string' && src.title.trim() ? src.title.trim() : 'Untitled Book',
+    subtitle: typeof src.subtitle === 'string' ? src.subtitle : '',
+    author: typeof src.author === 'string' ? src.author : '',
+    created: Number(src.created) || now,
+    updated: Number(src.updated) || now,
+    chapters: Array.isArray(src.chapters) ? src.chapters.map((c, i) => ({
+      id: typeof c?.id === 'string' && c.id ? c.id : uid(),
+      title: typeof c?.title === 'string' && c.title.trim() ? c.title.trim() : `Chapter ${i + 1}`,
+      html: typeof c?.html === 'string' ? c.html : '<p></p>'
+    })) : [],
+    cover: { ...defaultCover(), ...(src.cover && typeof src.cover === 'object' ? src.cover : {}) },
+    settings: { ...defaultSettings(), ...(src.settings && typeof src.settings === 'object' ? src.settings : {}) },
+    version: 2
+  };
+  if (!p.chapters.length) p.chapters = templateChapters('blank', p.title);
+  return p;
+}
+
 function templateChapters(kind, title) {
   if (kind === 'novel') {
     return [
@@ -1207,7 +1275,7 @@ function templateChapters(kind, title) {
 function buildProject(opts) {
   const now = Date.now();
   const ui = getUI();
-  const p = {
+  return normalizeProject({
     id: uid(),
     title: opts.title || 'Untitled Book',
     subtitle: opts.subtitle || '',
@@ -1218,8 +1286,7 @@ function buildProject(opts) {
     cover: defaultCover(),
     settings: defaultSettings(),
     version: 2
-  };
-  return p;
+  });
 }
 
 /* ---------- Index sync ---------- */
@@ -1358,9 +1425,10 @@ function openProject(id) {
 
 function createProject(opts) {
   const p = buildProject(opts);
-  if (!saveProjectObj(p)) return;
+  if (!p || !saveProjectObj(p)) return false;
   upsertIndexEntry(p);
-  location.href = 'editor.html?id=' + encodeURIComponent(p.id);
+  location.assign('editor.html?id=' + encodeURIComponent(p.id));
+  return true;
 }
 
 function deleteProject(id) {
@@ -1522,23 +1590,19 @@ function importFile(file) {
       if (data.project) src = data.project;
       if (!src || !Array.isArray(src.chapters)) throw new Error('bad');
 
-      const p = {
+      const p = normalizeProject({
         id: uid(),
         title: src.title || 'Imported Book',
         subtitle: src.subtitle || '',
         author: src.author || '',
         created: Date.now(),
         updated: Date.now(),
-        chapters: src.chapters.map(c => ({
-          id: uid(),
-          title: c.title || 'Chapter',
-          html: c.html || '<p></p>'
-        })),
+        chapters: src.chapters,
         cover: src.cover || defaultCover(),
         settings: { ...defaultSettings(), ...(src.settings || data.settings || {}) },
         version: 2
-      };
-      if (!p.chapters.length) p.chapters = templateChapters('blank');
+      });
+      if (!p) throw new Error('bad project');
 
       if (!saveProjectObj(p)) return;
       upsertIndexEntry(p);
@@ -1554,7 +1618,11 @@ function importFile(file) {
 /* ============================================================
    INIT
    ============================================================ */
+let appInitialized = false;
+
 function init() {
+  if (appInitialized) return;
+  appInitialized = true;
   render();
 
   $('#btnNew').addEventListener('click', openNewModal);
