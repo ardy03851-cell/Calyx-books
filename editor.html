@@ -236,6 +236,10 @@
       background: #4a9d5c
     }
 
+    .save-state.error::before {
+      background: #d85c5c
+    }
+
     @keyframes pulse {
 
       0%,
@@ -1915,7 +1919,8 @@
             </div>
             <input type="range" id="rLs" min="-1" max="3" step="0.1">
             <div class="row" style="margin-top:14px">
-              <label>Paragraph spacing</label><span class="val" id="vPs">1.1</span></div>
+              <label>Paragraph spacing</label><span class="val" id="vPs">1.1</span>
+            </div>
             <input type="range" id="rPs" min="0" max="2.5" step="0.05">
           </div>
           <div class="sect">
@@ -2093,7 +2098,8 @@
                 <button class="chip" data-lay="bottom">Bottom</button>
               </div>
               <div class="row" style="margin-top:14px">
-                <label>Title size</label><span class="val" id="vCvSize">100</span></div>
+                <label>Title size</label><span class="val" id="vCvSize">100</span>
+              </div>
               <input type="range" id="cvSize" min="50" max="180" step="2">
               <div class="row" style="margin-top:14px"><label>Frame border</label>
                 <div class="switch on" id="cvFrame"></div>
@@ -2258,29 +2264,81 @@ let currentIdx = 0;
 let currentTheme = 'ink';
 let currentAccent = null;
 
+function storageGet(key) {
+  try { return localStorage.getItem(key); } catch { return null; }
+}
+function storageSet(key, value) {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch {
+    return false;
+  }
+}
+function storageRemove(key) {
+  try { localStorage.removeItem(key); } catch {}
+}
+
+function normalizeProject(src) {
+  if (!src || typeof src !== 'object') return null;
+  const now = Date.now();
+  const defaults = {
+    font:'Georgia', size:19, lh:1.85, ls:0, ps:1.1,
+    align:'left', indent:false, dropcap:false,
+    pagew:740, pad:64, texture:false,
+    focus:false, typewriter:false, spell:true, goal:50000
+  };
+  const coverDefaults = {
+    bgType:'gradient', c1:'#8b5e34', c2:'#c9a227', bgImage:null,
+    layout:'center', font:'Playfair Display', titleSize:100, frame:true
+  };
+  const chapters = Array.isArray(src.chapters) ? src.chapters.map((c, i) => ({
+    id: typeof c?.id === 'string' && c.id ? c.id : uid(),
+    title: typeof c?.title === 'string' && c.title.trim() ? c.title.trim() : `Chapter ${i + 1}`,
+    html: typeof c?.html === 'string' ? c.html : '<p></p>'
+  })) : [];
+  if (!chapters.length) chapters.push({
+    id: uid(),
+    title: 'Chapter One',
+    html: '<h1>Chapter One</h1><p></p>'
+  });
+  return {
+    id: typeof src.id === 'string' && src.id ? src.id : projectId,
+    title: typeof src.title === 'string' && src.title.trim() ? src.title.trim() : 'Untitled Book',
+    subtitle: typeof src.subtitle === 'string' ? src.subtitle : '',
+    author: typeof src.author === 'string' ? src.author : '',
+    created: Number(src.created) || now,
+    updated: Number(src.updated) || now,
+    chapters,
+    cover: { ...coverDefaults, ...(src.cover && typeof src.cover === 'object' ? src.cover : {}) },
+    settings: { ...defaults, ...(src.settings && typeof src.settings === 'object' ? src.settings : {}) },
+    version: 2
+  };
+}
+
 function loadProject() {
   if (!projectId) return null;
   try {
-    const raw = localStorage.getItem(PROJ_KEY(projectId));
-    return raw ? JSON.parse(raw) : null;
+    const raw = storageGet(PROJ_KEY(projectId));
+    return raw ? normalizeProject(JSON.parse(raw)) : null;
   } catch { return null; }
 }
 
 function saveProject(silent) {
-  if (!project) return;
+  if (!project || !project.chapters?.length) return false;
   project.updated = Date.now();
-  // ensure current chapter is synced
   if (project.chapters[currentIdx]) {
     project.chapters[currentIdx].html = editor.innerHTML;
   }
-  try {
-    localStorage.setItem(PROJ_KEY(project.id), JSON.stringify(project));
-    // update index entry
-    updateIndexEntry();
-    if (!silent) setSaveState('saved');
-  } catch (e) {
-    toast('Storage limit reached — export a backup to be safe.');
+  const payload = JSON.stringify(project);
+  if (!storageSet(PROJ_KEY(project.id), payload)) {
+    setSaveState('error');
+    toast('Could not save. Your browser storage may be full — export a backup and remove large images.');
+    return false;
   }
+  updateIndexEntry();
+  if (!silent) setSaveState('saved');
+  return true;
 }
 
 function updateIndexEntry() {
@@ -2305,17 +2363,29 @@ function updateIndexEntry() {
     };
     const i = idx.findIndex(e => e.id === project.id);
     if (i >= 0) idx[i] = entry; else idx.unshift(entry);
-    localStorage.setItem(INDEX_KEY, JSON.stringify(idx));
+    storageSet(INDEX_KEY, JSON.stringify(idx));
   } catch {}
 }
 
 let saveTimer = null;
 function setSaveState(state) {
   const el = $('#saveState');
-  el.classList.remove('saving','saved');
-  if (state === 'saving') { el.textContent = 'Saving…'; el.classList.add('saving'); }
-  else if (state === 'saved') { el.textContent = 'Saved'; el.classList.add('saved'); $('#sbSaved').textContent = 'All changes saved'; }
-  else { el.textContent = 'Unsaved'; }
+  el.classList.remove('saving','saved','error');
+  if (state === 'saving') {
+    el.textContent = 'Saving…';
+    el.classList.add('saving');
+  } else if (state === 'saved') {
+    el.textContent = 'Saved';
+    el.classList.add('saved');
+    $('#sbSaved').textContent = 'All changes saved';
+  } else if (state === 'error') {
+    el.textContent = 'Not saved';
+    el.classList.add('error');
+    $('#sbSaved').textContent = 'Save failed — export a backup';
+  } else {
+    el.textContent = 'Unsaved';
+    $('#sbSaved').textContent = 'Unsaved changes';
+  }
 }
 const saveDebounced = debounce(() => saveProject(false), 700);
 
@@ -3693,10 +3763,11 @@ function renderAccentSwatches() {
 
 function saveUI() {
   try {
-    const ui = JSON.parse(localStorage.getItem(UI_KEY)) || {};
+    const raw = storageGet(UI_KEY);
+    const ui = raw ? JSON.parse(raw) : {};
     ui.theme = currentTheme;
     ui.accent = currentAccent;
-    localStorage.setItem(UI_KEY, JSON.stringify(ui));
+    storageSet(UI_KEY, JSON.stringify(ui));
   } catch {}
 }
 
@@ -3874,10 +3945,10 @@ function initGlobals() {
   $('#btnDelete').addEventListener('click', () => {
     if (!confirm('Delete "' + project.title + '" permanently? This cannot be undone.')) return;
     try {
-      localStorage.removeItem(PROJ_KEY(project.id));
-      const raw = localStorage.getItem(INDEX_KEY);
+      storageRemove(PROJ_KEY(project.id));
+      const raw = storageGet(INDEX_KEY);
       const idx = raw ? JSON.parse(raw) : [];
-      localStorage.setItem(INDEX_KEY, JSON.stringify(idx.filter(e => e.id !== project.id)));
+      storageSet(INDEX_KEY, JSON.stringify(idx.filter(e => e.id !== project.id)));
     } catch {}
     location.href = 'index.html';
   });
@@ -3898,11 +3969,29 @@ function initGlobals() {
   });
 
   document.addEventListener('visibilitychange', () => { if (document.hidden) saveProject(true); });
-  window.addEventListener('beforeunload', () => { syncCurrent(); saveProject(true); });
+  window.addEventListener('beforeunload', () => {
+    try {
+      syncCurrent();
+      if (saveTimer) {
+        clearTimeout(saveTimer);
+        saveTimer = null;
+      }
+      saveProject(true);
+    } catch {}
+  });
   window.addEventListener('resize', () => {
     if (window.innerWidth > 1180) closeDrawers();
   });
 }
+
+window.addEventListener('error', (event) => {
+  console.error('Calyx Book error:', event.error || event.message);
+  try { toast('Something went wrong, but your current work is still open. Try saving.'); } catch {}
+});
+window.addEventListener('unhandledrejection', (event) => {
+  console.error('Calyx Book promise error:', event.reason);
+  try { toast('A background task failed. Your editor is still available.'); } catch {}
+});
 
 /* ============================================================
    INIT
@@ -3944,10 +4033,16 @@ function hydrate() {
   setSaveState('saved');
 }
 
+let appBooted = false;
+
 function boot() {
+  if (appBooted) return;
+  appBooted = true;
+
   // load UI prefs
   try {
-    const ui = JSON.parse(localStorage.getItem(UI_KEY)) || {};
+    const raw = storageGet(UI_KEY);
+    const ui = raw ? JSON.parse(raw) : {};
     if (ui.theme && THEMES[ui.theme]) currentTheme = ui.theme;
     if (ui.accent) currentAccent = ui.accent;
   } catch {}
@@ -3975,24 +4070,7 @@ function boot() {
     return;
   }
 
-  // Normalize project
-  if (!project.chapters || !project.chapters.length) {
-    project.chapters = [{ id: uid(), title: 'Chapter One', html: '<h1>Chapter One</h1><p></p>' }];
-  }
-  if (!project.cover) project.cover = {
-    bgType:'gradient', c1:'#8b5e34', c2:'#c9a227', bgImage:null,
-    layout:'center', font:'Playfair Display', titleSize:100, frame:true
-  };
-  if (!project.settings) project.settings = {};
-  const defaults = {
-    font:'Georgia', size:19, lh:1.85, ls:0, ps:1.1,
-    align:'left', indent:false, dropcap:false,
-    pagew:740, pad:64, texture:false,
-    focus:false, typewriter:false, spell:true, goal:50000
-  };
-  Object.keys(defaults).forEach(k => {
-    if (project.settings[k] === undefined) project.settings[k] = defaults[k];
-  });
+  // Project data has already been normalized by loadProject().
 
   // Preload fonts
   loadFont(project.settings.font);
