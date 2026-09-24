@@ -44,6 +44,7 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       overscroll-behavior: none;
+      touch-action: manipulation;
     }
 
     :root {
@@ -73,6 +74,7 @@
       --doc-ps: 1.1em;
       --page-w: 740px;
       --page-pad: 64px;
+      --decor-color: rgba(0, 0, 0, .14);
     }
 
     button,
@@ -140,10 +142,12 @@
       flex: 0 0 auto;
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 0 12px;
+      gap: 6px;
+      padding: 0 10px;
       height: calc(var(--top-h) + env(safe-area-inset-top));
       padding-top: env(safe-area-inset-top);
+      padding-left: max(10px, env(safe-area-inset-left));
+      padding-right: max(10px, env(safe-area-inset-right));
       background: rgba(10, 12, 15, .9);
       backdrop-filter: blur(18px) saturate(1.4);
       -webkit-backdrop-filter: blur(18px) saturate(1.4);
@@ -153,9 +157,9 @@
     }
 
     .tb-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 9px;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
       display: grid;
       place-items: center;
       flex: 0 0 auto;
@@ -164,8 +168,8 @@
     }
 
     .tb-btn svg {
-      width: 18px;
-      height: 18px
+      width: 19px;
+      height: 19px
     }
 
     .tb-btn:hover {
@@ -186,7 +190,7 @@
       background: transparent;
       border: 1px solid transparent;
       border-radius: 8px;
-      padding: 7px 12px;
+      padding: 8px 12px;
       font-weight: 600;
       font-size: 14px;
       color: var(--text);
@@ -256,8 +260,8 @@
       display: inline-flex;
       align-items: center;
       gap: 7px;
-      padding: 8px 14px;
-      border-radius: 8px;
+      padding: 9px 14px;
+      border-radius: 9px;
       font-weight: 600;
       font-size: 13px;
       transition: .14s;
@@ -306,7 +310,7 @@
     .main {
       flex: 1;
       display: grid;
-      grid-template-columns: 248px minmax(0, 1fr) 320px;
+      grid-template-columns: 260px minmax(0, 1fr) 336px;
       overflow: hidden;
       min-height: 0;
     }
@@ -317,6 +321,7 @@
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
       padding-bottom: calc(24px + env(safe-area-inset-bottom));
+      overscroll-behavior: contain;
     }
 
     .sidebar.left {
@@ -350,9 +355,9 @@
     }
 
     .mini-btn {
-      width: 26px;
-      height: 26px;
-      border-radius: 7px;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
       display: grid;
       place-items: center;
       color: var(--text-2);
@@ -379,12 +384,13 @@
       display: flex;
       align-items: center;
       gap: 9px;
-      padding: 9px 10px;
+      padding: 10px;
       border-radius: 8px;
-      margin-bottom: 2px;
+      margin-bottom: 3px;
       transition: .12s;
       cursor: pointer;
       border: 1px solid transparent;
+      position: relative;
     }
 
     .chapter:hover {
@@ -407,13 +413,9 @@
       border-radius: 0 2px 2px 0;
     }
 
-    .chapter {
-      position: relative
-    }
-
     .ch-num {
-      width: 22px;
-      height: 22px;
+      width: 24px;
+      height: 24px;
       flex: 0 0 auto;
       border-radius: 6px;
       display: grid;
@@ -466,9 +468,9 @@
     }
 
     .ch-tools button {
-      width: 22px;
-      height: 22px;
-      border-radius: 5px;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
       display: grid;
       place-items: center;
       color: var(--text-3);
@@ -583,8 +585,8 @@
     }
 
     .tbt {
-      min-width: 32px;
-      height: 32px;
+      min-width: 34px;
+      height: 34px;
       padding: 0 8px;
       border-radius: 7px;
       display: grid;
@@ -622,7 +624,7 @@
     }
 
     .tb-select {
-      height: 32px;
+      height: 34px;
       border-radius: 7px;
       background: rgba(255, 255, 255, .045);
       border: 1px solid var(--border);
@@ -657,6 +659,7 @@
       display: flex;
       justify-content: center;
       align-items: flex-start;
+      overscroll-behavior: contain;
     }
 
     .page {
@@ -786,7 +789,6 @@
       opacity: .5;
       margin: 2.5em 0;
       position: relative;
-      contenteditable: false;
     }
 
     .page .page-break::after {
@@ -840,6 +842,151 @@
 
     body.theme-dark .page:empty::before {
       color: rgba(255, 255, 255, .18)
+    }
+
+    /* ---------- NEW: Chapter heading styles ---------- */
+    .page.chapter-plain h1:first-of-type {
+      text-align: left;
+      font-size: 1.9em;
+    }
+
+    .page.chapter-centered h1:first-of-type {
+      text-align: center;
+      font-size: 1.9em;
+      margin: 1.2em 0 1.4em;
+      letter-spacing: -.01em;
+    }
+
+    .page.chapter-centered h1:first-of-type::after {
+      content: "";
+      display: block;
+      width: 48px;
+      height: 2px;
+      background: var(--accent);
+      margin: 18px auto 0;
+      opacity: .7;
+    }
+
+    .page.chapter-rule h1:first-of-type {
+      text-align: center;
+      font-size: 1.6em;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin: 1.6em 0 1.6em;
+    }
+
+    .page.chapter-rule h1:first-of-type::before,
+    .page.chapter-rule h1:first-of-type::after {
+      content: "";
+      display: block;
+      width: 30%;
+      height: 1px;
+      background: currentColor;
+      opacity: .25;
+      margin: 0 auto;
+    }
+
+    .page.chapter-rule h1:first-of-type::before {
+      margin-bottom: 1.2em
+    }
+
+    .page.chapter-rule h1:first-of-type::after {
+      margin-top: 1.2em
+    }
+
+    .page.chapter-display h1:first-of-type {
+      text-align: center;
+      font-size: 2.6em;
+      font-weight: 700;
+      line-height: 1.1;
+      margin: 1em 0 1.4em;
+      letter-spacing: -.02em;
+    }
+
+    .page.chapter-numeral h1:first-of-type {
+      text-align: center;
+      font-size: 3em;
+      font-weight: 700;
+      margin: 1em 0 1.4em;
+      color: var(--accent);
+      letter-spacing: -.02em;
+    }
+
+    /* ---------- NEW: Page decorations ---------- */
+    .page.decor-frame::before {
+      content: "";
+      position: absolute;
+      inset: 20px;
+      border: 1px solid var(--decor-color);
+      pointer-events: none;
+      border-radius: 2px;
+    }
+
+    .page.decor-ornate::before {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border: 1px solid var(--decor-color);
+      pointer-events: none;
+      box-shadow: inset 0 0 0 4px var(--paper), inset 0 0 0 5px var(--decor-color);
+    }
+
+    .page.decor-side-rule::before {
+      content: "";
+      position: absolute;
+      left: 32px;
+      top: 60px;
+      bottom: 60px;
+      width: 2px;
+      background: var(--accent);
+      opacity: .55;
+      pointer-events: none;
+    }
+
+    .page.decor-corner::before,
+    .page.decor-corner::after {
+      content: "";
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border: 2px solid var(--accent);
+      opacity: .6;
+      pointer-events: none;
+    }
+
+    .page.decor-corner::before {
+      top: 18px;
+      left: 18px;
+      border-right: none;
+      border-bottom: none;
+    }
+
+    .page.decor-corner::after {
+      bottom: 18px;
+      right: 18px;
+      border-left: none;
+      border-top: none;
+    }
+
+    .page.decor-dots::before {
+      content: "";
+      position: absolute;
+      inset: 16px;
+      border: 2px dotted var(--decor-color);
+      pointer-events: none;
+      border-radius: 6px;
+    }
+
+    /* ---------- NEW: Ornaments ---------- */
+    .page .ornament {
+      text-align: center;
+      font-size: 1.3em;
+      color: var(--accent);
+      margin: 1.8em 0;
+      letter-spacing: .5em;
+      opacity: .85;
+      user-select: none;
     }
 
     /* ---------- Image blocks ---------- */
@@ -937,8 +1084,8 @@
     }
 
     #imgBar button {
-      min-width: 30px;
-      height: 30px;
+      min-width: 32px;
+      height: 32px;
       padding: 0 8px;
       border-radius: 7px;
       display: grid;
@@ -974,6 +1121,8 @@
       gap: 16px;
       padding: 7px 18px;
       padding-bottom: calc(7px + env(safe-area-inset-bottom));
+      padding-left: max(18px, env(safe-area-inset-left));
+      padding-right: max(18px, env(safe-area-inset-right));
       background: rgba(10, 12, 15, .85);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
@@ -982,6 +1131,11 @@
       color: var(--text-3);
       overflow-x: auto;
       white-space: nowrap;
+      scrollbar-width: none;
+    }
+
+    .statusbar::-webkit-scrollbar {
+      display: none
     }
 
     .statusbar b {
@@ -1045,23 +1199,31 @@
     .tabs {
       display: flex;
       gap: 2px;
-      padding: 10px 10px 0;
+      padding: 10px 8px 0;
       position: sticky;
       top: 0;
       z-index: 6;
       background: var(--bg-2);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .tabs::-webkit-scrollbar {
+      display: none
     }
 
     .tab {
-      flex: 1;
+      flex: 1 0 auto;
+      min-width: 46px;
       padding: 9px 4px;
       border-radius: 8px 8px 0 0;
-      font-size: 11.5px;
+      font-size: 11px;
       font-weight: 600;
       color: var(--text-3);
       text-align: center;
       transition: .14s;
-      letter-spacing: .2px;
+      letter-spacing: .1px;
+      white-space: nowrap;
     }
 
     .tab:hover {
@@ -1097,6 +1259,7 @@
       font-weight: 700;
     }
 
+    /* Themes grid — compact */
     .theme-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -1105,7 +1268,7 @@
 
     .theme-card {
       border-radius: 9px;
-      padding: 8px 5px 6px;
+      padding: 6px 4px 5px;
       border: 1.5px solid transparent;
       background: var(--surface);
       text-align: center;
@@ -1123,11 +1286,11 @@
     }
 
     .theme-sw {
-      height: 32px;
+      height: 30px;
       border-radius: 5px;
       display: flex;
       overflow: hidden;
-      margin-bottom: 6px;
+      margin-bottom: 5px;
       box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .2);
     }
 
@@ -1136,10 +1299,15 @@
     }
 
     .theme-card span {
-      font-size: 9.5px;
+      font-size: 9px;
       color: var(--text-3);
       font-weight: 600;
-      letter-spacing: .2px
+      letter-spacing: .2px;
+      text-transform: capitalize;
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .theme-card.active span {
@@ -1173,7 +1341,7 @@
       -webkit-appearance: none;
       appearance: none;
       width: 100%;
-      height: 3px;
+      height: 4px;
       border-radius: 3px;
       background: rgba(255, 255, 255, .1);
       outline: none;
@@ -1183,8 +1351,8 @@
 
     input[type=range]::-webkit-slider-thumb {
       -webkit-appearance: none;
-      width: 16px;
-      height: 16px;
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
       background: var(--accent);
       border: 2px solid var(--bg-2);
@@ -1197,8 +1365,8 @@
     }
 
     input[type=range]::-moz-range-thumb {
-      width: 14px;
-      height: 14px;
+      width: 18px;
+      height: 18px;
       border-radius: 50%;
       background: var(--accent);
       border: 2px solid var(--bg-2);
@@ -1207,10 +1375,10 @@
 
     .field {
       width: 100%;
-      padding: 10px 12px;
+      padding: 11px 12px;
       background: rgba(255, 255, 255, .04);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 9px;
       outline: none;
       font-size: 13px;
       transition: .14s;
@@ -1226,8 +1394,8 @@
     }
 
     .switch {
-      width: 38px;
-      height: 22px;
+      width: 40px;
+      height: 24px;
       border-radius: 12px;
       background: rgba(255, 255, 255, .12);
       position: relative;
@@ -1241,8 +1409,8 @@
       position: absolute;
       top: 3px;
       left: 3px;
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
       border-radius: 50%;
       background: #fff;
       transition: .2s;
@@ -1277,7 +1445,7 @@
     }
 
     .chip {
-      padding: 7px 12px;
+      padding: 8px 12px;
       border-radius: 18px;
       background: var(--surface);
       border: 1px solid var(--border);
@@ -1285,6 +1453,7 @@
       font-weight: 600;
       color: var(--text-2);
       transition: .14s;
+      white-space: nowrap;
     }
 
     .chip:hover {
@@ -1305,8 +1474,8 @@
     }
 
     .swatch {
-      width: 30px;
-      height: 30px;
+      width: 32px;
+      height: 32px;
       border-radius: 8px;
       border: 2px solid transparent;
       transition: .14s;
@@ -1319,6 +1488,349 @@
     .swatch.on {
       border-color: #fff;
       box-shadow: 0 0 0 2px var(--accent)
+    }
+
+    /* ---------- NEW: Book presets ---------- */
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .preset-card {
+      padding: 12px 10px;
+      border-radius: 10px;
+      background: var(--surface);
+      border: 1.5px solid transparent;
+      text-align: left;
+      transition: .14s;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .preset-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--border-hi);
+      background: var(--surface-2);
+    }
+
+    .preset-card.active {
+      border-color: var(--accent);
+      background: rgba(201, 162, 39, .06);
+    }
+
+    .preset-card .pc-ico {
+      font-size: 16px;
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+
+    .preset-card b {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -.1px;
+    }
+
+    .preset-card small {
+      font-size: 10px;
+      color: var(--text-3);
+      line-height: 1.35;
+    }
+
+    /* ---------- NEW: Look preview ---------- */
+    .look-preview {
+      background: var(--paper);
+      color: var(--paper-text);
+      border-radius: 10px;
+      padding: 22px 20px;
+      margin-bottom: 12px;
+      text-align: center;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .06);
+      font-family: var(--doc-font);
+      position: relative;
+      overflow: hidden;
+      min-height: 130px;
+    }
+
+    .look-preview h5 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+
+    .look-preview .lp-orn {
+      color: var(--accent);
+      font-size: 14px;
+      letter-spacing: .3em;
+      opacity: .8;
+    }
+
+    .look-preview .lp-rule {
+      width: 36px;
+      height: 2px;
+      background: var(--accent);
+      margin: 8px auto 0;
+      opacity: .7;
+    }
+
+    /* ---------- NEW: Ornament picker ---------- */
+    .orn-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .orn-btn {
+      padding: 12px 4px;
+      border-radius: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      font-size: 16px;
+      letter-spacing: 0;
+      transition: .14s;
+      display: grid;
+      place-items: center;
+    }
+
+    .orn-btn:hover {
+      background: var(--surface-2);
+      border-color: var(--border-hi);
+      transform: translateY(-1px);
+    }
+
+    /* ---------- NEW: Sprint timer ---------- */
+    .sprint-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .sprint-ring-wrap {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      margin: 0 auto 12px;
+    }
+
+    .sprint-ring {
+      transform: rotate(-90deg);
+      width: 140px;
+      height: 140px;
+    }
+
+    .sprint-ring circle {
+      fill: none;
+      stroke-width: 7;
+      stroke-linecap: round;
+    }
+
+    .sprint-ring .bg {
+      stroke: rgba(255, 255, 255, .08);
+    }
+
+    .sprint-ring .fg {
+      stroke: url(#sprintGrad);
+      transition: stroke-dashoffset .35s linear;
+    }
+
+    .sprint-time {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-size: 26px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -.5px;
+    }
+
+    .sprint-meta {
+      font-size: 11.5px;
+      color: var(--text-3);
+      margin-bottom: 14px;
+    }
+
+    .sprint-meta b {
+      color: var(--text-2);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .sprint-durations {
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .sprint-durations .chip {
+      padding: 6px 12px;
+      font-size: 11px;
+    }
+
+    .sprint-controls {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .sprint-controls button {
+      padding: 10px 18px;
+      border-radius: 9px;
+      font-weight: 600;
+      font-size: 12.5px;
+      transition: .14s;
+    }
+
+    .sprint-controls .primary {
+      background: linear-gradient(140deg, var(--accent), var(--accent-hi));
+      color: #17130a;
+      min-width: 100px;
+    }
+
+    .sprint-controls .ghost {
+      background: rgba(255, 255, 255, .05);
+      border: 1px solid var(--border);
+      color: var(--text-2);
+    }
+
+    .sprint-controls button:active {
+      transform: scale(.97);
+    }
+
+    /* ---------- NEW: Session stats ---------- */
+    .mini-stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+    }
+
+    .mini-stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 10px 8px;
+      text-align: center;
+    }
+
+    .mini-stat b {
+      display: block;
+      font-size: 15px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -.3px;
+      color: var(--text);
+    }
+
+    .mini-stat span {
+      font-size: 9px;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: .7px;
+      font-weight: 600;
+    }
+
+    /* ---------- NEW: Command palette ---------- */
+    .cmdk-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 400;
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 14vh 20px 20px;
+      background: rgba(5, 7, 9, .55);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .cmdk-overlay.open {
+      display: flex;
+      animation: fadeIn .14s ease;
+    }
+
+    .cmdk {
+      width: 100%;
+      max-width: 560px;
+      background: var(--surface);
+      border: 1px solid var(--border-hi);
+      border-radius: 14px;
+      box-shadow: 0 40px 80px -20px rgba(0, 0, 0, .9);
+      overflow: hidden;
+      animation: modalIn .18s cubic-bezier(.2, 1.1, .4, 1);
+    }
+
+    .cmdk-input {
+      width: 100%;
+      padding: 16px 20px;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cmdk-list {
+      max-height: 380px;
+      overflow-y: auto;
+      padding: 6px;
+    }
+
+    .cmdk-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 9px;
+      cursor: pointer;
+      transition: .1s;
+      font-size: 13.5px;
+      color: var(--text-2);
+    }
+
+    .cmdk-item.active,
+    .cmdk-item:hover {
+      background: var(--surface-2);
+      color: var(--text);
+    }
+
+    .cmdk-item .cmdk-ico {
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      background: rgba(255, 255, 255, .05);
+      color: var(--accent);
+      flex: 0 0 auto;
+    }
+
+    .cmdk-item .cmdk-ico svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    .cmdk-item small {
+      margin-left: auto;
+      font-size: 10.5px;
+      color: var(--text-3);
+      font-family: "JetBrains Mono", monospace;
+    }
+
+    .cmdk-empty {
+      padding: 22px;
+      text-align: center;
+      color: var(--text-3);
+      font-size: 12.5px;
     }
 
     /* ============================================================
@@ -1420,9 +1932,9 @@
     }
 
     .x {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
       flex: 0 0 auto;
       display: grid;
       place-items: center;
@@ -1659,7 +2171,8 @@
         position: fixed;
         top: calc(var(--top-h) + env(safe-area-inset-top));
         bottom: 0;
-        width: 300px;
+        width: 320px;
+        max-width: 86vw;
         z-index: 50;
         transition: transform .26s cubic-bezier(.3, 1, .4, 1);
         box-shadow: 0 0 60px rgba(0, 0, 0, .6);
@@ -1686,7 +2199,7 @@
       }
 
       .top-btn {
-        padding: 8px 10px
+        padding: 9px 11px
       }
 
       .book-title {
@@ -1734,12 +2247,45 @@
       .overlay,
       #toasts,
       #imgBar,
-      .backdrop {
+      .backdrop,
+      .cmdk-overlay {
         display: none !important
       }
 
       #printArea {
         display: block !important
+      }
+    }
+
+    /* ---------- iPad-specific: bigger touch targets ---------- */
+    @media (pointer: coarse) {
+      .tbt {
+        min-width: 38px;
+        height: 38px
+      }
+
+      .tb-btn {
+        width: 42px;
+        height: 42px
+      }
+
+      .mini-btn {
+        width: 32px;
+        height: 32px
+      }
+
+      .chip {
+        padding: 9px 14px
+      }
+
+      .swatch {
+        width: 36px;
+        height: 36px
+      }
+
+      input[type=range]::-webkit-slider-thumb {
+        width: 22px;
+        height: 22px
       }
     }
   </style>
@@ -1759,6 +2305,9 @@
       <input class="book-title" id="bookTitle" value="Untitled Book" spellcheck="false" aria-label="Book title">
       <span class="save-state" id="saveState">Saved</span>
       <div class="grow"></div>
+      <button class="tb-btn" id="btnCmd" title="Command palette (⌘K)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+    </button>
       <button class="tb-btn" id="btnFocus" title="Focus mode">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
     </button>
@@ -1840,6 +2389,9 @@
           <button class="tbt" id="btnHr" title="Divider">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12h16"/></svg>
         </button>
+          <button class="tbt" id="btnOrnament" title="Ornament">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"/><path d="M5 18h14"/></svg>
+        </button>
           <span class="tb-sep"></span>
           <button class="tbt" data-cmd="justifyLeft" title="Align left">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h12M3 18h16"/></svg>
@@ -1885,7 +2437,9 @@
         <div class="tabs">
           <button class="tab active" data-tab="theme">Theme</button>
           <button class="tab" data-tab="type">Type</button>
-          <button class="tab" data-tab="layout">Layout</button>
+          <button class="tab" data-tab="layout">Page</button>
+          <button class="tab" data-tab="look">Look</button>
+          <button class="tab" data-tab="tools">Tools</button>
           <button class="tab" data-tab="book">Book</button>
         </div>
 
@@ -1899,6 +2453,17 @@
             <h4>Accent Color</h4>
             <div class="swatches" id="accentSwatches"></div>
           </div>
+          <div class="sect">
+            <h4>Paper Tone</h4>
+            <div class="chip-row" id="paperChips">
+              <button class="chip on" data-paper="">Default</button>
+              <button class="chip" data-paper="#fffaf0">Cream</button>
+              <button class="chip" data-paper="#ffffff">Bright</button>
+              <button class="chip" data-paper="#f5f0e3">Ivory</button>
+              <button class="chip" data-paper="#e8dfc7">Parchment</button>
+              <button class="chip" data-paper="#0f1626">Dark</button>
+            </div>
+          </div>
         </div>
 
         <!-- TYPE PANE -->
@@ -1906,7 +2471,7 @@
           <div class="sect">
             <h4>Document Font</h4>
             <div class="font-preview" id="fontPreview">The quick brown fox jumps over the lazy dog.</div>
-            <button class="chip" id="btnFontPicker" style="width:100%;padding:11px 12px;border-radius:9px;text-align:center">Choose from 300+ fonts</button>
+            <button class="chip" id="btnFontPicker" style="width:100%;padding:12px;border-radius:9px;text-align:center">Choose from 300+ fonts</button>
           </div>
           <div class="sect">
             <h4>Typography</h4>
@@ -1962,6 +2527,113 @@
             <div class="row"><label>Spell check</label>
               <div class="switch on" id="swSpell"></div>
             </div>
+            <div class="row"><label>Warm page tint</label>
+              <div class="switch" id="swWarm"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LOOK PANE (NEW) -->
+        <div class="pane" data-pane="look">
+          <div class="sect">
+            <h4>Book Presets</h4>
+            <div class="preset-grid" id="presetGrid"></div>
+          </div>
+          <div class="sect">
+            <h4>Live Preview</h4>
+            <div class="look-preview" id="lookPreview">
+              <div class="lp-orn">❦</div>
+              <h5 id="lookPreviewTitle">Chapter One</h5>
+              <div id="lookPreviewRule" class="lp-rule"></div>
+            </div>
+          </div>
+          <div class="sect">
+            <h4>Chapter Heading</h4>
+            <div class="chip-row" id="chapterStyleChips">
+              <button class="chip" data-ch="plain">Plain</button>
+              <button class="chip on" data-ch="centered">Centered</button>
+              <button class="chip" data-ch="rule">Rule</button>
+              <button class="chip" data-ch="display">Display</button>
+              <button class="chip" data-ch="numeral">Numeral</button>
+            </div>
+          </div>
+          <div class="sect">
+            <h4>Page Decoration</h4>
+            <div class="chip-row" id="decorChips">
+              <button class="chip on" data-decor="none">None</button>
+              <button class="chip" data-decor="frame">Frame</button>
+              <button class="chip" data-decor="ornate">Ornate</button>
+              <button class="chip" data-decor="side-rule">Side Rule</button>
+              <button class="chip" data-decor="corner">Corners</button>
+              <button class="chip" data-decor="dots">Dots</button>
+            </div>
+          </div>
+          <div class="sect">
+            <h4>Ornament Divider</h4>
+            <p style="font-size:11px;color:var(--text-3);margin:-4px 0 10px;line-height:1.5">
+              Tap to insert at the cursor position in your text.
+            </p>
+            <div class="orn-grid" id="ornGrid"></div>
+          </div>
+        </div>
+
+        <!-- TOOLS PANE (NEW) -->
+        <div class="pane" data-pane="tools">
+          <div class="sect">
+            <h4>Writing Sprint</h4>
+            <div class="sprint-card">
+              <div class="sprint-ring-wrap">
+                <svg class="sprint-ring" viewBox="0 0 140 140">
+                  <defs>
+                    <linearGradient id="sprintGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="var(--accent)" />
+                      <stop offset="100%" stop-color="var(--accent-hi)" />
+                    </linearGradient>
+                  </defs>
+                  <circle class="bg" cx="70" cy="70" r="60" />
+                  <circle class="fg" id="sprintRing" cx="70" cy="70" r="60" stroke-dasharray="377"
+                    stroke-dashoffset="0" />
+                </svg>
+                <div class="sprint-time" id="sprintTime">25:00</div>
+              </div>
+              <div class="sprint-meta">
+                <b id="sprintWords">0</b> words written this sprint
+              </div>
+              <div class="sprint-durations" id="sprintDurations">
+                <button class="chip" data-min="10">10 min</button>
+                <button class="chip on" data-min="25">25 min</button>
+                <button class="chip" data-min="45">45 min</button>
+                <button class="chip" data-min="60">60 min</button>
+              </div>
+              <div class="sprint-controls">
+                <button class="primary" id="sprintStart">Start</button>
+                <button class="ghost" id="sprintReset">Reset</button>
+              </div>
+            </div>
+          </div>
+          <div class="sect">
+            <h4>Today</h4>
+            <div class="mini-stat-grid">
+              <div class="mini-stat"><b id="msToday">0</b><span>Words</span></div>
+              <div class="mini-stat"><b id="msStreak">0</b><span>Streak</span></div>
+              <div class="mini-stat"><b id="msBest">0</b><span>Best day</span></div>
+            </div>
+          </div>
+          <div class="sect">
+            <h4>Session</h4>
+            <div class="mini-stat-grid" style="grid-template-columns:1fr 1fr">
+              <div class="mini-stat"><b id="msSession">0</b><span>Session words</span></div>
+              <div class="mini-stat"><b id="msTime">0m</b><span>Time writing</span></div>
+            </div>
+          </div>
+          <div class="sect">
+            <h4>Ambience</h4>
+            <div class="chip-row" id="ambienceChips">
+              <button class="chip on" data-amb="none">None</button>
+              <button class="chip" data-amb="rain">Rain</button>
+              <button class="chip" data-amb="cafe">Café</button>
+              <button class="chip" data-amb="forest">Forest</button>
+            </div>
           </div>
         </div>
 
@@ -1979,8 +2651,8 @@
           </div>
           <div class="sect">
             <h4>Project</h4>
-            <button class="chip" id="btnBackup" style="width:100%;padding:11px 12px;border-radius:9px;text-align:center;margin-bottom:8px">Download backup</button>
-            <button class="chip" id="btnDelete" style="width:100%;padding:11px 12px;border-radius:9px;text-align:center;color:#ef7b7b;border-color:rgba(239,123,123,.3)">Delete this book</button>
+            <button class="chip" id="btnBackup" style="width:100%;padding:12px;border-radius:9px;text-align:center;margin-bottom:8px">Download backup</button>
+            <button class="chip" id="btnDelete" style="width:100%;padding:12px;border-radius:9px;text-align:center;color:#ef7b7b;border-color:rgba(239,123,123,.3)">Delete this book</button>
           </div>
         </div>
       </aside>
@@ -2012,6 +2684,14 @@
     <button data-img="delete" title="Delete">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
   </button>
+  </div>
+
+  <!-- ============ COMMAND PALETTE (NEW) ============ -->
+  <div class="cmdk-overlay" id="cmdkOverlay">
+    <div class="cmdk" role="dialog" aria-label="Command palette">
+      <input class="cmdk-input" id="cmdkInput" placeholder="Type a command…" autocomplete="off" spellcheck="false">
+      <div class="cmdk-list" id="cmdkList"></div>
+    </div>
   </div>
 
   <!-- ============ EXPORT MODAL ============ -->
@@ -2084,11 +2764,11 @@
               </div>
               <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
                 <label style="font-size:11px;color:var(--text-3);flex:1">Color A</label>
-                <input type="color" id="cvC1" value="#8b5e34" style="width:42px;height:30px;border:none;background:none;padding:0;cursor:pointer">
+                <input type="color" id="cvC1" value="#8b5e34" style="width:44px;height:32px;border:none;background:none;padding:0;cursor:pointer">
                 <label style="font-size:11px;color:var(--text-3);flex:1">Color B</label>
-                <input type="color" id="cvC2" value="#c9a227" style="width:42px;height:30px;border:none;background:none;padding:0;cursor:pointer">
+                <input type="color" id="cvC2" value="#c9a227" style="width:44px;height:32px;border:none;background:none;padding:0;cursor:pointer">
               </div>
-              <button class="chip" id="cvUpload" style="width:100%;padding:10px;border-radius:8px;margin-top:10px;text-align:center">Upload background image</button>
+              <button class="chip" id="cvUpload" style="width:100%;padding:11px;border-radius:8px;margin-top:10px;text-align:center">Upload background image</button>
             </div>
             <div class="sect">
               <h4>Layout</h4>
@@ -2113,7 +2793,7 @@
         </div>
       </div>
       <div class="modal-foot">
-        <button class="chip" data-close="coverOverlay" style="padding:9px 14px;border-radius:8px">Close</button>
+        <button class="chip" data-close="coverOverlay" style="padding:10px 14px;border-radius:8px">Close</button>
         <button class="top-btn primary" id="cvDownload">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
         <span>Download PNG</span>
@@ -2139,10 +2819,11 @@ const debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = se
 
 const INDEX_KEY = 'calyx.index';
 const PROJ_KEY  = id => 'calyx.proj.' + id;
+const STATS_KEY = id => 'calyx.stats.' + id;
 const UI_KEY    = 'calyx.ui';
 
 /* ============================================================
-   THEMES
+   THEMES — expanded with sunset, pastel, cozy, etc.
    ============================================================ */
 const THEMES = {
   ink:        { bg:'#0a0c0f', bg2:'#0e1116', surface:'#14181e', surface2:'#1a1f27', border:'rgba(255,255,255,.08)', borderHi:'rgba(255,255,255,.16)', text:'#e9edf2', text2:'#98a3b2', text3:'#68727f', paper:'#fffaf0', paperText:'#1a1a1a' },
@@ -2156,8 +2837,18 @@ const THEMES = {
   ocean:      { bg:'#04151a', bg2:'#082028', surface:'#0d2e39', surface2:'#123d4c', border:'rgba(255,255,255,.08)', borderHi:'rgba(255,255,255,.18)', text:'#dff2f6', text2:'#84aab5', text3:'#557a85', paper:'#f2fbfd', paperText:'#07222c' },
   plum:       { bg:'#130c18', bg2:'#1b1022', surface:'#26172f', surface2:'#33203e', border:'rgba(255,255,255,.08)', borderHi:'rgba(255,255,255,.18)', text:'#ece4ef', text2:'#a595b1', text3:'#70647a', paper:'#fbf3ee', paperText:'#221626' },
   obsidian:   { bg:'#070809', bg2:'#0c0e11', surface:'#131619', surface2:'#1c2024', border:'rgba(255,255,255,.08)', borderHi:'rgba(255,255,255,.17)', text:'#e7eaee', text2:'#939aa3', text3:'#63696f', paper:'#f8f9fa', paperText:'#121417' },
+  /* --- NEW THEMES --- */
+  sunset:     { bg:'#1c0e16', bg2:'#26141c', surface:'#321a24', surface2:'#41222e', border:'rgba(255,200,180,.10)', borderHi:'rgba(255,200,180,.22)', text:'#fbe9e0', text2:'#c9a294', text3:'#8a6c62', paper:'#fff2e6', paperText:'#2a1810' },
+  dusk:       { bg:'#140f22', bg2:'#1b1530', surface:'#261c40', surface2:'#322650', border:'rgba(200,180,255,.10)', borderHi:'rgba(200,180,255,.22)', text:'#e9e0fa', text2:'#a99ac9', text3:'#726890', paper:'#f2ecff', paperText:'#1a1230' },
+  rose:       { bg:'#1a0e14', bg2:'#241219', surface:'#301822', surface2:'#40222e', border:'rgba(255,180,200,.10)', borderHi:'rgba(255,180,200,.22)', text:'#fbe6ec', text2:'#c99aa8', text3:'#8a6370', paper:'#fff0f3', paperText:'#2a141a' },
+  cozy:       { bg:'#16110b', bg2:'#1e1810', surface:'#2a2116', surface2:'#3a2d1f', border:'rgba(255,220,170,.10)', borderHi:'rgba(255,220,170,.22)', text:'#f4e9d5', text2:'#bda98a', text3:'#8a7a60', paper:'#faf0dc', paperText:'#2a1f12' },
+  /* --- LIGHT THEMES --- */
   frost:      { bg:'#eef2f6', bg2:'#e6ebf1', surface:'#ffffff', surface2:'#f2f5f8', border:'rgba(20,30,50,.1)', borderHi:'rgba(20,30,50,.2)', text:'#1c2633', text2:'#5c6775', text3:'#8791a0', paper:'#ffffff', paperText:'#141c26' },
   ivory:      { bg:'#f4f1ea', bg2:'#eae6dc', surface:'#ffffff', surface2:'#f2efe6', border:'rgba(60,50,30,.1)', borderHi:'rgba(60,50,30,.2)', text:'#2a2418', text2:'#6b6250', text3:'#938a78', paper:'#ffffff', paperText:'#24201a' },
+  pastel:     { bg:'#f5f0f8', bg2:'#ede6f2', surface:'#ffffff', surface2:'#f7f2fa', border:'rgba(80,60,110,.10)', borderHi:'rgba(80,60,110,.22)', text:'#2a1f38', text2:'#6e5e84', text3:'#9a8dab', paper:'#fefbff', paperText:'#2a1f38' },
+  mint:       { bg:'#eef6f1', bg2:'#e3efe8', surface:'#ffffff', surface2:'#f0f7f3', border:'rgba(30,80,60,.10)', borderHi:'rgba(30,80,60,.22)', text:'#122a20', text2:'#4a6a5c', text3:'#7d9488', paper:'#f6fcf9', paperText:'#0f2419' },
+  sakura:     { bg:'#fdf0f2', bg2:'#f8e6ea', surface:'#ffffff', surface2:'#fdf1f3', border:'rgba(140,50,80,.10)', borderHi:'rgba(140,50,80,.22)', text:'#3a1a24', text2:'#8a5a68', text3:'#b18a94', paper:'#fff8f9', paperText:'#2e1218' },
+  sand:       { bg:'#f6efe2', bg2:'#eee5d2', surface:'#ffffff', surface2:'#f8f2e5', border:'rgba(90,70,40,.12)', borderHi:'rgba(90,70,40,.22)', text:'#2e2418', text2:'#6e6250', text3:'#968a74', paper:'#fdf8ec', paperText:'#2a2118' },
   manuscript: { bg:'#efe8d8', bg2:'#e5ddcb', surface:'#f8f2e3', surface2:'#ebe3d0', border:'rgba(70,55,30,.14)', borderHi:'rgba(70,55,30,.24)', text:'#2e2418', text2:'#6e6250', text3:'#968a74', paper:'#fdf8ec', paperText:'#2a2118' },
   sepia:      { bg:'#e2d4bb', bg2:'#d8c8ab', surface:'#efe3c9', surface2:'#e4d5b8', border:'rgba(70,55,30,.16)', borderHi:'rgba(70,55,30,.26)', text:'#2e2418', text2:'#6e6250', text3:'#94886e', paper:'#f7ecd5', paperText:'#2a2018' },
   parchment:  { bg:'#f2ead7', bg2:'#e8dfc7', surface:'#faf4e6', surface2:'#efe6d1', border:'rgba(70,55,30,.15)', borderHi:'rgba(70,55,30,.25)', text:'#2b2419', text2:'#6b6250', text3:'#918873', paper:'#fffaf0', paperText:'#2a2318' }
@@ -2171,7 +2862,68 @@ const ACCENTS = [
   '#f97316','#ea580c','#a16207','#71717a'
 ];
 
-const DARK_THEMES = new Set(['ink','graphite','midnight','slate','forest','oxblood','noir','cocoa','ocean','plum','obsidian']);
+const DARK_THEMES = new Set(['ink','graphite','midnight','slate','forest','oxblood','noir','cocoa','ocean','plum','obsidian','sunset','dusk','rose','cozy']);
+
+/* ============================================================
+   BOOK PRESETS (NEW)
+   ============================================================ */
+const BOOK_PRESETS = {
+  novel: {
+    label: 'Novel', icon: '📖', desc: 'Classic fiction layout',
+    settings: { font:'Georgia', size:19, lh:1.85, ls:0, ps:1.1, align:'justify', indent:true, dropcap:false, pagew:740, pad:64, chapterStyle:'centered', decor:'none' }
+  },
+  poetry: {
+    label: 'Poetry', icon: '🌸', desc: 'Centered verse',
+    settings: { font:'Cormorant Garamond', size:20, lh:2.1, ls:.2, ps:1.4, align:'center', indent:false, dropcap:false, pagew:620, pad:80, chapterStyle:'plain', decor:'none' }
+  },
+  memoir: {
+    label: 'Memoir', icon: '🕯️', desc: 'Warm & personal',
+    settings: { font:'Lora', size:18.5, lh:1.9, ls:0, ps:1.1, align:'left', indent:false, dropcap:true, pagew:700, pad:72, chapterStyle:'display', decor:'side-rule' }
+  },
+  children: {
+    label: "Children's", icon: '🧸', desc: 'Playful & spacious',
+    settings: { font:'Nunito', size:22, lh:1.9, ls:.3, ps:1.4, align:'left', indent:false, dropcap:false, pagew:760, pad:70, chapterStyle:'numeral', decor:'corner' }
+  },
+  academic: {
+    label: 'Academic', icon: '🎓', desc: 'Dense & formal',
+    settings: { font:'Times New Roman', size:17, lh:1.65, ls:0, ps:.9, align:'justify', indent:true, dropcap:false, pagew:780, pad:80, chapterStyle:'plain', decor:'none' }
+  },
+  screenplay: {
+    label: 'Screenplay', icon: '🎬', desc: 'Monospace format',
+    settings: { font:'Courier Prime', size:16, lh:1.7, ls:.2, ps:1.1, align:'left', indent:false, dropcap:false, pagew:660, pad:90, chapterStyle:'rule', decor:'none' }
+  },
+  cookbook: {
+    label: 'Cookbook', icon: '🍳', desc: 'Warm & readable',
+    settings: { font:'Merriweather', size:17.5, lh:1.8, ls:0, ps:1.2, align:'left', indent:false, dropcap:false, pagew:720, pad:66, chapterStyle:'centered', decor:'frame' }
+  },
+  zine: {
+    label: 'Zine', icon: '✂️', desc: 'Bold & experimental',
+    settings: { font:'Space Grotesk', size:18, lh:1.7, ls:.1, ps:1.2, align:'left', indent:false, dropcap:true, pagew:700, pad:60, chapterStyle:'display', decor:'ornate' }
+  },
+  classic: {
+    label: 'Classic', icon: '🏛️', desc: 'Victorian novel feel',
+    settings: { font:'EB Garamond', size:19.5, lh:1.95, ls:0, ps:.9, align:'justify', indent:true, dropcap:true, pagew:700, pad:80, chapterStyle:'centered', decor:'ornate' }
+  },
+  modern: {
+    label: 'Modern', icon: '◼', desc: 'Clean editorial',
+    settings: { font:'Inter', size:18, lh:1.75, ls:-.1, ps:1.1, align:'left', indent:false, dropcap:false, pagew:700, pad:64, chapterStyle:'plain', decor:'none' }
+  }
+};
+
+const ORNAMENTS = [
+  { glyph: '❦', label: 'Fleuron' },
+  { glyph: '❧', label: 'Leaf' },
+  { glyph: '✦ ✦ ✦', label: 'Stars' },
+  { glyph: '· · ·', label: 'Dots' },
+  { glyph: '◆', label: 'Diamond' },
+  { glyph: '⁂', label: 'Asterism' },
+  { glyph: '~ ~ ~', label: 'Waves' },
+  { glyph: '✧', label: 'Sparkle' },
+  { glyph: '§', label: 'Section' },
+  { glyph: '† † †', label: 'Daggers' },
+  { glyph: '◇ ◇ ◇', label: 'Open diamonds' },
+  { glyph: '※', label: 'Reference' }
+];
 
 /* ============================================================
    FONTS
@@ -2253,6 +3005,10 @@ function download(data, filename, type) {
 function safeName(t) {
   return (t || 'book').replace(/[^\w\s\-]/g, '').trim().replace(/\s+/g, '_') || 'book';
 }
+function todayKey() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
 
 /* ============================================================
    STATE
@@ -2263,6 +3019,7 @@ let project = null;
 let currentIdx = 0;
 let currentTheme = 'ink';
 let currentAccent = null;
+let paperOverride = null;
 
 function storageGet(key) {
   try { return localStorage.getItem(key); } catch { return null; }
@@ -2285,8 +3042,9 @@ function normalizeProject(src) {
   const defaults = {
     font:'Georgia', size:19, lh:1.85, ls:0, ps:1.1,
     align:'left', indent:false, dropcap:false,
-    pagew:740, pad:64, texture:false,
-    focus:false, typewriter:false, spell:true, goal:50000
+    pagew:740, pad:64, texture:false, warm:false,
+    focus:false, typewriter:false, spell:true, goal:50000,
+    chapterStyle:'centered', decor:'none', preset:'novel', ornament:'fleuron'
   };
   const coverDefaults = {
     bgType:'gradient', c1:'#8b5e34', c2:'#c9a227', bgImage:null,
@@ -2312,7 +3070,7 @@ function normalizeProject(src) {
     chapters,
     cover: { ...coverDefaults, ...(src.cover && typeof src.cover === 'object' ? src.cover : {}) },
     settings: { ...defaults, ...(src.settings && typeof src.settings === 'object' ? src.settings : {}) },
-    version: 2
+    version: 3
   };
 }
 
@@ -2337,6 +3095,7 @@ function saveProject(silent) {
     return false;
   }
   updateIndexEntry();
+  updateDailyStats();
   if (!silent) setSaveState('saved');
   return true;
 }
@@ -2390,6 +3149,89 @@ function setSaveState(state) {
 const saveDebounced = debounce(() => saveProject(false), 700);
 
 /* ============================================================
+   STATS TRACKING (NEW)
+   ============================================================ */
+let stats = { date:'', dayStart:0, today:0, history:{}, streak:0, best:0, sessionStart:0, sessionStartTime:0 };
+let sessionTimer = null;
+
+function loadStats() {
+  try {
+    const raw = storageGet(STATS_KEY(project.id));
+    if (raw) {
+      const s = JSON.parse(raw);
+      stats = { ...stats, ...s };
+    }
+  } catch {}
+  const today = todayKey();
+  if (stats.date !== today) {
+    // new day — reset
+    stats.date = today;
+    stats.dayStart = totalWordsAll();
+    stats.today = 0;
+  }
+  stats.sessionStart = totalWordsAll();
+  stats.sessionStartTime = Date.now();
+  recomputeStreak();
+}
+
+function saveStats() {
+  try {
+    storageSet(STATS_KEY(project.id), JSON.stringify(stats));
+  } catch {}
+}
+
+function totalWordsAll() {
+  if (!project) return 0;
+  let t = 0;
+  project.chapters.forEach((c, i) => {
+    t += (i === currentIdx && editor) ? countWords(editor.innerHTML) : countWords(c.html);
+  });
+  return t;
+}
+
+function updateDailyStats() {
+  if (!project) return;
+  const today = todayKey();
+  if (stats.date !== today) {
+    stats.date = today;
+    stats.dayStart = totalWordsAll();
+  }
+  const total = totalWordsAll();
+  stats.today = Math.max(0, total - stats.dayStart);
+  stats.history[today] = stats.today;
+  stats.best = Math.max(stats.best || 0, stats.today);
+  recomputeStreak();
+  saveStats();
+  updateToolsUI();
+}
+
+function recomputeStreak() {
+  let streak = 0;
+  const d = new Date();
+  for (let i = 0; i < 400; i++) {
+    const key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    const w = stats.history[key] || 0;
+    if (w > 0) streak++;
+    else if (i > 0) break;
+    d.setDate(d.getDate() - 1);
+  }
+  stats.streak = streak;
+}
+
+function updateToolsUI() {
+  const t = totalWordsAll();
+  $('#msToday').textContent = (stats.today || 0).toLocaleString();
+  $('#msStreak').textContent = stats.streak || 0;
+  $('#msBest').textContent = (stats.best || 0).toLocaleString();
+  const session = Math.max(0, t - stats.sessionStart);
+  $('#msSession').textContent = session.toLocaleString();
+  if (stats.sessionStartTime) {
+    const mins = Math.round((Date.now() - stats.sessionStartTime) / 60000);
+    $('#msTime').textContent = mins < 60 ? mins + 'm' : Math.floor(mins/60) + 'h ' + (mins%60) + 'm';
+  }
+}
+
+/* ============================================================
    THEME APPLICATION
    ============================================================ */
 function applyTheme(name) {
@@ -2404,7 +3246,7 @@ function applyTheme(name) {
   r.setProperty('--text', t.text);
   r.setProperty('--text-2', t.text2);
   r.setProperty('--text-3', t.text3);
-  r.setProperty('--paper', t.paper);
+  r.setProperty('--paper', paperOverride || t.paper);
   r.setProperty('--paper-text', t.paperText);
 
   if (currentAccent) {
@@ -2417,9 +3259,21 @@ function applyTheme(name) {
   document.documentElement.dataset.theme = name;
   document.body.classList.toggle('theme-dark', DARK_THEMES.has(name));
 
-  // theme-color meta
+  // decor color depends on paper luminance
+  const paperIsDark = isDarkColor(paperOverride || t.paper);
+  r.setProperty('--decor-color', paperIsDark ? 'rgba(255,255,255,.22)' : 'rgba(0,0,0,.16)');
+
   let meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.setAttribute('content', t.bg);
+}
+
+function isDarkColor(hex) {
+  if (!hex) return false;
+  const h = hex.replace('#','');
+  if (h.length !== 6) return false;
+  const r = parseInt(h.slice(0,2),16), g = parseInt(h.slice(2,4),16), b = parseInt(h.slice(4,6),16);
+  const lum = (0.299*r + 0.587*g + 0.114*b) / 255;
+  return lum < 0.5;
 }
 
 function applyTypography() {
@@ -2448,12 +3302,53 @@ function applyTypography() {
   document.body.classList.toggle('texture', s.texture);
   document.body.classList.toggle('focus-mode', s.focus);
 
+  // Warm tint filter
+  if (s.warm) {
+    page.style.filter = 'sepia(0.12) saturate(1.05)';
+  } else {
+    page.style.filter = '';
+  }
+
+  applyBookLook();
+
   loadFont(s.font, () => {
     const fp = $('#fontPreview');
     if (fp) fp.style.fontFamily = `"${s.font}", Georgia, serif`;
   });
   const fp = $('#fontPreview');
   if (fp) fp.style.fontFamily = `"${s.font}", Georgia, serif`;
+}
+
+/* NEW: apply chapter & decoration classes */
+function applyBookLook() {
+  if (!project || !editor) return;
+  const s = project.settings;
+  const page = editor;
+
+  // Chapter styles
+  page.classList.remove('chapter-plain','chapter-centered','chapter-rule','chapter-display','chapter-numeral');
+  page.classList.add('chapter-' + (s.chapterStyle || 'centered'));
+
+  // Decorations
+  page.classList.remove('decor-none','decor-frame','decor-ornate','decor-side-rule','decor-corner','decor-dots');
+  page.classList.add('decor-' + (s.decor || 'none'));
+
+  // update preview
+  const prevTitle = $('#lookPreviewTitle');
+  const prevRule = $('#lookPreviewRule');
+  const prev = $('#lookPreview');
+  if (prev) {
+    prev.className = 'look-preview';
+    // apply font/size subtle
+    prev.style.fontFamily = `"${s.font}", Georgia, serif`;
+    prevTitle.style.fontFamily = `"${s.font}", Georgia, serif`;
+    prevTitle.style.textAlign = (s.chapterStyle === 'plain') ? 'left' : 'center';
+    prevTitle.style.letterSpacing = (s.chapterStyle === 'rule') ? '.18em' : '0';
+    prevTitle.style.textTransform = (s.chapterStyle === 'rule') ? 'uppercase' : 'none';
+    prevTitle.style.fontSize = (s.chapterStyle === 'display') ? '20px' : (s.chapterStyle === 'numeral' ? '24px' : '16px');
+    prevTitle.style.color = (s.chapterStyle === 'numeral') ? 'var(--accent)' : 'var(--paper-text)';
+    prevRule.style.display = (s.chapterStyle === 'centered' || s.chapterStyle === 'rule') ? 'block' : 'none';
+  }
 }
 
 /* ============================================================
@@ -2470,6 +3365,7 @@ function initEditor() {
     updateStats();
     setSaveState('saving');
     saveDebounced();
+    if (sprint.running) updateSprintWords();
   });
 
   editor.addEventListener('keyup', () => { updateBlockStyle(); typewriterScroll(); });
@@ -2540,6 +3436,15 @@ function typewriterScroll() {
   if (Math.abs(delta) > 6) editorScroll.scrollTop += delta;
 }
 
+function insertOrnament(glyph) {
+  editor.focus();
+  const html = `<div class="ornament" contenteditable="false">${glyph}</div><p><br></p>`;
+  document.execCommand('insertHTML', false, html);
+  project.chapters[currentIdx].html = editor.innerHTML;
+  updateStats();
+  saveDebounced();
+}
+
 function initToolbar() {
   $('#toolbar').addEventListener('mousedown', (e) => {
     if (e.target.closest('.tbt')) e.preventDefault();
@@ -2568,6 +3473,15 @@ function initToolbar() {
     editor.focus();
     document.execCommand('insertHTML', false, '<hr><p><br></p>');
     saveDebounced();
+  });
+  $('#btnOrnament').addEventListener('click', () => {
+    // open Look tab and scroll to ornaments
+    activateTab('look');
+    if (window.innerWidth <= 1180) toggleDrawer('right');
+    setTimeout(() => {
+      const el = $('#ornGrid');
+      if (el) el.scrollIntoView({ behavior:'smooth', block:'center' });
+    }, 200);
   });
   $('#btnPageBreak').addEventListener('click', () => {
     editor.focus();
@@ -2713,7 +3627,6 @@ function updateStats() {
   $('#goalLabel').textContent = goal > 0
     ? total.toLocaleString() + ' / ' + goal.toLocaleString()
     : 'not set';
-  // update ch meta word counts (regenerate)
   const items = $$('.chapter .ch-meta');
   project.chapters.forEach((c, i) => {
     if (items[i]) {
@@ -2721,6 +3634,7 @@ function updateStats() {
       items[i].textContent = w.toLocaleString() + ' words';
     }
   });
+  if (sprint.running) updateSprintWords();
 }
 
 /* ============================================================
@@ -3198,6 +4112,7 @@ function htmlToMarkdown(html) {
         case 'pre': out += '\n\n```\n' + n.textContent + '\n```\n\n'; break;
         case 'div':
           if (n.classList.contains('page-break')) out += '\n\n---\n\n';
+          else if (n.classList.contains('ornament')) out += '\n\n' + n.textContent + '\n\n';
           else out += '\n\n' + inner() + '\n\n'; break;
         default: out += inner();
       }
@@ -3420,6 +4335,7 @@ function runExport(type) {
   }
   else if (type === 'html') {
     const body = b.chapters.map(c => `<section class="chapter">${c.html}</section>`).join('\n');
+    const decorCss = getDecorCssForExport(b.settings);
     const html = `<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -3441,7 +4357,9 @@ function runExport(type) {
   figure{margin:2em 0;text-align:center}
   figcaption{font-size:.8em;opacity:.6;font-style:italic}
   hr{border:none;border-top:1px solid #ccc;margin:2.5em auto;width:40%}
+  .ornament{text-align:center;font-size:1.3em;color:#c9a227;margin:1.8em 0;letter-spacing:.5em}
   .page-break{page-break-after:always;height:0}
+  ${decorCss}
   @media print{body{background:#fff}.titlepage{page-break-after:always}}
 </style></head><body>
 <div class="wrap">
@@ -3469,6 +4387,7 @@ function runExport(type) {
   p{margin:0 0 ${b.settings.ps}em}
   blockquote{border-left:3px solid #c9a227;padding-left:14pt;font-style:italic}
   img{max-width:100%}
+  .ornament{text-align:center;color:#c9a227;letter-spacing:.4em}
 </style></head><body>
 <div style="text-align:center;padding:120pt 0 80pt">
   <h1 style="font-size:34pt">${escHtml(b.title)}</h1>
@@ -3494,6 +4413,14 @@ ${body}</body></html>`;
   }
 }
 
+function getDecorCss(s) {
+  if (s.decor === 'frame') return `.chapter{border:1px solid rgba(0,0,0,.15);padding:60px 44px}`;
+  if (s.decor === 'ornate') return `.chapter{border:2px double rgba(0,0,0,.2);padding:60px 44px}`;
+  if (s.decor === 'side-rule') return `.chapter{border-left:3px solid #c9a227;padding-left:36px}`;
+  if (s.decor === 'corner') return `.chapter{position:relative;padding:60px 44px}`;
+  return '';
+}
+
 function closeExport() {
   setTimeout(() => $('#exportOverlay').classList.remove('open'), 220);
 }
@@ -3515,7 +4442,7 @@ function printBook() {
     @media print {
       @page { size: A4; margin: 22mm 20mm; }
       html, body { height: auto !important; overflow: visible !important; background:#fff !important; }
-      .app, .overlay, #toasts, #imgBar, .backdrop { display: none !important; }
+      .app, .overlay, #toasts, #imgBar, .backdrop, .cmdk-overlay { display: none !important; }
       #printArea {
         display: block !important;
         font-family: "${b.settings.font}", Georgia, serif;
@@ -3534,6 +4461,7 @@ function printBook() {
       #printArea figure { page-break-inside: avoid; text-align: center; margin: 14pt 0; }
       #printArea figcaption { font-size: .8em; opacity: .65; font-style: italic; }
       #printArea hr { border: none; border-top: 1px solid #bbb; margin: 18pt auto; width: 40%; }
+      #printArea .ornament { text-align: center; color: #c9a227; letter-spacing: .4em; margin: 16pt 0; }
       #printArea .page-break { page-break-after: always; height: 0; border: none; }
       #printArea .img-block { width: 70% !important; margin: 14pt auto; }
     }`;
@@ -3576,6 +4504,7 @@ img{max-width:100%;height:auto;}
 figure{margin:1.4em 0;text-align:center;}
 figcaption{font-size:.8em;color:#666;font-style:italic;margin-top:.4em;}
 hr{border:none;border-top:1px solid #ccc;margin:2em auto;width:40%;}
+.ornament{text-align:center;color:#c9a227;letter-spacing:.4em;margin:1.6em 0;}
 .page-break{page-break-after:always;}`;
   files.push({ name: 'OEBPS/style.css', data: enc.encode(css) });
 
@@ -3761,12 +4690,25 @@ function renderAccentSwatches() {
   });
 }
 
+function renderPaperChips() {
+  $$('#paperChips .chip').forEach(c => {
+    c.classList.toggle('on', (c.dataset.paper || '') === (paperOverride || ''));
+    c.addEventListener('click', () => {
+      paperOverride = c.dataset.paper || null;
+      $$('#paperChips .chip').forEach(x => x.classList.toggle('on', x === c));
+      applyTheme(currentTheme);
+      saveUI();
+    });
+  });
+}
+
 function saveUI() {
   try {
     const raw = storageGet(UI_KEY);
     const ui = raw ? JSON.parse(raw) : {};
     ui.theme = currentTheme;
     ui.accent = currentAccent;
+    ui.paper = paperOverride;
     storageSet(UI_KEY, JSON.stringify(ui));
   } catch {}
 }
@@ -3796,9 +4738,396 @@ function bindSwitch(id, key, onChange) {
   });
 }
 
+/* NEW: presets */
+function renderPresets() {
+  const grid = $('#presetGrid');
+  grid.innerHTML = Object.entries(BOOK_PRESETS).map(([key, p]) => `
+    <button class="preset-card ${project.settings.preset === key ? 'active' : ''}" data-preset="${key}">
+      <span class="pc-ico">${p.icon}</span>
+      <b>${p.label}</b>
+      <small>${p.desc}</small>
+    </button>`).join('');
+  $$('#presetGrid .preset-card').forEach(b => {
+    b.addEventListener('click', () => {
+      const key = b.dataset.preset;
+      const preset = BOOK_PRESETS[key];
+      if (!preset) return;
+      applyPreset(key);
+    });
+  });
+}
+
+function applyPreset(key) {
+  const p = BOOK_PRESETS[key];
+  if (!p) return;
+  const s = project.settings;
+  const ps = p.settings;
+  Object.keys(ps).forEach(k => { s[k] = ps[k]; });
+  s.preset = key;
+  // update widgets
+  $('#rSize').value = s.size; $('#vSize').textContent = s.size;
+  $('#rLh').value = s.lh; $('#vLh').textContent = (+s.lh).toFixed(2);
+  $('#rLs').value = s.ls; $('#vLs').textContent = (+s.ls).toFixed(1);
+  $('#rPs').value = s.ps; $('#vPs').textContent = (+s.ps).toFixed(2);
+  $('#rPagew').value = s.pagew; $('#vPagew').textContent = s.pagew;
+  $('#rPad').value = s.pad; $('#vPad').textContent = s.pad;
+  $('#swIndent').classList.toggle('on', !!s.indent);
+  $('#swDropcap').classList.toggle('on', !!s.dropcap);
+  $$('#alignChips .chip').forEach(x => x.classList.toggle('on', x.dataset.align === s.align));
+  $$('#chapterStyleChips .chip').forEach(x => x.classList.toggle('on', x.dataset.ch === s.chapterStyle));
+  $$('#decorChips .chip').forEach(x => x.classList.toggle('on', x.dataset.decor === s.decor));
+  loadFont(s.font);
+  applyTypography();
+  renderPresets();
+  saveProject();
+  toast(p.label + ' preset applied');
+}
+
+/* NEW: chapter style chips */
+function initChapterStyleUI() {
+  $$('#chapterStyleChips .chip').forEach(c => {
+    c.classList.toggle('on', c.dataset.ch === project.settings.chapterStyle);
+    c.addEventListener('click', () => {
+      project.settings.chapterStyle = c.dataset.ch;
+      $$('#chapterStyleChips .chip').forEach(x => x.classList.toggle('on', x === c));
+      applyBookLook();
+      saveProject();
+    });
+  });
+  $$('#decorChips .chip').forEach(c => {
+    c.classList.toggle('on', c.dataset.decor === project.settings.decor);
+    c.addEventListener('click', () => {
+      project.settings.decor = c.dataset.decor;
+      $$('#decorChips .chip').forEach(x => x.classList.toggle('on', x === c));
+      applyBookLook();
+      saveProject();
+    });
+  });
+}
+
+/* NEW: ornament grid */
+function renderOrnaments() {
+  $('#ornGrid').innerHTML = ORNAMENTS.map(o =>
+    `<button class="orn-btn" data-glyph="${o.glyph}" title="${o.label}">${o.glyph}</button>`
+  ).join('');
+  $$('#ornGrid .orn-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      insertOrnament(b.dataset.glyph);
+      toast('Ornament inserted');
+    });
+  });
+}
+
+/* NEW: sprint timer */
+const sprint = {
+  running: false,
+  duration: 25 * 60,
+  remaining: 25 * 60,
+  startWords: 0,
+  intervalId: null,
+  raf: null
+};
+
+function renderSprintDurations() {
+  $$('#sprintDurations .chip').forEach(c => {
+    c.addEventListener('click', () => {
+      if (sprint.running) return;
+      const m = +c.dataset.min;
+      sprint.duration = m * 60;
+      sprint.remaining = sprint.duration;
+      $$('#sprintDurations .chip').forEach(x => x.classList.toggle('on', x === c));
+      updateSprintDisplay();
+    });
+  });
+}
+
+function updateSprintDisplay() {
+  const m = Math.floor(sprint.remaining / 60);
+  const s = Math.floor(sprint.remaining % 60);
+  $('#sprintTime').textContent = m + ':' + String(s).padStart(2, '0');
+  const total = sprint.duration;
+  const pct = total > 0 ? (total - sprint.remaining) / total : 0;
+  const circ = 2 * Math.PI * 60; // 377
+  const offset = circ * (1 - pct);
+  $('#sprintRing').setAttribute('stroke-dashoffset', String(offset));
+  $('#sprintRing').setAttribute('stroke-dasharray', String(circ));
+}
+
+function startSprint() {
+  if (sprint.running) {
+    // pause
+    sprint.running = false;
+    clearInterval(sprint.intervalId);
+    sprint.intervalId = null;
+    $('#sprintStart').textContent = 'Resume';
+    return;
+  }
+  sprint.running = true;
+  sprint.startWords = totalWordsAll();
+  $('#sprintStart').textContent = 'Pause';
+  const startedAt = Date.now();
+  const startRemaining = sprint.remaining;
+  sprint.intervalId = setInterval(() => {
+    const elapsed = (Date.now() - startedAt) / 1000;
+    sprint.remaining = Math.max(0, startRemaining - elapsed);
+    updateSprintDisplay();
+    if (sprint.remaining <= 0) {
+      stopSprint(true);
+    }
+  }, 200);
+  updateSprintWords();
+}
+
+function stopSprint(completed) {
+  sprint.running = false;
+  if (sprint.intervalId) clearInterval(sprint.intervalId);
+  sprint.intervalId = null;
+  $('#sprintStart').textContent = 'Start';
+  if (completed) {
+    const written = Math.max(0, totalWordsAll() - sprint.startWords);
+    toast('Sprint complete! You wrote ' + written.toLocaleString() + ' words.', 3600);
+    playChime();
+  }
+}
+
+function resetSprint() {
+  stopSprint(false);
+  sprint.remaining = sprint.duration;
+  updateSprintDisplay();
+  updateSprintWords();
+}
+
+function updateSprintWords() {
+  if (!sprint.startWords) {
+    $('#sprintWords').textContent = '0';
+    return;
+  }
+  const w = Math.max(0, totalWordsAll() - sprint.startWords);
+  $('#sprintWords').textContent = w.toLocaleString();
+}
+
+function playChime() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const now = ctx.currentTime;
+    [660, 880, 1100].forEach((freq, i) => {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.frequency.value = freq;
+      o.type = 'sine';
+      g.gain.setValueAtTime(0, now + i * 0.15);
+      g.gain.linearRampToValueAtTime(0.18, now + i * 0.15 + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.15 + 0.6);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(now + i * 0.15); o.stop(now + i * 0.15 + 0.7);
+    });
+  } catch {}
+}
+
+/* NEW: ambience (simple procedural tones, no external assets) */
+let ambienceNodes = null;
+function setAmbience(type) {
+  if (ambienceNodes) {
+    try { ambienceNodes.forEach(n => n.stop && n.stop()); } catch {}
+    try { ambienceNodes.ctx && ambienceNodes.ctx.close(); } catch {}
+    ambienceNodes = null;
+  }
+  if (type === 'none') return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const master = ctx.createGain();
+    master.gain.value = 0.02;
+    master.connect(ctx.destination);
+    const nodes = [];
+    // brown-ish noise via filtered oscillator bank
+    const bufSize = 2 * ctx.sampleRate;
+    const buffer = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    let last = 0;
+    for (let i = 0; i < bufSize; i++) {
+      const white = Math.random() * 2 - 1;
+      last = (last + 0.02 * white) / 1.02;
+      data[i] = last * 3.5;
+    }
+    const src = ctx.createBufferSource();
+    src.buffer = buffer; src.loop = true;
+    const filter = ctx.createBiquadFilter();
+    if (type === 'rain') { filter.type = 'highpass'; filter.frequency.value = 800; }
+    else if (type === 'cafe') { filter.type = 'bandpass'; filter.frequency.value = 500; filter.Q.value = 0.7; }
+    else if (type === 'forest') { filter.type = 'lowpass'; filter.frequency.value = 1200; }
+    src.connect(filter); filter.connect(master);
+    src.start();
+    nodes.push(src);
+    ambienceNodes = nodes;
+    ambienceNodes.ctx = ctx;
+  } catch {}
+}
+
+function initToolsUI() {
+  renderSprintDurations();
+  updateSprintDisplay();
+  updateToolsUI();
+
+  $('#sprintStart').addEventListener('click', startSprint);
+  $('#sprintReset').addEventListener('click', resetSprint);
+
+  $$('#ambienceChips .chip').forEach(c => {
+    c.addEventListener('click', () => {
+      $$('#ambienceChips .chip').forEach(x => x.classList.toggle('on', x === c));
+      setAmbience(c.dataset.amb);
+      if (c.dataset.amb !== 'none') toast('Ambience: ' + c.dataset.amb);
+    });
+  });
+
+  // update time display every 30s
+  setInterval(updateToolsUI, 30000);
+}
+
+/* NEW: command palette */
+const COMMANDS = [
+  { id:'new-chapter', label:'Add new chapter', icon:'＋', hint:'', run: () => addChapter() },
+  { id:'export', label:'Export book', icon:'↗', hint:'⌘E', run: () => { renderExportGrid(); $('#exportOverlay').classList.add('open'); } },
+  { id:'cover', label:'Open cover designer', icon:'◐', hint:'', run: () => openCover() },
+  { id:'focus', label:'Toggle focus mode', icon:'⛶', hint:'', run: () => { project.settings.focus = !project.settings.focus; applyTypography(); $('#btnFocus').classList.toggle('on', project.settings.focus); saveProject(); } },
+  { id:'sprint', label:'Start a 25-min writing sprint', icon:'⏱', hint:'', run: () => { activateTab('tools'); if (window.innerWidth <= 1180) toggleDrawer('right'); sprint.duration = 1500; sprint.remaining = 1500; updateSprintDisplay(); startSprint(); } },
+  { id:'theme-sunset', label:'Theme: Sunset', icon:'◐', hint:'', run: () => { currentTheme='sunset'; applyTheme('sunset'); renderThemeGrid(); saveUI(); } },
+  { id:'theme-cozy', label:'Theme: Cozy', icon:'◐', hint:'', run: () => { currentTheme='cozy'; applyTheme('cozy'); renderThemeGrid(); saveUI(); } },
+  { id:'theme-pastel', label:'Theme: Pastel', icon:'◐', hint:'', run: () => { currentTheme='pastel'; applyTheme('pastel'); renderThemeGrid(); saveUI(); } },
+  { id:'theme-dusk', label:'Theme: Dusk', icon:'◐', hint:'', run: () => { currentTheme='dusk'; applyTheme('dusk'); renderThemeGrid(); saveUI(); } },
+  { id:'theme-rose', label:'Theme: Rose', icon:'◐', hint:'', run: () => { currentTheme='rose'; applyTheme('rose'); renderThemeGrid(); saveUI(); } },
+  { id:'theme-mint', label:'Theme: Mint', icon:'◐', hint:'', run: () => { currentTheme='mint'; applyTheme('mint'); renderThemeGrid(); saveUI(); } },
+  { id:'preset-novel', label:'Preset: Novel', icon:'📖', hint:'', run: () => applyPreset('novel') },
+  { id:'preset-poetry', label:'Preset: Poetry', icon:'🌸', hint:'', run: () => applyPreset('poetry') },
+  { id:'preset-children', label:"Preset: Children's", icon:'🧸', hint:'', run: () => applyPreset('children') },
+  { id:'preset-academic', label:'Preset: Academic', icon:'🎓', hint:'', run: () => applyPreset('academic') },
+  { id:'preset-classic', label:'Preset: Classic', icon:'🏛️', hint:'', run: () => applyPreset('classic') },
+  { id:'preset-modern', label:'Preset: Modern', icon:'◼', hint:'', run: () => applyPreset('modern') },
+  { id:'orn-fleuron', label:'Insert fleuron ornament', icon:'❦', hint:'', run: () => insertOrnament('❦') },
+  { id:'orn-stars', label:'Insert star ornament', icon:'✦', hint:'', run: () => insertOrnament('✦ ✦ ✦') },
+  { id:'font', label:'Choose document font', icon:'Aa', hint:'', run: () => openFontPicker() },
+  { id:'backup', label:'Download backup', icon:'↓', hint:'', run: () => { syncCurrent(); download(JSON.stringify(project, null, 2), safeName(project.title) + '.calyx.json', 'application/json'); toast('Backup downloaded'); } }
+];
+
+function renderCmdk(filter) {
+  const list = $('#cmdkList');
+  const q = (filter || '').toLowerCase().trim();
+  const items = q ? COMMANDS.filter(c => c.label.toLowerCase().includes(q) || c.id.includes(q)) : COMMANDS;
+  if (!items.length) {
+    list.innerHTML = '<div class="cmdk-empty">No commands match.</div>';
+    return;
+  }
+  list.innerHTML = items.map((c, i) =>
+    `<div class="cmdk-item ${i === 0 ? 'active' : ''}" data-idx="${i}">
+      <span class="cmdk-ico">${c.icon}</span>
+      <span>${c.label}</span>
+      ${c.hint ? `<small>${c.hint}</small>` : ''}
+    </div>`
+  ).join('');
+  $$('#cmdkList .cmdk-item').forEach(el => {
+    el.addEventListener('click', () => runCmd(items[+el.dataset.idx]));
+    el.addEventListener('mouseenter', () => {
+      $$('#cmdkList .cmdk-item').forEach(x => x.classList.remove('active'));
+      el.classList.add('active');
+    });
+  });
+}
+
+function runCmd(cmd) {
+  if (!cmd) return;
+  closeCmdk();
+  try { cmd.run(); } catch (e) { console.error(e); toast('Command failed'); }
+}
+
+function openCmdk() {
+  $('#cmdkOverlay').classList.add('open');
+  $('#cmdkInput').value = '';
+  renderCmdk('');
+  setTimeout(() => $('#cmdkInput').focus(), 60);
+}
+
+function closeCmdk() {
+  $('#cmdkOverlay').classList.remove('open');
+}
+
+function initCmdk() {
+  $('#btnCmd').addEventListener('click', openCmdk);
+  $('#cmdkOverlay').addEventListener('click', (e) => {
+    if (e.target === $('#cmdkOverlay')) closeCmdk();
+  });
+  $('#cmdkInput').addEventListener('input', (e) => renderCmdk(e.target.value));
+  $('#cmdkInput').addEventListener('keydown', (e) => {
+    const items = $$('#cmdkList .cmdk-item');
+    let idx = items.findIndex(x => x.classList.contains('active'));
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (idx >= 0) items[idx].classList.remove('active');
+      idx = (idx + 1) % items.length;
+      items[idx] && items[idx].classList.add('active');
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (idx >= 0) items[idx].classList.remove('active');
+      idx = (idx - 1 + items.length) % items.length;
+      items[idx] && items[idx].classList.add('active');
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (idx >= 0) {
+        const q = $('#cmdkInput').value.toLowerCase().trim();
+        const visible = q ? COMMANDS.filter(c => c.label.toLowerCase().includes(q) || c.id.includes(q)) : COMMANDS;
+        runCmd(visible[idx]);
+      }
+    }
+  });
+}
+
+/* NEW: iPad swipe gestures */
+function initGestures() {
+  let touchStartX = 0, touchStartY = 0, touchEdge = false, touchSide = null, touchTime = 0;
+  const EDGE = 40;
+  const MIN_SWIPE = 60;
+
+  document.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1) return;
+    const t = e.touches[0];
+    touchStartX = t.clientX;
+    touchStartY = t.clientY;
+    touchTime = Date.now();
+    if (touchStartX < EDGE) { touchEdge = true; touchSide = 'left'; }
+    else if (touchStartX > window.innerWidth - EDGE) { touchEdge = true; touchSide = 'right'; }
+    else { touchEdge = false; touchSide = null; }
+  }, { passive: true });
+
+  document.addEventListener('touchend', (e) => {
+    if (!touchEdge) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touchStartX;
+    const dy = Math.abs(t.clientY - touchStartY);
+    const dt = Date.now() - touchTime;
+    if (dt > 600 || dy > 80) return;
+    if (touchSide === 'left' && dx > MIN_SWIPE) {
+      if (window.innerWidth <= 1180) {
+        closeDrawers();
+        openDrawer('left');
+      }
+    } else if (touchSide === 'right' && dx < -MIN_SWIPE) {
+      if (window.innerWidth <= 1180) {
+        closeDrawers();
+        openDrawer('right');
+      }
+    }
+    touchEdge = false;
+  }, { passive: true });
+}
+
+/* Tab activation helper */
+function activateTab(name) {
+  $$('.tab').forEach(x => x.classList.toggle('active', x.dataset.tab === name));
+  $$('.pane').forEach(p => p.classList.toggle('active', p.dataset.pane === name));
+}
+
 function initSettingsUI() {
   renderThemeGrid();
   renderAccentSwatches();
+  renderPaperChips();
 
   bindRange('#rSize', '#vSize', 'size');
   bindRange('#rLh', '#vLh', 'lh', v => (+v).toFixed(2));
@@ -3824,6 +5153,7 @@ function initSettingsUI() {
   bindSwitch('#swTexture', 'texture');
   bindSwitch('#swSpell', 'spell');
   bindSwitch('#swTypewriter', 'typewriter');
+  bindSwitch('#swWarm', 'warm');
   bindSwitch('#swFocus', 'focus', (on) => {
     $('#btnFocus').classList.toggle('on', on);
   });
@@ -3862,6 +5192,14 @@ function initSettingsUI() {
     $$('.tab').forEach(x => x.classList.toggle('active', x === t));
     $$('.pane').forEach(p => p.classList.toggle('active', p.dataset.pane === t.dataset.tab));
   }));
+
+  // Look pane
+  renderPresets();
+  initChapterStyleUI();
+  renderOrnaments();
+
+  // Tools pane
+  initToolsUI();
 }
 
 /* ============================================================
@@ -3946,6 +5284,7 @@ function initGlobals() {
     if (!confirm('Delete "' + project.title + '" permanently? This cannot be undone.')) return;
     try {
       storageRemove(PROJ_KEY(project.id));
+      storageRemove(STATS_KEY(project.id));
       const raw = storageGet(INDEX_KEY);
       const idx = raw ? JSON.parse(raw) : [];
       storageSet(INDEX_KEY, JSON.stringify(idx.filter(e => e.id !== project.id)));
@@ -3957,14 +5296,26 @@ function initGlobals() {
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
+      if ($('#cmdkOverlay').classList.contains('open')) { closeCmdk(); return; }
       $$('.overlay.open').forEach(o => o.classList.remove('open'));
       closeDrawers();
       deselectImage();
+    }
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      if ($('#cmdkOverlay').classList.contains('open')) closeCmdk(); else openCmdk();
     }
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'e') {
       e.preventDefault();
       renderExportGrid();
       $('#exportOverlay').classList.add('open');
+    }
+    // iPad keyboard shortcut for sprint
+    if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 's') {
+      e.preventDefault();
+      activateTab('tools');
+      if (window.innerWidth <= 1180) openDrawer('right');
+      startSprint();
     }
   });
 
@@ -3977,6 +5328,7 @@ function initGlobals() {
         saveTimer = null;
       }
       saveProject(true);
+      saveStats();
     } catch {}
   });
   window.addEventListener('resize', () => {
@@ -4022,15 +5374,19 @@ function hydrate() {
   $('#swTexture').classList.toggle('on', !!project.settings.texture);
   $('#swSpell').classList.toggle('on', project.settings.spell !== false);
   $('#swTypewriter').classList.toggle('on', !!project.settings.typewriter);
+  $('#swWarm').classList.toggle('on', !!project.settings.warm);
   $('#swFocus').classList.toggle('on', !!project.settings.focus);
   $('#btnFocus').classList.toggle('on', !!project.settings.focus);
   $$('#alignChips .chip').forEach(c => c.classList.toggle('on', c.dataset.align === project.settings.align));
+  $$('#chapterStyleChips .chip').forEach(c => c.classList.toggle('on', c.dataset.ch === project.settings.chapterStyle));
+  $$('#decorChips .chip').forEach(c => c.classList.toggle('on', c.dataset.decor === project.settings.decor));
 
   applyTheme(currentTheme);
   applyTypography();
   renderChapters();
   updateStats();
   setSaveState('saved');
+  updateToolsUI();
 }
 
 let appBooted = false;
@@ -4045,13 +5401,13 @@ function boot() {
     const ui = raw ? JSON.parse(raw) : {};
     if (ui.theme && THEMES[ui.theme]) currentTheme = ui.theme;
     if (ui.accent) currentAccent = ui.accent;
+    if (ui.paper) paperOverride = ui.paper;
   } catch {}
 
   // load project
   project = loadProject();
 
   if (!project) {
-    // No project found — show empty state and redirect
     document.body.innerHTML = `
       <div style="min-height:100vh;display:grid;place-items:center;padding:24px;background:#0a0c0f;color:#e9edf2;font-family:Inter,system-ui,sans-serif;text-align:center">
         <div style="max-width:420px">
@@ -4070,7 +5426,8 @@ function boot() {
     return;
   }
 
-  // Project data has already been normalized by loadProject().
+  // Load stats for this project
+  loadStats();
 
   // Preload fonts
   loadFont(project.settings.font);
@@ -4083,6 +5440,8 @@ function boot() {
   initImgBar();
   initSettingsUI();
   initGlobals();
+  initCmdk();
+  initGestures();
   initCover();
   renderExportGrid();
   hydrate();
